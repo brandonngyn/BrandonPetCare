@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Pup Update Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --ink:#13233F;
+  --ink-soft:#51607A;
+  --navy-deep:#0B1626;
+  --stone:#F6F4EF;
+  --white:#FFFFFF;
+  --gold:#A3813A;
+  --gold-light:#CBA968;
+  --line:rgba(19,35,63,0.14);
+}
+
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body{
+  margin:0;
+  background:var(--stone);
+  color:var(--ink);
+  font-family:"Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  padding-bottom:60px;
+}
+
+header{
+  background:var(--navy-deep);
+  color:#fff;
+  padding:34px 22px 30px;
+  text-align:center;
+}
+header .eyebrow{
+  font-size:12px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--gold-light);
+  font-weight:600;
+}
+header h1{
+  font-family:"Fraunces", serif;
+  font-weight:500;
+  font-size:28px;
+  margin:10px 0 6px;
+}
+header p{
+  color:#B9C2D4;
+  font-size:14.5px;
+  margin:0;
+  max-width:360px;
+  margin:0 auto;
+}
+
+main{
+  max-width:480px;
+  margin:0 auto;
+  padding:26px 18px 0;
+}
+
+.field{ margin-bottom:22px; }
+.field label{
+  display:block;
+  font-size:12.5px;
+  font-weight:600;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin-bottom:9px;
+}
+.field input[type=text],
+.field textarea,
+.field select{
+  width:100%;
+  font-family:inherit;
+  font-size:16px;
+  padding:12px 14px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:var(--white);
+  color:var(--ink);
+}
+.field textarea{ min-height:70px; resize:vertical; }
+
+.chip-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.chip{
+  border:1px solid var(--line);
+  background:var(--white);
+  padding:9px 15px;
+  border-radius:999px;
+  font-size:14px;
+  color:var(--ink);
+  cursor:pointer;
+  user-select:none;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.chip.active{
+  background:var(--navy-deep);
+  border-color:var(--navy-deep);
+  color:#fff;
+}
+
+.name-input-row{
+  display:flex;
+  gap:8px;
+}
+.name-input-row input{
+  flex:1;
+  font-family:inherit;
+  font-size:16px;
+  padding:12px 14px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:var(--white);
+  color:var(--ink);
+}
+.add-name-btn{
+  padding:0 20px;
+  background:var(--navy-deep);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  font-family:inherit;
+  font-weight:600;
+  font-size:14px;
+  cursor:pointer;
+}
+.name-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid var(--gold-light);
+  background:rgba(163,129,58,0.08);
+  padding:8px 10px 8px 15px;
+  border-radius:999px;
+  font-size:14px;
+  color:var(--ink);
+}
+.name-chip button{
+  background:none;
+  border:none;
+  color:var(--ink-soft);
+  font-size:16px;
+  line-height:1;
+  cursor:pointer;
+  padding:2px 4px;
+}
+
+.length-toggle{
+  display:flex;
+  border:1px solid var(--line);
+  border-radius:8px;
+  overflow:hidden;
+}
+.length-toggle button{
+  flex:1;
+  padding:11px;
+  background:var(--white);
+  border:none;
+  font-family:inherit;
+  font-size:14px;
+  font-weight:600;
+  color:var(--ink-soft);
+  cursor:pointer;
+}
+.length-toggle button.active{
+  background:var(--navy-deep);
+  color:#fff;
+}
+
+.generate-btn{
+  display:block;
+  width:100%;
+  padding:16px;
+  margin-top:6px;
+  background:var(--gold);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  font-family:inherit;
+  font-weight:700;
+  font-size:15px;
+  letter-spacing:0.02em;
+  cursor:pointer;
+}
+.generate-btn:active{ transform:scale(0.99); }
+
+.output-wrap{
+  margin-top:30px;
+  display:none;
+}
+.output-wrap.show{ display:block; }
+
+.output-label{
+  font-size:12.5px;
+  font-weight:600;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin-bottom:10px;
+}
+
+.bubble{
+  background:#0B84FF;
+  color:#fff;
+  padding:13px 16px;
+  border-radius:18px 18px 4px 18px;
+  font-size:16px;
+  line-height:1.5;
+  max-width:100%;
+  white-space:pre-wrap;
+}
+
+.copy-btn{
+  display:block;
+  width:100%;
+  padding:14px;
+  margin-top:14px;
+  background:var(--white);
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:8px;
+  font-family:inherit;
+  font-weight:600;
+  font-size:14.5px;
+  cursor:pointer;
+}
+.copy-btn.copied{
+  background:var(--navy-deep);
+  color:#fff;
+  border-color:var(--navy-deep);
+}
+
+.regenerate-btn{
+  display:block;
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  background:transparent;
+  color:var(--ink-soft);
+  border:none;
+  font-family:inherit;
+  font-size:13.5px;
+  text-decoration:underline;
+  cursor:pointer;
+}
+
+footer{
+  text-align:center;
+  color:var(--ink-soft);
+  font-size:12.5px;
+  padding:30px 20px 0;
+  opacity:0.7;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BrandonPetCare Tools</span>
+  <h1>Pup Update Generator</h1>
+  <p>Fill in a few quick details from the visit. Get a warm, ready-to-send update in seconds.</p>
+</header>
+
+<main>
+  <div class="field">
+    <label for="petNameInput">Pet name(s)</label>
+    <div class="name-input-row">
+      <input type="text" id="petNameInput" placeholder="Type a name and press Enter">
+      <button type="button" class="add-name-btn" onclick="addPetName()">Add</button>
+    </div>
+    <div class="chip-grid" id="petNameChips" style="margin-top:10px;"></div>
+  </div>
+
+  <div class="field">
+    <label>What happened today</label>
+    <div class="chip-grid" id="activityChips">
+      <div class="chip" data-value="walk">Went on a walk</div>
+      <div class="chip" data-value="run">Went for a run</div>
+      <div class="chip" data-value="potty">Potty break</div>
+      <div class="chip" data-value="play">Playtime</div>
+      <div class="chip" data-value="treats">Had treats</div>
+      <div class="chip" data-value="meal">Fed a meal</div>
+      <div class="chip" data-value="nap">Napped / relaxed</div>
+      <div class="chip" data-value="cuddles">Extra cuddles</div>
+      <div class="chip" data-value="park">Dog park or beach trip</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="mood">Overall mood</label>
+    <select id="mood">
+      <option value="great">Happy and relaxed</option>
+      <option value="playful">Playful and full of energy</option>
+      <option value="sleepy">Mellow, mostly napped</option>
+      <option value="shy">A little shy at first, warmed up</option>
+      <option value="affectionate">Extra affectionate today</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="notes">Anything specific to mention (optional)</label>
+    <textarea id="notes" placeholder="e.g. favorite toy was the rope tug, greeted the neighbor's dog nicely, ate all their food"></textarea>
+  </div>
+
+  <div class="field">
+    <label>Message length</label>
+    <div class="length-toggle">
+      <button type="button" class="active" data-len="short">Short</button>
+      <button type="button" data-len="detailed">Detailed</button>
+    </div>
+  </div>
+
+  <button class="generate-btn" onclick="generateUpdate()">Generate Update</button>
+
+  <div class="output-wrap" id="outputWrap">
+    <div class="output-label">Preview</div>
+    <div class="bubble" id="bubbleText"></div>
+    <button class="copy-btn" id="copyBtn" onclick="copyText()">Copy Message</button>
+    <button class="regenerate-btn" onclick="generateUpdate()">Try another version</button>
+  </div>
+</main>
+
+<footer>Everything here is generated locally on your device. Nothing is saved or sent anywhere.</footer>
+
+<script>
+let selectedActivities = new Set();
+let messageLength = 'short';
+let petNames = [];
+
+function renderPetNameChips(){
+  const wrap = document.getElementById('petNameChips');
+  wrap.innerHTML = '';
+  petNames.forEach((name, i) => {
+    const chip = document.createElement('span');
+    chip.className = 'name-chip';
+    chip.innerHTML = `${name} <button type="button" aria-label="Remove ${name}">&times;</button>`;
+    chip.querySelector('button').addEventListener('click', () => {
+      petNames.splice(i, 1);
+      renderPetNameChips();
+    });
+    wrap.appendChild(chip);
+  });
+}
+
+function addPetName(){
+  const input = document.getElementById('petNameInput');
+  const val = input.value.trim();
+  if (val && !petNames.includes(val)) {
+    petNames.push(val);
+    renderPetNameChips();
+  }
+  input.value = '';
+  input.focus();
+}
+
+document.getElementById('petNameInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    addPetName();
+  }
+});
+
+function joinNames(names){
+  if (names.length === 0) return null;
+  if (names.length === 1) return names[0];
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  return `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`;
+}
+
+document.querySelectorAll('#activityChips .chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const val = chip.dataset.value;
+    if (selectedActivities.has(val)) {
+      selectedActivities.delete(val);
+      chip.classList.remove('active');
+    } else {
+      selectedActivities.add(val);
+      chip.classList.add('active');
+    }
+  });
+});
+
+document.querySelectorAll('.length-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.length-toggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    messageLength = btn.dataset.len;
+  });
+});
+
+function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+const activityPhrases = {
+  walk: ["went on a nice walk around the neighborhood", "had a good walk to stretch the legs", "we took a walk together"],
+  run: ["got in a solid run", "we went for a run and burned off some energy", "had a good run outside"],
+  potty: ["had a potty break", "went out for a bathroom break"],
+  play: ["had some playtime", "we played for a bit", "got some good playtime in"],
+  treats: ["got a treat or two", "enjoyed a treat"],
+  meal: ["was fed on schedule", "had their meal"],
+  nap: ["got some rest", "relaxed for a while", "took it easy"],
+  cuddles: ["got plenty of cuddles", "we had some good snuggle time"],
+  park: ["we made a trip to the park", "went out to the dog park/beach and had a blast"]
+};
+
+const moodPhrases = {
+  great: ["seemed happy and relaxed the whole time", "was in a great mood", "was calm and content"],
+  playful: ["had a ton of energy today", "was playful and full of life", "was in a very playful mood"],
+  sleepy: ["was pretty mellow and mostly napped", "took it easy and rested a lot", "was in a relaxed, sleepy mood"],
+  shy: ["was a little shy at first but warmed up quickly", "took a bit to settle in but was comfortable by the end"],
+  affectionate: ["was extra affectionate today", "wanted lots of attention and gave lots of love back"]
+};
+
+const openers = ["Quick update on", "Just wrapped up time with", "Update on", "Wanted to let you know how it went with"];
+const closers = ["All is well!", "Everything went smoothly.", "No issues at all, had a great visit.", "Looking forward to next time!"];
+
+function generateUpdate(){
+  const petLabel = joinNames(petNames) || "your pup";
+  const isPlural = petNames.length > 1;
+  const notes = document.getElementById('notes').value.trim();
+  const mood = document.getElementById('mood').value;
+
+  const activities = Array.from(selectedActivities).map(a => pick(activityPhrases[a]));
+
+  let msg = `${pick(openers)} ${petLabel}! `;
+
+  if (activities.length > 0) {
+    if (activities.length === 1) {
+      msg += `We ${activities[0]}. `;
+    } else if (activities.length === 2) {
+      msg += `We ${activities[0]} and ${activities[1]}. `;
+    } else {
+      const last = activities.pop();
+      msg += `We ${activities.join(', ')}, and ${last}. `;
+    }
+  }
+
+  msg += `${petLabel} ${pick(moodPhrases[mood])}. `;
+
+  if (notes) {
+    msg += `${notes}. `;
+  }
+
+  msg += pick(closers);
+
+  if (isPlural) {
+    msg = msg.replace(/\bwas\b/g, 'were');
+  }
+
+  document.getElementById('bubbleText').textContent = msg;
+  document.getElementById('outputWrap').classList.add('show');
+  document.getElementById('copyBtn').classList.remove('copied');
+  document.getElementById('copyBtn').textContent = 'Copy Message';
+
+  document.getElementById('outputWrap').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyText(){
+  const text = document.getElementById('bubbleText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+  }).catch(() => {
+    const range = document.createRange();
+    range.selectNode(document.getElementById('bubbleText'));
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand('copy');
+  });
+}
+</script>
+
+</body>
+</html>
