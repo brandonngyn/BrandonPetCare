@@ -463,42 +463,6 @@ blockquote{
   color:var(--gold);
 }
 
-/* ---------- emergency ---------- */
-.emergency-card{
-  max-width:640px;
-  margin:0 auto;
-  background:var(--navy-deep);
-  color:#FFFFFF;
-  border-radius:4px;
-  padding:42px 36px;
-  text-align:center;
-}
-.emergency-card p.note{
-  color:#B9C2D4;
-  font-size:15.5px;
-  max-width:460px;
-  margin:0 auto 28px;
-}
-.emergency-tiers{
-  display:flex;
-  justify-content:center;
-  gap:44px;
-  flex-wrap:wrap;
-}
-.emergency-tiers div .price{
-  font-family:"Fraunces", serif;
-  font-weight:500;
-  font-size:26px;
-  color:var(--gold-light);
-}
-.emergency-tiers div .label{
-  font-size:13px;
-  letter-spacing:0.04em;
-  color:#8D97AC;
-  margin-top:6px;
-  text-transform:uppercase;
-}
-
 /* ---------- gallery ---------- */
 .gallery{
   column-count:2;
@@ -867,7 +831,6 @@ a:focus-visible, .btn:focus-visible{
 
 @media (max-width:600px){
   section{ padding:60px 20px; }
-  .emergency-tiers{ gap:28px; }
   body{ font-size:17px; }
   .steps{ grid-template-columns:1fr; }
   .cards{ grid-template-columns:1fr; }
@@ -1142,31 +1105,14 @@ a:focus-visible, .btn:focus-visible{
     </div>
 
   </div>
+
+  <p style="text-align:center; max-width:420px; margin:26px auto 0; font-size:13.5px; color:var(--ink-soft); opacity:0.85; line-height:1.5;">
+    &#128062; A little advance notice keeps tails wagging and rates lower. Requests inside 24 hours carry a rush rate of $500/night for the first dog, $250/night each additional.
+  </p>
 </section>
 
 
 <section class="reveal">
-  <div class="section-head">
-    <span class="eyebrow">Last Minute Care</span>
-    <h2>Emergency Availability</h2>
-  </div>
-  <div class="emergency-card">
-    <p class="note">Bookings requested with less than 24 hours' notice are subject to an emergency availability rate.</p>
-    <div class="emergency-tiers">
-      <div>
-        <div class="price">$500/night</div>
-        <div class="label">First dog</div>
-      </div>
-      <div>
-        <div class="price">$250/night</div>
-        <div class="label">Each additional dog</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<section class="section-alt reveal">
   <div class="section-head">
     <span class="eyebrow">For Current Clients</span>
     <h2>Need an Update Right Now?</h2>
@@ -1178,7 +1124,7 @@ a:focus-visible, .btn:focus-visible{
 </section>
 
 
-<section class="reveal">
+<section class="section-alt reveal">
   <div class="section-head">
     <span class="eyebrow">Pet Gallery</span>
     <h2>Happy Clients</h2>
@@ -1214,7 +1160,7 @@ a:focus-visible, .btn:focus-visible{
 </section>
 
 
-<section class="section-alt reveal">
+<section class="reveal">
   <div class="section-head">
     <span class="eyebrow">Testimonials</span>
     <h2>Client Testimonials</h2>
@@ -1337,7 +1283,7 @@ a:focus-visible, .btn:focus-visible{
 </section>
 
 
-<section class="reveal">
+<section class="section-alt reveal">
   <div class="offer">
     <span class="eyebrow">Special Offer</span>
     <p>Ask about returning client and referral discounts.</p>
@@ -1347,7 +1293,7 @@ a:focus-visible, .btn:focus-visible{
 </section>
 
 
-<section class="section-alt reveal">
+<section class="reveal">
   <div class="section-head">
     <span class="eyebrow">Share Your Story</span>
     <h2>Leave Your Own Review</h2>
