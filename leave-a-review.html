@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Share Your Story | BrandonPetCare</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --ink:#13233F;
+  --ink-soft:#51607A;
+  --navy-deep:#0B1626;
+  --stone:#F6F4EF;
+  --white:#FFFFFF;
+  --gold:#A3813A;
+  --gold-light:#CBA968;
+  --line:rgba(19,35,63,0.14);
+}
+
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body{
+  margin:0;
+  background:var(--stone);
+  color:var(--ink);
+  font-family:"Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height:100vh;
+}
+
+header{
+  background:var(--navy-deep);
+  color:#fff;
+  padding:36px 22px 32px;
+  text-align:center;
+}
+.back-link{
+  display:inline-block;
+  margin-bottom:18px;
+  font-size:13px;
+  font-weight:600;
+  color:#8D97AC;
+  text-decoration:none;
+}
+@media (hover:hover){
+  .back-link:hover{ color:var(--gold-light); }
+}
+header .eyebrow{
+  font-size:12px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--gold-light);
+  font-weight:600;
+}
+header h1{
+  font-family:"Fraunces", serif;
+  font-weight:500;
+  font-size:28px;
+  margin:10px 0 6px;
+}
+header p{
+  color:#B9C2D4;
+  font-size:14.5px;
+  margin:0 auto;
+  max-width:360px;
+}
+
+main{
+  max-width:480px;
+  margin:0 auto;
+  padding:30px 20px 40px;
+}
+
+.intro-note{
+  background:rgba(163,129,58,0.08);
+  border:1px solid var(--gold-light);
+  border-radius:10px;
+  padding:16px 18px;
+  font-size:14.5px;
+  color:var(--ink-soft);
+  margin-bottom:26px;
+  line-height:1.55;
+  text-align:center;
+}
+
+.review-form{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:32px 26px;
+  text-align:left;
+}
+.review-form label{
+  display:block;
+  font-size:12.5px;
+  font-weight:600;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin-bottom:8px;
+}
+.review-form input[type=text],
+.review-form textarea{
+  width:100%;
+  font-family:inherit;
+  font-size:16px;
+  padding:12px 14px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:var(--stone);
+  color:var(--ink);
+  margin-bottom:20px;
+}
+.review-form textarea{ min-height:130px; resize:vertical; }
+.review-form button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  padding:17px 32px;
+  min-height:54px;
+  background:var(--gold);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  font-weight:700;
+  font-size:15.5px;
+  cursor:pointer;
+}
+.review-form button:disabled{ opacity:0.65; }
+.review-form button:active:not(:disabled){ transform:scale(0.99); }
+
+.error-note{
+  color:#B0432F;
+  font-size:13.5px;
+  margin-top:10px;
+  display:none;
+}
+.error-note.show{ display:block; }
+
+.confirm-card{
+  display:none;
+  text-align:center;
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:44px 30px;
+}
+.confirm-card.show{ display:block; }
+.confirm-card .paw{ font-size:34px; margin-bottom:14px; }
+.confirm-card h2{
+  font-family:"Fraunces", serif;
+  font-weight:500;
+  font-size:22px;
+  margin:0 0 10px;
+  color:var(--ink);
+}
+.confirm-card p{
+  color:var(--ink-soft);
+  font-size:15.5px;
+  line-height:1.6;
+  max-width:340px;
+  margin:0 auto;
+}
+.confirm-back-btn{
+  display:inline-block;
+  margin-top:26px;
+  padding:14px 30px;
+  background:var(--navy-deep);
+  color:#fff;
+  border-radius:8px;
+  font-family:inherit;
+  font-weight:600;
+  font-size:14.5px;
+  text-decoration:none;
+}
+
+footer{
+  text-align:center;
+  color:var(--ink-soft);
+  font-size:12.5px;
+  padding:10px 20px 30px;
+  opacity:0.7;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="back-link">&larr; Back to Main Site</a>
+  <span class="eyebrow">BrandonPetCare</span>
+  <h1>How Did We Do?</h1>
+  <p>Thanks so much for trusting us with your pet. We'd love to hear how the stay went.</p>
+</header>
+
+<main>
+
+  <div id="formState">
+    <p class="intro-note">Your story might be the reason another pet parent decides to book. Brandon reads every submission personally before anything goes up on the site.</p>
+
+    <form id="reviewForm" class="review-form" action="https://formspree.io/f/mrenvjjy" method="POST">
+      <input type="hidden" name="_subject" value="New testimonial submitted">
+      <label for="rev-name">Your name</label>
+      <input type="text" id="rev-name" name="name" required>
+
+      <label for="rev-pet">Your pet's name (optional)</label>
+      <input type="text" id="rev-pet" name="pet_name">
+
+      <label for="rev-story">Tell us about the stay</label>
+      <textarea id="rev-story" name="story" required placeholder="How did your pet do? Anything Brandon did that stood out?"></textarea>
+
+      <button type="submit" id="reviewBtn">Submit Your Story</button>
+      <div class="error-note" id="errorNote">Please share a few words before submitting.</div>
+    </form>
+  </div>
+
+  <div id="confirmState" class="confirm-card">
+    <div class="paw">&#128062;</div>
+    <h2>Pawsome, thank you!</h2>
+    <p>Brandon will read every word, tail wagging the whole time, before it goes up on the site.</p>
+    <a href="index.html" class="confirm-back-btn">Back to Main Site</a>
+  </div>
+
+</main>
+
+<footer>Sent straight and privately to Brandon.</footer>
+
+<script>
+(function(){
+  var form = document.getElementById('reviewForm');
+  var formState = document.getElementById('formState');
+  var confirmState = document.getElementById('confirmState');
+  var errorNote = document.getElementById('errorNote');
+  if (!form) return;
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var story = document.getElementById('rev-story').value.trim();
+    var name = document.getElementById('rev-name').value.trim();
+
+    if (!name || !story) {
+      errorNote.classList.add('show');
+      return;
+    }
+    errorNote.classList.remove('show');
+
+    var btn = document.getElementById('reviewBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    }).then(function(response){
+      if (response.ok){
+        formState.style.display = 'none';
+        confirmState.classList.add('show');
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Submit Your Story';
+        errorNote.textContent = "Something went wrong. Please try emailing your story directly instead.";
+        errorNote.classList.add('show');
+      }
+    }).catch(function(){
+      btn.disabled = false;
+      btn.textContent = 'Submit Your Story';
+      errorNote.textContent = "Something went wrong. Please try emailing your story directly instead.";
+      errorNote.classList.add('show');
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
