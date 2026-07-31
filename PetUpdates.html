@@ -139,6 +139,25 @@ main{
   color:var(--ink);
 }
 .field textarea{ min-height:70px; resize:vertical; }
+
+.checkbox-label{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:15.5px;
+  font-weight:400;
+  text-transform:none;
+  letter-spacing:normal;
+  color:var(--ink);
+  cursor:pointer;
+}
+.checkbox-label input[type=checkbox]{
+  width:20px;
+  height:20px;
+  flex-shrink:0;
+  accent-color:var(--gold);
+  cursor:pointer;
+}
 .field .hint{
   font-size:12.5px;
   color:var(--ink-soft);
@@ -253,6 +272,13 @@ footer{
       <textarea id="noteField" placeholder="e.g. how's their appetite been, are they settling in okay"></textarea>
     </div>
 
+    <div class="field">
+      <label class="checkbox-label">
+        <input type="checkbox" id="wantsPhotos" checked>
+        <span>Include a photo or two with the update</span>
+      </label>
+    </div>
+
     <button class="request-btn" id="requestBtn" onclick="sendRequest()">Request Update Now</button>
     <div class="error-note" id="errorNote">Please enter your pet's code first.</div>
   </div>
@@ -292,6 +318,7 @@ function initState(){
 function sendRequest(){
   const code = document.getElementById('petCode').value.trim();
   const note = document.getElementById('noteField').value.trim();
+  const wantsPhotos = document.getElementById('wantsPhotos').checked;
   const errorNote = document.getElementById('errorNote');
 
   if (!code) {
@@ -304,9 +331,11 @@ function sendRequest(){
   btn.disabled = true;
   btn.textContent = 'Sending...';
 
+  const photoLine = wantsPhotos ? "Photos: yes please" : "Photos: not needed";
+
   const message = note
-    ? `Pet code: ${code}\nNote: ${note}`
-    : `Pet code: ${code}`;
+    ? `Pet code: ${code}\n${photoLine}\nNote: ${note}`
+    : `Pet code: ${code}\n${photoLine}`;
 
   fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
     method: 'POST',
