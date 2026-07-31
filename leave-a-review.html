@@ -113,6 +113,56 @@ main{
   margin-bottom:20px;
 }
 .review-form textarea{ min-height:130px; resize:vertical; }
+
+.private-divider{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:28px 0 6px;
+}
+.private-divider::before,
+.private-divider::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:var(--line);
+}
+.private-divider span{
+  font-size:11.5px;
+  font-weight:700;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--gold);
+  white-space:nowrap;
+}
+.private-hint{
+  font-size:13px;
+  color:var(--ink-soft);
+  margin:0 0 16px;
+  line-height:1.5;
+}
+.chip-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:18px;
+}
+.chip{
+  border:1px solid var(--line);
+  background:var(--stone);
+  padding:9px 14px;
+  border-radius:999px;
+  font-size:13.5px;
+  color:var(--ink);
+  cursor:pointer;
+  user-select:none;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.chip.active{
+  background:var(--navy-deep);
+  border-color:var(--navy-deep);
+  color:#fff;
+}
 .review-form button{
   display:inline-flex;
   align-items:center;
@@ -210,6 +260,22 @@ footer{
       <label for="rev-story">Tell us about the stay</label>
       <textarea id="rev-story" name="story" required placeholder="How did your pet do? Anything Brandon did that stood out?"></textarea>
 
+      <div class="private-divider">
+        <span>Private note to Brandon</span>
+      </div>
+      <p class="private-hint">This part stays between you and Brandon. It's never posted anywhere.</p>
+
+      <div class="chip-grid" id="feedbackChips">
+        <div class="chip" data-value="More updates please">Wanted more updates</div>
+        <div class="chip" data-value="More pictures please">Wanted more pictures</div>
+        <div class="chip" data-value="That was too many pictures">That was too many pictures</div>
+        <div class="chip" data-value="Everything was perfect">Everything was perfect</div>
+      </div>
+      <input type="hidden" id="feedbackTags" name="feedback_tags" value="">
+
+      <label for="rev-private" style="margin-top:16px;">Anything else? (optional, private)</label>
+      <textarea id="rev-private" name="private_note" placeholder="Anything you'd rather tell Brandon privately"></textarea>
+
       <button type="submit" id="reviewBtn">Submit Your Story</button>
       <div class="error-note" id="errorNote">Please share a few words before submitting.</div>
     </form>
@@ -227,6 +293,24 @@ footer{
 <footer>Sent straight and privately to Brandon.</footer>
 
 <script>
+(function(){
+  var selectedTags = new Set();
+  var tagsInput = document.getElementById('feedbackTags');
+  document.querySelectorAll('#feedbackChips .chip').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      var val = chip.dataset.value;
+      if (selectedTags.has(val)) {
+        selectedTags.delete(val);
+        chip.classList.remove('active');
+      } else {
+        selectedTags.add(val);
+        chip.classList.add('active');
+      }
+      tagsInput.value = Array.from(selectedTags).join(', ');
+    });
+  });
+})();
+
 (function(){
   var form = document.getElementById('reviewForm');
   var formState = document.getElementById('formState');
