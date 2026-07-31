@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Request an Update | BrandonPetCare</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --ink:#13233F;
+  --ink-soft:#51607A;
+  --navy-deep:#0B1626;
+  --stone:#F6F4EF;
+  --white:#FFFFFF;
+  --gold:#A3813A;
+  --gold-light:#CBA968;
+  --line:rgba(19,35,63,0.14);
+}
+
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body{
+  margin:0;
+  background:var(--stone);
+  color:var(--ink);
+  font-family:"Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height:100vh;
+}
+
+header{
+  background:var(--navy-deep);
+  color:#fff;
+  padding:36px 22px 32px;
+  text-align:center;
+}
+header .eyebrow{
+  font-size:12px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--gold-light);
+  font-weight:600;
+}
+header h1{
+  font-family:"Fraunces", serif;
+  font-weight:500;
+  font-size:28px;
+  margin:10px 0 6px;
+}
+header p{
+  color:#B9C2D4;
+  font-size:14.5px;
+  margin:0 auto;
+  max-width:360px;
+}
+
+main{
+  max-width:480px;
+  margin:0 auto;
+  padding:30px 20px 40px;
+}
+
+/* ---------- closed state ---------- */
+.closed-card{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:32px 26px;
+  text-align:center;
+}
+.closed-card .icon{
+  font-size:32px;
+  margin-bottom:14px;
+}
+.closed-card h2{
+  font-family:"Fraunces", serif;
+  font-weight:500;
+  font-size:21px;
+  margin:0 0 10px;
+}
+.closed-card p{
+  color:var(--ink-soft);
+  font-size:15.5px;
+  line-height:1.6;
+  margin:0 0 6px;
+}
+.closed-card .hours{
+  display:inline-block;
+  margin-top:14px;
+  padding:8px 18px;
+  background:var(--stone);
+  border-radius:999px;
+  font-size:13.5px;
+  font-weight:600;
+  color:var(--ink);
+}
+.closed-card .contact-line{
+  margin-top:22px;
+  font-size:14.5px;
+}
+.closed-card .contact-line a{
+  color:var(--gold);
+  font-weight:600;
+  text-decoration:none;
+}
+
+/* ---------- open / form state ---------- */
+.info-note{
+  background:rgba(163,129,58,0.08);
+  border:1px solid var(--gold-light);
+  border-radius:10px;
+  padding:14px 16px;
+  font-size:14px;
+  color:var(--ink-soft);
+  margin-bottom:26px;
+  line-height:1.5;
+}
+
+.field{ margin-bottom:20px; }
+.field label{
+  display:block;
+  font-size:12.5px;
+  font-weight:600;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin-bottom:9px;
+}
+.field input[type=text],
+.field textarea{
+  width:100%;
+  font-family:inherit;
+  font-size:16px;
+  padding:13px 14px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:var(--white);
+  color:var(--ink);
+}
+.field textarea{ min-height:70px; resize:vertical; }
+.field .hint{
+  font-size:12.5px;
+  color:var(--ink-soft);
+  opacity:0.8;
+  margin-top:7px;
+}
+
+.request-btn{
+  display:block;
+  width:100%;
+  padding:18px;
+  margin-top:8px;
+  background:var(--gold);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  font-family:inherit;
+  font-weight:700;
+  font-size:16px;
+  letter-spacing:0.02em;
+  cursor:pointer;
+}
+.request-btn:disabled{
+  opacity:0.6;
+  cursor:default;
+}
+.request-btn:active:not(:disabled){ transform:scale(0.99); }
+
+.error-note{
+  color:#B0432F;
+  font-size:13.5px;
+  margin-top:10px;
+  display:none;
+}
+.error-note.show{ display:block; }
+
+/* ---------- confirmation state ---------- */
+.confirm-card{
+  display:none;
+  text-align:center;
+  padding:20px 4px 4px;
+}
+.confirm-card.show{ display:block; }
+.confirm-card .check{
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:var(--navy-deep);
+  color:var(--gold-light);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  margin:0 auto 20px;
+}
+.confirm-card h2{
+  font-family:"Fraunces", serif;
+  font-weight:500;
+  font-size:22px;
+  margin:0 0 12px;
+}
+.confirm-card p{
+  color:var(--ink-soft);
+  font-size:15.5px;
+  line-height:1.6;
+  max-width:340px;
+  margin:0 auto;
+}
+
+footer{
+  text-align:center;
+  color:var(--ink-soft);
+  font-size:12.5px;
+  padding:10px 20px 30px;
+  opacity:0.7;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BrandonPetCare</span>
+  <h1>Request an Update</h1>
+  <p>Enter your pet's code below and Brandon will send you a fresh update within 30&ndash;60 minutes.</p>
+</header>
+
+<main>
+
+  <div id="closedState" class="closed-card" style="display:none;">
+    <div class="icon">🌙</div>
+    <h2>Outside request hours</h2>
+    <p>Live update requests are available during normal daytime hours. Reach out directly and Brandon will get back to you as soon as he can.</p>
+    <span class="hours">7 AM &ndash; 7 PM Pacific</span>
+    <div class="contact-line">
+      <a href="mailto:care@brandonpetcare.com">care@brandonpetcare.com</a>
+    </div>
+  </div>
+
+  <div id="openState" style="display:none;">
+    <div class="info-note">
+      Requests are answered within 30&ndash;60 minutes during normal hours (7 AM&ndash;7 PM). For anything urgent, please call or text directly instead.
+    </div>
+
+    <div class="field">
+      <label for="petCode">Pet code</label>
+      <input type="text" id="petCode" placeholder="e.g. ZEUS123">
+      <div class="hint">Don't have a code? Ask Brandon and he'll set one up for your pet.</div>
+    </div>
+
+    <div class="field">
+      <label for="noteField">Anything specific you'd like to know? (optional)</label>
+      <textarea id="noteField" placeholder="e.g. how's their appetite been, are they settling in okay"></textarea>
+    </div>
+
+    <button class="request-btn" id="requestBtn" onclick="sendRequest()">Request Update Now</button>
+    <div class="error-note" id="errorNote">Please enter your pet's code first.</div>
+  </div>
+
+  <div id="confirmState" class="confirm-card">
+    <div class="check">&#10003;</div>
+    <h2>Update requested</h2>
+    <p>Brandon's been notified and will send you an update within the next 30&ndash;60 minutes.</p>
+  </div>
+
+</main>
+
+<footer>Requests go directly and privately to Brandon.</footer>
+
+<script>
+const NTFY_TOPIC = "brandonpetcare-update-94gxj0276h";
+const OPEN_HOUR = 7;
+const CLOSE_HOUR = 19;
+
+function getPacificHour(){
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Los_Angeles',
+    hour: 'numeric',
+    hour12: false
+  }).formatToParts(new Date());
+  const hourPart = parts.find(p => p.type === 'hour');
+  return parseInt(hourPart.value, 10);
+}
+
+function initState(){
+  const hour = getPacificHour();
+  const isOpen = hour >= OPEN_HOUR && hour < CLOSE_HOUR;
+  document.getElementById('closedState').style.display = isOpen ? 'none' : 'block';
+  document.getElementById('openState').style.display = isOpen ? 'block' : 'none';
+}
+
+function sendRequest(){
+  const code = document.getElementById('petCode').value.trim();
+  const note = document.getElementById('noteField').value.trim();
+  const errorNote = document.getElementById('errorNote');
+
+  if (!code) {
+    errorNote.classList.add('show');
+    return;
+  }
+  errorNote.classList.remove('show');
+
+  const btn = document.getElementById('requestBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  const message = note
+    ? `Pet code: ${code}\nNote: ${note}`
+    : `Pet code: ${code}`;
+
+  fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
+    method: 'POST',
+    body: message,
+    headers: {
+      'Title': 'Update Requested',
+      'Priority': 'high',
+      'Tags': 'dog'
+    }
+  }).then(() => {
+    document.getElementById('openState').style.display = 'none';
+    document.getElementById('confirmState').classList.add('show');
+  }).catch(() => {
+    btn.disabled = false;
+    btn.textContent = 'Request Update Now';
+    errorNote.textContent = "Something went wrong sending your request. Please text or email directly instead.";
+    errorNote.classList.add('show');
+  });
+}
+
+initState();
+</script>
+
+</body>
+</html>
