@@ -116,6 +116,22 @@ main{
 }
 .review-form textarea{ min-height:130px; resize:vertical; }
 
+.star-rating{
+  display:flex;
+  gap:6px;
+  margin-bottom:8px;
+}
+.star{
+  font-size:38px;
+  line-height:1;
+  color:#D8D3C8;
+  cursor:pointer;
+  user-select:none;
+  transition:color .15s ease, transform .1s ease;
+}
+.star:active{ transform:scale(0.92); }
+.star.filled{ color:var(--gold); }
+
 .private-divider{
   display:flex;
   align-items:center;
@@ -256,6 +272,17 @@ footer{
       <label for="rev-name">Your name</label>
       <input type="text" id="rev-name" name="name" autocomplete="name" required>
 
+      <label>Overall rating</label>
+      <div class="star-rating" id="starRating">
+        <span class="star" data-value="1">&#9733;</span>
+        <span class="star" data-value="2">&#9733;</span>
+        <span class="star" data-value="3">&#9733;</span>
+        <span class="star" data-value="4">&#9733;</span>
+        <span class="star" data-value="5">&#9733;</span>
+      </div>
+      <input type="hidden" id="ratingInput" name="rating" value="">
+      <div class="error-note" id="ratingError">Please select a rating before submitting.</div>
+
       <label for="rev-date">Date of stay</label>
       <input type="date" id="rev-date" name="stay_date">
 
@@ -296,6 +323,28 @@ footer{
 
 <script>
 (function(){
+  var stars = document.querySelectorAll('#starRating .star');
+  var ratingInput = document.getElementById('ratingInput');
+  var ratingError = document.getElementById('ratingError');
+
+  function paintStars(value){
+    stars.forEach(function(star){
+      var starValue = parseInt(star.dataset.value, 10);
+      star.classList.toggle('filled', starValue <= value);
+    });
+  }
+
+  stars.forEach(function(star){
+    star.addEventListener('click', function(){
+      var value = star.dataset.value;
+      ratingInput.value = value;
+      paintStars(parseInt(value, 10));
+      ratingError.classList.remove('show');
+    });
+  });
+})();
+
+(function(){
   var selectedTags = new Set();
   var tagsInput = document.getElementById('feedbackTags');
   document.querySelectorAll('#feedbackChips .chip').forEach(function(chip){
@@ -318,18 +367,29 @@ footer{
   var formState = document.getElementById('formState');
   var confirmState = document.getElementById('confirmState');
   var errorNote = document.getElementById('errorNote');
+  var ratingError = document.getElementById('ratingError');
   if (!form) return;
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
     var story = document.getElementById('rev-story').value.trim();
     var name = document.getElementById('rev-name').value.trim();
+    var rating = document.getElementById('ratingInput').value;
 
+    var hasError = false;
+    if (!rating) {
+      ratingError.classList.add('show');
+      hasError = true;
+    } else {
+      ratingError.classList.remove('show');
+    }
     if (!name || !story) {
       errorNote.classList.add('show');
-      return;
+      hasError = true;
+    } else {
+      errorNote.classList.remove('show');
     }
-    errorNote.classList.remove('show');
+    if (hasError) return;
 
     var btn = document.getElementById('reviewBtn');
     btn.disabled = true;
