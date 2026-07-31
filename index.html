@@ -653,6 +653,7 @@ blockquote{
   margin-bottom:8px;
 }
 .contact-form input,
+.contact-form select,
 .contact-form textarea{
   width:100%;
   font-family:inherit;
@@ -1041,7 +1042,7 @@ a:focus-visible, .btn:focus-visible{
     <div class="step">
       <div class="step-num">3</div>
       <h3>Relax</h3>
-      <p>You travel with confidence, backed by daily updates and dependable care while you're away.</p>
+      <p>You travel with confidence, backed by regular updates (usually every couple of days, more often if you'd like) and dependable care while you're away.</p>
     </div>
   </div>
 </section>
@@ -1130,7 +1131,7 @@ a:focus-visible, .btn:focus-visible{
     <div class="card">
       <h3>Included With Care</h3>
       <ul class="included-list">
-        <li>Daily photo updates and video <span style="font-size:0.8em; color:var(--ink-soft); opacity:0.85;">(if requested)</span></li>
+        <li>Photo updates every couple of days <span style="font-size:0.8em; color:var(--ink-soft); opacity:0.85;">(daily or more by request)</span>, video if requested</li>
         <li>Feeding schedules</li>
         <li>Medication administration</li>
         <li>Walks and enrichment</li>
@@ -1391,6 +1392,15 @@ a:focus-visible, .btn:focus-visible{
       </div>
     </div>
     <p class="form-note" style="text-align:left; margin-top:-10px;">Leave blank if this is just a general inquiry. Dates are requests, not confirmed bookings, until Brandon replies.</p>
+
+    <label for="cf-updates">How often would you like updates?</label>
+    <select id="cf-updates" name="update_frequency">
+      <option value="Every 2 days (default)" selected>Every 2 days (default)</option>
+      <option value="Daily">Daily</option>
+      <option value="Every 3 days">Every 3 days</option>
+      <option value="Every 4 days">Every 4 days</option>
+      <option value="No updates needed">No updates needed</option>
+    </select>
 
     <label for="cf-message">Tell me about your pet and what you need</label>
     <textarea id="cf-message" name="message" required></textarea>
