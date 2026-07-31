@@ -130,6 +130,11 @@ main{
   transition:color .15s ease, transform .1s ease;
 }
 .star:active{ transform:scale(0.92); }
+.star:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:3px;
+  border-radius:4px;
+}
 .star.filled{ color:var(--gold); }
 
 .private-divider{
@@ -272,13 +277,13 @@ footer{
       <label for="rev-name">Your name</label>
       <input type="text" id="rev-name" name="name" autocomplete="name" required>
 
-      <label>Overall rating</label>
-      <div class="star-rating" id="starRating">
-        <span class="star" data-value="1">&#9733;</span>
-        <span class="star" data-value="2">&#9733;</span>
-        <span class="star" data-value="3">&#9733;</span>
-        <span class="star" data-value="4">&#9733;</span>
-        <span class="star" data-value="5">&#9733;</span>
+      <label id="ratingLabel">Overall rating</label>
+      <div class="star-rating" id="starRating" role="radiogroup" aria-labelledby="ratingLabel">
+        <span class="star" data-value="1" role="radio" aria-checked="false" aria-label="1 star" tabindex="0">&#9733;</span>
+        <span class="star" data-value="2" role="radio" aria-checked="false" aria-label="2 stars" tabindex="0">&#9733;</span>
+        <span class="star" data-value="3" role="radio" aria-checked="false" aria-label="3 stars" tabindex="0">&#9733;</span>
+        <span class="star" data-value="4" role="radio" aria-checked="false" aria-label="4 stars" tabindex="0">&#9733;</span>
+        <span class="star" data-value="5" role="radio" aria-checked="false" aria-label="5 stars" tabindex="0">&#9733;</span>
       </div>
       <input type="hidden" id="ratingInput" name="rating" value="">
       <div class="error-note" id="ratingError">Please select a rating before submitting.</div>
@@ -332,15 +337,24 @@ footer{
     stars.forEach(function(star){
       var starValue = parseInt(star.dataset.value, 10);
       star.classList.toggle('filled', starValue <= value);
+      star.setAttribute('aria-checked', starValue === value ? 'true' : 'false');
     });
   }
 
+  function select(star){
+    var value = star.dataset.value;
+    ratingInput.value = value;
+    paintStars(parseInt(value, 10));
+    ratingError.classList.remove('show');
+  }
+
   stars.forEach(function(star){
-    star.addEventListener('click', function(){
-      var value = star.dataset.value;
-      ratingInput.value = value;
-      paintStars(parseInt(value, 10));
-      ratingError.classList.remove('show');
+    star.addEventListener('click', function(){ select(star); });
+    star.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        select(star);
+      }
     });
   });
 })();
