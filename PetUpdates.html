@@ -35,6 +35,17 @@ header{
   padding:36px 22px 32px;
   text-align:center;
 }
+.back-link{
+  display:inline-block;
+  margin-bottom:18px;
+  font-size:13px;
+  font-weight:600;
+  color:#8D97AC;
+  text-decoration:none;
+}
+@media (hover:hover){
+  .back-link:hover{ color:var(--gold-light); }
+}
 header .eyebrow{
   font-size:12px;
   letter-spacing:0.2em;
@@ -226,6 +237,18 @@ main{
   max-width:340px;
   margin:0 auto;
 }
+.confirm-back-btn{
+  display:inline-block;
+  margin-top:26px;
+  padding:14px 30px;
+  background:var(--navy-deep);
+  color:#fff;
+  border-radius:8px;
+  font-family:inherit;
+  font-weight:600;
+  font-size:14.5px;
+  text-decoration:none;
+}
 
 footer{
   text-align:center;
@@ -239,6 +262,7 @@ footer{
 <body>
 
 <header>
+  <a href="index.html" class="back-link">&larr; Back to Main Site</a>
   <span class="eyebrow">BrandonPetCare</span>
   <h1>Request an Update</h1>
   <p>Enter your pet's code below and Brandon will send you a fresh update within 30&ndash;60 minutes.</p>
@@ -274,7 +298,7 @@ footer{
 
     <div class="field">
       <label class="checkbox-label">
-        <input type="checkbox" id="wantsPhotos" checked>
+        <input type="checkbox" id="wantsPhotos">
         <span>Include a photo or two with the update</span>
       </label>
     </div>
@@ -287,6 +311,7 @@ footer{
     <div class="check">&#10003;</div>
     <h2>Update requested</h2>
     <p>Brandon's been notified and will send you an update within the next 30&ndash;60 minutes.</p>
+    <a href="index.html" class="confirm-back-btn">Back to Main Site</a>
   </div>
 
 </main>
