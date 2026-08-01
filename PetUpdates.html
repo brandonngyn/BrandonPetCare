@@ -74,6 +74,37 @@ main{
 }
 
 /* ---------- closed state ---------- */
+.imessage-btn{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-top:22px;
+  padding:18px 22px;
+  background:linear-gradient(135deg, #0B84FF, #0A6FDB);
+  border-radius:16px;
+  text-decoration:none;
+  box-shadow:0 10px 26px rgba(11,132,255,0.35);
+}
+.imessage-icon{
+  flex-shrink:0;
+  font-size:34px;
+  line-height:1;
+}
+.imessage-text{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.imessage-title{
+  color:#fff;
+  font-weight:700;
+  font-size:17px;
+}
+.imessage-sub{
+  color:rgba(255,255,255,0.85);
+  font-size:13.5px;
+}
+
 .closed-card{
   background:var(--white);
   border:1px solid var(--line);
@@ -263,7 +294,7 @@ footer{
 <body>
 
 <header>
-  <a href="index.html" class="back-link">&larr; Back to Main Site</a>
+  <a href="https://brandonpetcare.com/" class="back-link">&larr; Back to Main Site</a>
   <span class="eyebrow">BrandonPetCare</span>
   <h1>Request an Update</h1>
   <p>Enter your pet's code below and Brandon will send you a fresh update within 30&ndash;60 minutes.</p>
@@ -276,6 +307,15 @@ footer{
     <h2>Outside request hours</h2>
     <p>Live update requests are available during normal daytime hours. Reach out directly and Brandon will get back to you as soon as he can.</p>
     <span class="hours">7 AM &ndash; 7 PM Pacific</span>
+
+    <a href="sms:care@brandonpetcare.com" class="imessage-btn">
+      <span class="imessage-icon">&#128172;</span>
+      <span class="imessage-text">
+        <span class="imessage-title">Message on iMessage</span>
+        <span class="imessage-sub">Available for iPhones, for super fast service</span>
+      </span>
+    </a>
+
     <div class="contact-line">
       <a href="mailto:care@brandonpetcare.com">care@brandonpetcare.com</a>
     </div>
@@ -312,7 +352,7 @@ footer{
     <div class="check">&#10003;</div>
     <h2>Update requested</h2>
     <p>Brandon's been notified and will send you an update within the next 30&ndash;60 minutes.</p>
-    <a href="index.html" class="confirm-back-btn">Back to Main Site</a>
+    <a href="https://brandonpetcare.com/" class="confirm-back-btn">Back to Main Site</a>
   </div>
 
 </main>
