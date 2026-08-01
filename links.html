@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Link Directory</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+
+:root{
+  --ink:#13233F;
+  --ink-soft:#51607A;
+  --navy-deep:#0B1626;
+  --stone:#F6F4EF;
+  --white:#FFFFFF;
+  --gold:#A3813A;
+  --gold-light:#CBA968;
+  --gold-text:#7A602B;
+  --line:rgba(19,35,63,0.14);
+}
+
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body{
+  margin:0;
+  background:var(--stone);
+  color:var(--ink);
+  font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  padding-bottom:60px;
+}
+
+header{
+  background:var(--navy-deep);
+  color:#fff;
+  padding:34px 22px 26px;
+  text-align:center;
+}
+header h1{
+  font-size:22px;
+  margin:0 0 6px;
+}
+header p{
+  color:#B9C2D4;
+  font-size:13.5px;
+  margin:0;
+}
+
+main{
+  max-width:520px;
+  margin:0 auto;
+  padding:22px 16px 0;
+}
+
+.group-label{
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--gold-text);
+  margin:26px 0 10px;
+}
+.group-label:first-child{ margin-top:0; }
+
+.link-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:14px 14px;
+  margin-bottom:10px;
+}
+.link-info{
+  flex:1;
+  min-width:0;
+}
+.link-title{
+  font-size:14.5px;
+  font-weight:700;
+  margin-bottom:2px;
+}
+.link-url{
+  font-size:12.5px;
+  color:var(--ink-soft);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-family:monospace;
+}
+.copy-btn{
+  flex-shrink:0;
+  width:60px;
+  padding:9px 0;
+  border-radius:8px;
+  border:1px solid var(--gold);
+  background:var(--white);
+  color:var(--gold-text);
+  font-size:12.5px;
+  font-weight:700;
+  cursor:pointer;
+}
+.copy-btn.copied{
+  background:var(--gold);
+  color:#fff;
+  border-color:var(--gold);
+}
+
+.warning-banner{
+  background:#3D2A0E;
+  color:#F1C97A;
+  font-size:12.5px;
+  text-align:center;
+  padding:10px 16px;
+  line-height:1.5;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Link Directory</h1>
+  <p>Every link used across BrandonPetCare, in one place</p>
+</header>
+
+<div class="warning-banner">
+  &#128274; This page isn't linked anywhere on the public site. Only people with this exact URL can find it.
+</div>
+
+<main>
+
+  <div class="group-label">Public Pages</div>
+
+  <div class="link-row">
+    <div class="link-info">
+      <div class="link-title">Main Site</div>
+      <div class="link-url" id="url-0">https://brandonpetcare.com/</div>
+    </div>
+    <button class="copy-btn" onclick="copyLink('url-0', this)">Copy</button>
+  </div>
+
+  <div class="link-row">
+    <div class="link-info">
+      <div class="link-title">Main Site &rarr; Contact Section</div>
+      <div class="link-url" id="url-1">https://brandonpetcare.com/#contact</div>
+    </div>
+    <button class="copy-btn" onclick="copyLink('url-1', this)">Copy</button>
+  </div>
+
+  <div class="link-row">
+    <div class="link-info">
+      <div class="link-title">Client Hub</div>
+      <div class="link-url" id="url-2">https://brandonpetcare.com/start.html</div>
+    </div>
+    <button class="copy-btn" onclick="copyLink('url-2', this)">Copy</button>
+  </div>
+
+  <div class="link-row">
+    <div class="link-info">
+      <div class="link-title">Monthly Walk Package Landing Page</div>
+      <div class="link-url" id="url-3">https://brandonpetcare.com/walk-package.html</div>
+    </div>
+    <button class="copy-btn" onclick="copyLink('url-3', this)">Copy</button>
+  </div>
+
+  <div class="group-label">Client Tools</div>
+
+  <div class="link-row">
+    <div class="link-info">
+      <div class="link-title">Request a Live Update</div>
+      <div class="link-url" id="url-4">https://brandonpetcare.com/PetUpdates.html</div>
+    </div>
+    <button class="copy-btn" onclick="copyLink('url-4', this)">Copy</button>
+  </div>
+
+  <div class="link-row">
+    <div class="link-info">
+      <div class="link-title">Leave a Review</div>
+      <div class="link-url" id="url-5">https://brandonpetcare.com/leave-a-review.html</div>
+    </div>
+    <button class="copy-btn" onclick="copyLink('url-5', this)">Copy</button>
+  </div>
+
+  <div class="group-label">Contact Methods</div>
+
+  <div class="link-row">
+    <div class="link-info">
+      <div class="link-title">Email</div>
+      <div class="link-url" id="url-6">care@brandonpetcare.com</div>
+    </div>
+    <button class="copy-btn" onclick="copyLink('url-6', this)">Copy</button>
+  </div>
+
+  <div class="link-row">
+    <div class="link-info">
+      <div class="link-title">iMessage (pre-filled, general)</div>
+      <div class="link-url" id="url-7">sms:care@brandonpetcare.com</div>
+    </div>
+    <button class="copy-btn" onclick="copyLink('url-7', this)">Copy</button>
+  </div>
+
+  <div class="link-row">
+    <div class="link-info">
+      <div class="link-title">Instagram</div>
+      <div class="link-url" id="url-8">https://instagram.com/BrandonPetCare</div>
+    </div>
+    <button class="copy-btn" onclick="copyLink('url-8', this)">Copy</button>
+  </div>
+
+  <div class="group-label">Your Private Tools</div>
+
+  <div class="link-row">
+    <div class="link-info">
+      <div class="link-title">Booking Tracker</div>
+      <div class="link-url" id="url-9">https://brandonpetcare.com/booking-tracker.html</div>
+    </div>
+    <button class="copy-btn" onclick="copyLink('url-9', this)">Copy</button>
+  </div>
+
+  <div class="link-row">
+    <div class="link-info">
+      <div class="link-title">Pup Update Generator</div>
+      <div class="link-url" id="url-10">https://brandonpetcare.com/pup-update-generator.html</div>
+    </div>
+    <button class="copy-btn" onclick="copyLink('url-10', this)">Copy</button>
+  </div>
+
+  <div class="link-row">
+    <div class="link-info">
+      <div class="link-title">This Link Directory</div>
+      <div class="link-url" id="url-11">https://brandonpetcare.com/links.html</div>
+    </div>
+    <button class="copy-btn" onclick="copyLink('url-11', this)">Copy</button>
+  </div>
+
+  <div class="group-label">Assets</div>
+
+  <div class="link-row">
+    <div class="link-info">
+      <div class="link-title">Social Preview Image</div>
+      <div class="link-url" id="url-12">https://brandonpetcare.com/og-image.jpg</div>
+    </div>
+    <button class="copy-btn" onclick="copyLink('url-12', this)">Copy</button>
+  </div>
+
+</main>
+
+<script>
+function copyLink(id, btn){
+  var text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(function(){
+    var original = btn.textContent;
+    btn.textContent = 'Copied';
+    btn.classList.add('copied');
+    setTimeout(function(){
+      btn.textContent = original;
+      btn.classList.remove('copied');
+    }, 1500);
+  }).catch(function(){
+    // fallback for older browsers
+    var el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    btn.textContent = 'Copied';
+    btn.classList.add('copied');
+    setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+</script>
+
+</body>
+</html>
