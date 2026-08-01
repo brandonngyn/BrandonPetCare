@@ -87,70 +87,6 @@ main{
   text-decoration:none;
 }
 
-.walk-promo{
-  text-align:center;
-  background:linear-gradient(160deg, var(--navy-deep), #16294A);
-  border-radius:12px;
-  padding:20px 20px;
-  margin-bottom:18px;
-  box-shadow:0 10px 22px rgba(11,22,38,0.15);
-}
-.walk-promo-eyebrow{
-  display:inline-block;
-  padding:6px 16px;
-  border-radius:999px;
-  background:rgba(203,169,104,0.15);
-  border:1px solid var(--gold-light);
-  color:var(--gold-light);
-  font-size:12px;
-  font-weight:700;
-  letter-spacing:0.08em;
-  text-transform:uppercase;
-}
-.walk-promo h3{
-  color:#fff;
-  font-size:17px;
-  margin:10px 0 2px;
-}
-.walk-promo-price{
-  font-weight:700;
-  font-size:28px;
-  color:var(--gold-light);
-  margin:4px 0;
-}
-.walk-promo-price span{
-  font-size:13px;
-  color:#B9C2D4;
-  font-weight:500;
-}
-.walk-promo p{
-  color:#DCE3F0;
-  font-size:13px;
-  margin:4px 0;
-}
-.walk-promo p.walk-promo-bonus{
-  color:var(--gold-light);
-  font-weight:600;
-  font-size:12px;
-}
-.walk-promo .btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:10px 22px;
-  min-height:40px;
-  background:transparent;
-  color:#fff;
-  border:1px solid var(--gold-light);
-  border-radius:8px;
-  text-decoration:none;
-  font-weight:600;
-  font-size:12.5px;
-}
-@media (hover:hover){
-  .walk-promo .btn:hover{ background:var(--gold-light); color:var(--navy-deep); }
-}
-
 .option-card{
   display:flex;
   align-items:center;
@@ -196,6 +132,23 @@ main{
   line-height:1.45;
 }
 
+.walk-promo-card{
+  border-color:var(--gold-light);
+  background:rgba(203,169,104,0.06);
+}
+.promo-price{
+  display:inline-block;
+  margin-left:6px;
+  padding:2px 9px;
+  border-radius:999px;
+  background:var(--navy-deep);
+  color:var(--gold-light);
+  font-family:"Inter", sans-serif;
+  font-size:12px;
+  font-weight:700;
+  vertical-align:middle;
+}
+
 footer{
   text-align:center;
   color:var(--ink-soft);
@@ -226,15 +179,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 
 <main>
 
-  <div class="walk-promo">
-    <span class="walk-promo-eyebrow">Member Favorite</span>
-    <h3>Monthly Walk Package</h3>
-    <div class="walk-promo-price">$100<span>/month</span></div>
-    <p>4 walks a month, 60 minutes each. No commitment, cancel anytime.</p>
-    <p class="walk-promo-bonus">&#9733; Every walk includes a live pup update, so you always know how it went.</p>
-    <a href="https://brandonpetcare.com/#contact" class="btn" style="margin-top:20px;">Inquire About This Deal</a>
-  </div>
-
   <a href="PetUpdates.html" class="option-card">
     <div class="option-icon">&#128241;</div>
     <div class="option-text">
@@ -264,6 +208,14 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
     <div class="option-text">
       <h2>Visit Main Site</h2>
       <p>See services, pricing, photos, and more.</p>
+    </div>
+  </a>
+
+  <a href="https://brandonpetcare.com/#contact" class="option-card walk-promo-card">
+    <div class="option-icon">&#128694;</div>
+    <div class="option-text">
+      <h2>Monthly Walk Package <span class="promo-price">$100/mo</span></h2>
+      <p>4 walks a month, 60 min each. No commitment, cancel anytime.</p>
     </div>
   </a>
 
