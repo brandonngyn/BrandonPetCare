@@ -703,6 +703,38 @@ blockquote{
   margin-top:14px;
   display:none;
 }
+.imessage-btn{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  max-width:480px;
+  margin:0 auto;
+  padding:18px 22px;
+  background:linear-gradient(135deg, #0B84FF, #0A6FDB);
+  border-radius:16px;
+  text-decoration:none;
+  box-shadow:0 10px 26px rgba(11,132,255,0.35);
+}
+.imessage-icon{
+  flex-shrink:0;
+  font-size:34px;
+  line-height:1;
+}
+.imessage-text{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.imessage-title{
+  color:#fff;
+  font-weight:700;
+  font-size:17px;
+}
+.imessage-sub{
+  color:rgba(255,255,255,0.85);
+  font-size:13.5px;
+}
+
 .divider-or{
   text-align:center;
   color:#8D97AC;
@@ -1298,6 +1330,16 @@ a:focus-visible, .btn:focus-visible{
     <p>Free meet &amp; greet available before booking. Feel free to share any specific routine you'd like followed to keep your pet as comfortable as possible.</p>
   </div>
 
+  <a href="sms:care@brandonpetcare.com" class="imessage-btn">
+    <span class="imessage-icon">&#128172;</span>
+    <span class="imessage-text">
+      <span class="imessage-title">Message on iMessage</span>
+      <span class="imessage-sub">Available for iPhones, for super fast service</span>
+    </span>
+  </a>
+
+  <p class="divider-or">Or send a message directly</p>
+
   <form class="contact-form" id="contactForm" action="https://formspree.io/f/mrenvjjy" method="POST">
     <label for="cf-name">Name</label>
     <input type="text" id="cf-name" name="name" autocomplete="name" required>
@@ -1351,8 +1393,6 @@ a:focus-visible, .btn:focus-visible{
   <p class="divider-or">Prefer another way to reach out?</p>
 
   <div class="contact-links">
-    <a href="sms:care@brandonpetcare.com" class="btn">Message on iMessage</a>
-    <p style="color:#B9C2D4; font-size:14px; margin:2px 0 0; max-width:320px;">iMessage available for iPhones, for super fast service message care@brandonpetcare.com</p>
     <a href="mailto:care@brandonpetcare.com" class="secondary-link">or email: care@brandonpetcare.com</a>
     <a href="https://instagram.com/BrandonPetCare" class="secondary-link" target="_blank" rel="noopener">or message on Instagram: @BrandonPetCare</a>
   </div>
