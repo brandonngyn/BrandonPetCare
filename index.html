@@ -272,6 +272,26 @@ h2{
 }
 
 /* ---------- about ---------- */
+.stat-callout{
+  text-align:center;
+  max-width:400px;
+  margin:0 auto 40px;
+}
+.stat-number{
+  font-family:"Fraunces", serif;
+  font-weight:500;
+  font-size:64px;
+  line-height:1;
+  color:var(--gold);
+}
+.stat-label{
+  margin-top:10px;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+}
 .about-wrap{
   display:grid;
   gap:26px;
@@ -865,6 +885,10 @@ a:focus-visible, .btn:focus-visible{
     <span class="eyebrow">About Me</span>
     <h2>A Trusted Hand<br>in Your Home</h2>
   </div>
+  <div class="stat-callout">
+    <div class="stat-number">4+</div>
+    <div class="stat-label">Years of Trusted Pet Care in South Orange County</div>
+  </div>
   <div class="about-wrap">
     <p>
       Hi there! I bring years of hands on experience caring for dogs of all
@@ -1283,6 +1307,17 @@ a:focus-visible, .btn:focus-visible{
 
     <div class="form-row">
       <div>
+        <label for="cf-phone">Phone (optional)</label>
+        <input type="tel" id="cf-phone" name="phone" autocomplete="tel" placeholder="949.209.7445">
+      </div>
+      <div>
+        <label for="cf-city">City (optional)</label>
+        <input type="text" id="cf-city" name="city" autocomplete="address-level2" placeholder="e.g. Coto de Caza">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div>
         <label for="cf-start">Start date</label>
         <input type="date" id="cf-start" name="start_date">
       </div>
@@ -1301,6 +1336,9 @@ a:focus-visible, .btn:focus-visible{
       <option value="Every 4 days">Every 4 days</option>
       <option value="No updates needed">No updates needed</option>
     </select>
+
+    <label for="cf-pets">Pet(s) name and age (optional)</label>
+    <input type="text" id="cf-pets" name="pets" placeholder="e.g. Zeus, 4 years old">
 
     <label for="cf-message">Tell me about your pet and what you need</label>
     <textarea id="cf-message" name="message" required></textarea>
