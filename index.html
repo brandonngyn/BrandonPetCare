@@ -197,8 +197,9 @@ header p.tag{
 .btn:active{ transform:scale(0.98); }
 
 .imessage-pill{
-  display:inline-block;
-  margin-top:18px;
+  display:block;
+  width:fit-content;
+  margin:18px auto 0;
   padding:9px 20px;
   background:rgba(11,132,255,0.12);
   border:1px solid #0B84FF;
@@ -666,7 +667,7 @@ blockquote{
   grid-template-columns:1fr 1fr;
   gap:14px;
 }
-@media (max-width:480px){
+@media (max-width:340px){
   .form-row{ grid-template-columns:1fr; }
 }
 .contact-form button{
@@ -858,7 +859,6 @@ a:focus-visible, .btn:focus-visible{
   <h1>BrandonPetCare</h1>
   <p class="tag">Personalized care, trusted service, and peace of mind while you're away.</p>
   <a href="#contact" class="btn">Request a Meet &amp; Greet</a>
-  <br>
   <a href="sms:care@brandonpetcare.com" class="imessage-pill">&#128172; Message on iMessage</a>
 </header>
 
