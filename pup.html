@@ -343,8 +343,13 @@ function renderPetNameChips(){
   petNames.forEach((name, i) => {
     const chip = document.createElement('span');
     chip.className = 'name-chip';
-    chip.innerHTML = `${name} <button type="button" aria-label="Remove ${name}">&times;</button>`;
-    chip.querySelector('button').addEventListener('click', () => {
+    chip.appendChild(document.createTextNode(name + ' '));
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.setAttribute('aria-label', 'Remove ' + name);
+    removeBtn.textContent = '\u00d7';
+    chip.appendChild(removeBtn);
+    removeBtn.addEventListener('click', () => {
       petNames.splice(i, 1);
       renderPetNameChips();
     });
