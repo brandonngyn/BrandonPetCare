@@ -84,6 +84,12 @@
   .feel-btn.selected{ background:var(--hold-blue); color:var(--chalk); border-color:var(--hold-blue); }
   .card-actions{ display:flex; align-items:center; justify-content:space-between; margin-top:12px; gap:8px; }
   .repeat-btn{ background:none; border:1px solid var(--line); color:var(--hold-blue); border-radius:6px; padding:8px 10px; font-family:'JetBrains Mono',monospace; font-size:10.5px; cursor:pointer; flex-shrink:0; }
+  .view-log-btn{ background:none; border:1px solid var(--hold-gold); color:var(--hold-gold); border-radius:6px; padding:8px 10px; font-family:'JetBrains Mono',monospace; font-size:10.5px; cursor:pointer; flex-shrink:0; }
+  .log-details{ display:none; margin-top:10px; background:var(--charcoal); border:1px solid var(--line); border-radius:8px; padding:10px 12px; }
+  .log-details.show{ display:block; animation:fadeUp 0.2s ease; }
+  .log-detail-row{ display:flex; justify-content:space-between; gap:10px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--chalk-dim); padding:4px 0; }
+  .log-detail-row span:first-child{ color:var(--chalk-faint); }
+  .log-detail-row span:last-child{ color:var(--chalk); text-align:right; }
   .log-btn{ flex:1; background:var(--hold-gold); color:var(--charcoal); border:none; border-radius:6px; padding:9px 0; font-family:'Archivo',sans-serif; font-weight:700; font-size:12.5px; cursor:pointer; }
   .log-btn.confirm-armed{ background:var(--hold-rust); animation:pulse 0.9s infinite; }
   @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.7; } }
@@ -534,6 +540,22 @@ function buildTrend(last, prev){
 }
 function todayISO(){ return new Date().toISOString().slice(0,10); }
 
+function buildLastLogDetailsHtml(last){
+  if (!last) return '';
+  const setsRows = (last.sets || []).map((s, i) =>
+    `<div class="log-detail-row"><span>Set ${i+1}</span><span>${escapeHtml(s.weight)}lb &times; ${escapeHtml(s.reps)}</span></div>`
+  ).join('');
+  const feelRow = last.feel ? `<div class="log-detail-row"><span>Felt</span><span>${escapeHtml(last.feel)}</span></div>` : '';
+  const notesRow = last.notes ? `<div class="log-detail-row"><span>Notes</span><span>${escapeHtml(last.notes)}</span></div>` : '';
+  return `
+    <div class="log-details">
+      <div class="log-detail-row"><span>Date</span><span>${escapeHtml(last.date)}</span></div>
+      ${setsRows}
+      ${feelRow}
+      ${notesRow}
+    </div>`;
+}
+
 const bwCache = {};
 async function getBodyweightHistory(user, count){
   const cached = bwCache[user];
@@ -632,6 +654,7 @@ function buildCardHtml(ex, last, prev, stats, idx){
   const barPct = Math.abs(trend.pct);
   const statHtml = stats ? `<div class="stat-strip"><span>Max: <b>${stats.max}lb</b></span><span>Avg: <b>${stats.avg.toFixed(0)}lb</b></span></div>` : '';
   const lastNotesHtml = (last && last.notes) ? `<div class="exercise-cue show" style="margin-top:0;">Last time: ${escapeHtml(last.notes)}</div>` : '';
+  const lastLogDetailsHtml = buildLastLogDetailsHtml(last);
 
   return `
     <div class="exercise-card${loggedToday ? ' logged-today' : ''}" data-exercise="${safeName}" data-last-id="${safeLastId}" data-idx="${idx}" style="animation-delay:${idx * 30}ms">
@@ -671,10 +694,12 @@ function buildCardHtml(ex, last, prev, stats, idx){
       <label class="notes-label" for="notes-${idx}">Notes (optional)</label>
       <textarea class="notes-input" id="notes-${idx}" placeholder="How it felt, form cues to remember, anything for next time" aria-label="${safeName} notes"></textarea>
       <div class="card-actions">
-        ${last ? '<button type="button" class="repeat-btn" title="Fill in last session\'s numbers">repeat last</button>' : '<span></span>'}
+        ${last ? '<button type="button" class="view-log-btn">View log</button>' : '<span></span>'}
+        ${last ? '<button type="button" class="repeat-btn" title="Fill in last session\'s numbers">repeat last</button>' : ''}
         <button type="button" class="log-btn">Log this exercise</button>
         ${last ? '<button type="button" class="delete-entry" title="Delete last entry" aria-label="Delete last entry">&#10005;</button>' : ''}
       </div>
+      ${lastLogDetailsHtml}
     </div>`;
 }
 
@@ -747,6 +772,15 @@ function wireSingleCard(card, data){
   card.querySelector('.info-toggle').addEventListener('click', () => {
     card.querySelector('.exercise-cue').classList.toggle('show');
   });
+
+  const viewLogBtn = card.querySelector('.view-log-btn');
+  if (viewLogBtn){
+    viewLogBtn.addEventListener('click', () => {
+      const details = card.querySelector('.log-details');
+      const isOpen = details.classList.toggle('show');
+      viewLogBtn.textContent = isOpen ? 'Hide log' : 'View log';
+    });
+  }
 
   function renumberSets(){
     card.querySelectorAll('.sets-container .set-row').forEach((row, i) => {
