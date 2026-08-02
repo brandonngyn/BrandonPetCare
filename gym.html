@@ -582,11 +582,9 @@ document.getElementById('connectBtn').addEventListener('click', async () => {
   const raw = document.getElementById('configInput').value.trim();
   const errEl = document.getElementById('setupError');
   errEl.textContent = '';
-  let config;
-  try {
-    config = JSON.parse(raw);
-  } catch(e){
-    errEl.textContent = "That doesn't look like valid JSON — copy the config object exactly as Firebase gave it to you.";
+  let config = parseFirebaseConfig(raw);
+  if (!config){
+    errEl.textContent = "Couldn't read that — copy the whole firebaseConfig block from Firebase (the const line through the closing };) and paste it as-is.";
     return;
   }
   if (!config.apiKey || !config.projectId){
