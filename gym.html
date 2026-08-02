@@ -48,6 +48,29 @@
     margin:0 0 16px;
     letter-spacing:-0.5px;
   }
+  .user-tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:10px;
+  }
+  .user-tab{
+    padding:6px 14px;
+    background:transparent;
+    border:1px solid var(--line);
+    border-radius:20px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    color:var(--chalk-dim);
+    cursor:pointer;
+    transition:all 0.15s;
+  }
+  .user-tab.active{
+    background:var(--hold-gold);
+    color:var(--charcoal);
+    border-color:var(--hold-gold);
+    font-weight:700;
+  }
   .day-tabs{
     display:flex;
     gap:8px;
@@ -197,8 +220,9 @@
 <body>
 
 <header>
-  <div class="eyebrow">Post-climb strength</div>
+  <div class="eyebrow" id="eyebrowText">Post-climb strength</div>
   <h1>Send Log</h1>
+  <div class="user-tabs" id="userTabs"></div>
   <div class="day-tabs" id="dayTabs"></div>
 </header>
 
@@ -243,6 +267,20 @@ const ROUTINE = {
 };
 
 let currentDay = "Mon";
+const USERS = ["Brandon", "Justin"];
+let currentUser = USERS[0];
+
+function renderUserTabs(){
+  const tabsEl = document.getElementById('userTabs');
+  tabsEl.innerHTML = '';
+  USERS.forEach(user => {
+    const btn = document.createElement('div');
+    btn.className = 'user-tab' + (user === currentUser ? ' active' : '');
+    btn.textContent = user;
+    btn.onclick = () => { currentUser = user; renderMain(); };
+    tabsEl.appendChild(btn);
+  });
+}
 let lastLogsCache = {};
 
 function todayKey(day){
@@ -262,14 +300,14 @@ function renderTabs(){
   });
 }
 
-async function getLastLogs(exerciseName, count){
+async function getLastLogs(user, exerciseName, count){
   try {
-    const keysResult = await window.storage.list(`entry:${exerciseName}:`);
+    const keysResult = await window.storage.list(`entry:${user}:${exerciseName}:`, true);
     if (!keysResult || !keysResult.keys || keysResult.keys.length === 0) return [];
     const sortedKeys = keysResult.keys.sort().reverse().slice(0, count);
     const logs = [];
     for (const k of sortedKeys){
-      const result = await window.storage.get(k);
+      const result = await window.storage.get(k, true);
       if (result) logs.push(JSON.parse(result.value));
     }
     return logs;
@@ -321,11 +359,12 @@ function buildTrend(last, prev){
 
 async function renderMain(){
   const mainEl = document.getElementById('main');
-  mainEl.innerHTML = '<div class="empty-state">Loading your log...</div>';
+  mainEl.innerHTML = '<div class="empty-state">Loading log...</div>';
+  document.getElementById('eyebrowText').textContent = `Post-climb strength — ${currentUser}`;
   const day = ROUTINE[currentDay];
   let html = '';
   for (const ex of day.exercises){
-    const logs = await getLastLogs(ex.name, 2);
+    const logs = await getLastLogs(currentUser, ex.name, 2);
     const last = logs[0] || null;
     const prev = logs[1] || null;
     const trend = buildTrend(last, prev);
@@ -372,11 +411,11 @@ async function saveSession(){
     });
     const hasData = sets.some(s => s.weight || s.reps);
     if (hasData){
-      const priorLogs = await getLastLogs(exerciseName, 1);
+      const priorLogs = await getLastLogs(currentUser, exerciseName, 1);
       const prior = priorLogs[0] || null;
-      const entry = { date, day: currentDay, sets };
+      const entry = { date, day: currentDay, user: currentUser, sets };
       try {
-        await window.storage.set(`entry:${exerciseName}:${time}`, JSON.stringify(entry));
+        await window.storage.set(`entry:${currentUser}:${exerciseName}:${time}`, JSON.stringify(entry), true);
         const newVol = sessionVolume(entry);
         const priorVol = sessionVolume(prior);
         let pctText = 'first log';
@@ -411,7 +450,7 @@ function showSummary(summary){
   panel.style.borderColor = 'var(--hold-gold)';
   panel.innerHTML = `
     <div class="exercise-head">
-      <div class="exercise-name">Session logged</div>
+      <div class="exercise-name">Session logged — ${currentUser}</div>
     </div>
     ${summary.map(s => `<div class="last-time">${s.name}: ${s.pctText}</div>`).join('')}
   `;
@@ -420,6 +459,7 @@ function showSummary(summary){
 
 document.getElementById('saveBtn').addEventListener('click', saveSession);
 
+renderUserTabs();
 renderTabs();
 renderMain();
 </script>
