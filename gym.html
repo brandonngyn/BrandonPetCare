@@ -65,6 +65,10 @@
   input:focus{ outline:none; border-color:var(--hold-blue); }
   input.input-error{ border-color:var(--hold-rust); }
   .col-labels{ display:grid; grid-template-columns:20px 1fr 1fr; gap:8px; margin-bottom:4px; }
+  .add-set-btn{ display:block; width:100%; background:none; border:1px dashed var(--line); color:var(--hold-blue); border-radius:6px; padding:8px 0; font-family:'JetBrains Mono',monospace; font-size:11px; cursor:pointer; margin:2px 0 8px; }
+  .notes-label{ display:block; font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; color:var(--chalk-faint); margin:10px 0 6px; }
+  .notes-input{ width:100%; min-height:52px; background:var(--charcoal); border:1px solid var(--line); border-radius:6px; color:var(--chalk); padding:8px 10px; font-family:'Archivo',sans-serif; font-size:13px; resize:vertical; }
+  .notes-input:focus{ outline:none; border-color:var(--hold-blue); }
   .col-labels span{ font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:0.5px; color:var(--chalk-faint); text-align:center; }
   .trend-bar-wrap{ margin-top:10px; }
   .trend-label{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--chalk-dim); margin-bottom:5px; display:flex; justify-content:space-between; }
@@ -251,8 +255,16 @@ function loadUsers(){
   return DEFAULT_USERS.slice();
 }
 function saveUsers(users){ try { localStorage.setItem('sendlog_users', JSON.stringify(users)); } catch(e){} }
+function loadCurrentUser(users){
+  try {
+    const saved = localStorage.getItem('sendlog_current_user');
+    if (saved && users.includes(saved)) return saved;
+  } catch(e){}
+  return users[0];
+}
+function saveCurrentUser(user){ try { localStorage.setItem('sendlog_current_user', user); } catch(e){} }
 let USERS = loadUsers();
-currentUser = USERS[0];
+currentUser = loadCurrentUser(USERS);
 
 let toastTimer = null;
 function showToast(msg, type){
@@ -362,7 +374,7 @@ function renderUserTabs(){
     const btn = document.createElement('div');
     btn.className = 'user-tab' + (user === currentUser ? ' active' : '');
     btn.textContent = user;
-    btn.onclick = () => { currentUser = user; renderUserTabs(); renderMain(); };
+    btn.onclick = () => { currentUser = user; saveCurrentUser(user); renderUserTabs(); renderMain(); };
     tabsEl.appendChild(btn);
   });
   const addBtn = document.createElement('div');
@@ -371,7 +383,7 @@ function renderUserTabs(){
   addBtn.onclick = () => {
     const name = prompt('Name to add:');
     if (name && name.trim() && !USERS.includes(name.trim())){
-      USERS.push(name.trim()); saveUsers(USERS); currentUser = name.trim();
+      USERS.push(name.trim()); saveUsers(USERS); currentUser = name.trim(); saveCurrentUser(currentUser);
       renderUserTabs(); renderMain();
     }
   };
@@ -389,38 +401,33 @@ function renderTabs(){
   });
 }
 
-async function getLastLogs(user, exerciseName, count){
-  try {
-    const snap = await db.collection('users').doc(user).collection('entries').where('exercise', '==', exerciseName).get();
-    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    docs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-    return docs.slice(0, count);
-  } catch(e){ return []; }
-}
-// FIX (lag on switching users/days): every switch used to re-fetch every
-// exercise from Firestore even if you'd just viewed that exact user/exercise
-// moments ago. This caches results in memory for the session and only hits
-// the network again after a write/delete invalidates the relevant entry, or
-// after 60 seconds in case another device changed something.
-const logsCache = {};
+// FIX (real lag root cause): the old approach ran one separate Firestore query
+// per exercise (5-6 queries every time you opened a day), which is slow
+// especially for a brand new user with nothing cached yet. This fetches a
+// user's entire entries collection in ONE query, caches it, and every
+// exercise's data is filtered out of that single result in memory instead.
+const userEntriesCache = {};
 const CACHE_TTL_MS = 60000;
 
-async function getAllLogs(user, exerciseName){
-  const key = user + '::' + exerciseName;
-  const cached = logsCache[key];
+async function getAllUserEntries(user){
+  const cached = userEntriesCache[user];
   if (cached && (Date.now() - cached.time) < CACHE_TTL_MS){
     return cached.docs;
   }
   try {
-    const snap = await db.collection('users').doc(user).collection('entries').where('exercise', '==', exerciseName).get();
+    const snap = await db.collection('users').doc(user).collection('entries').get();
     const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     docs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-    logsCache[key] = { docs, time: Date.now() };
+    userEntriesCache[user] = { docs, time: Date.now() };
     return docs;
   } catch(e){ return []; }
 }
-function invalidateLogsCache(user, exerciseName){
-  delete logsCache[user + '::' + exerciseName];
+function invalidateUserEntriesCache(user){
+  delete userEntriesCache[user];
+}
+async function getAllLogs(user, exerciseName){
+  const all = await getAllUserEntries(user);
+  return all.filter(e => e.exercise === exerciseName);
 }
 function sessionVolume(entry){
   if (!entry || !entry.sets) return 0;
@@ -550,6 +557,7 @@ function buildCardHtml(ex, last, prev, stats, idx){
   const loggedToday = last && last.date === todayISO();
   const barPct = Math.abs(trend.pct);
   const statHtml = stats ? `<div class="stat-strip"><span>Max: <b>${stats.max}lb</b></span><span>Avg: <b>${stats.avg.toFixed(0)}lb</b></span></div>` : '';
+  const lastNotesHtml = (last && last.notes) ? `<div class="exercise-cue show" style="margin-top:0;">Last time: ${escapeHtml(last.notes)}</div>` : '';
 
   return `
     <div class="exercise-card${loggedToday ? ' logged-today' : ''}" data-exercise="${safeName}" data-last-id="${safeLastId}" data-idx="${idx}" style="animation-delay:${idx * 30}ms">
@@ -563,15 +571,19 @@ function buildCardHtml(ex, last, prev, stats, idx){
       </div>
       <div class="exercise-cue">${safeCue}</div>
       ${statHtml}
+      ${lastNotesHtml}
       <div class="col-labels"><span></span><span>Weight (lb)</span><span>Reps</span></div>
-      ${[1,2,3].map(setNum => {
-        return `
-        <div class="set-row">
-          <div class="set-num">${setNum}</div>
-          <input type="number" inputmode="decimal" class="weight-input" placeholder="0" min="0" max="2000" aria-label="${safeName} set ${setNum} weight in pounds">
-          <input type="number" inputmode="numeric" class="reps-input" placeholder="0" min="0" max="200" aria-label="${safeName} set ${setNum} reps">
-        </div>`;
-      }).join('')}
+      <div class="sets-container">
+        ${[1,2,3].map(setNum => {
+          return `
+          <div class="set-row">
+            <div class="set-num">${setNum}</div>
+            <input type="number" inputmode="decimal" class="weight-input" placeholder="0" min="0" max="2000" aria-label="${safeName} set ${setNum} weight in pounds">
+            <input type="number" inputmode="numeric" class="reps-input" placeholder="0" min="0" max="200" aria-label="${safeName} set ${setNum} reps">
+          </div>`;
+        }).join('')}
+      </div>
+      <button type="button" class="add-set-btn">+ Add another set</button>
       <div class="feel-row">
         <button type="button" class="feel-btn" data-feel="Easy">Easy</button>
         <button type="button" class="feel-btn" data-feel="Good">Good</button>
@@ -581,6 +593,8 @@ function buildCardHtml(ex, last, prev, stats, idx){
         <div class="trend-label"><span>${safeTrendText}</span></div>
         <div class="trend-track"><div class="trend-fill ${trend.cls}" style="width:${barPct}%"></div></div>
       </div>
+      <label class="notes-label" for="notes-${idx}">Notes (optional)</label>
+      <textarea class="notes-input" id="notes-${idx}" placeholder="How it felt, form cues to remember, anything for next time" aria-label="${safeName} notes"></textarea>
       <div class="card-actions">
         ${last ? '<button type="button" class="repeat-btn" title="Fill in last session\'s numbers">repeat last</button>' : '<span></span>'}
         <button type="button" class="log-btn">Log this exercise</button>
@@ -597,11 +611,12 @@ async function renderMain(){
   mainEl.innerHTML = '<div id="bwWrap"></div>' + day.exercises.map(() => '<div class="skeleton"></div>').join('');
   renderBodyweight();
 
-  const cardsData = await Promise.all(day.exercises.map(async (ex) => {
-    const allLogs = await getAllLogs(currentUser, ex.name);
+  const allUserEntries = await getAllUserEntries(currentUser);
+  const cardsData = day.exercises.map((ex) => {
+    const allLogs = allUserEntries.filter(e => e.exercise === ex.name);
     const stats = computeStats(allLogs);
     return { ex, last: allLogs[0] || null, prev: allLogs[1] || null, stats, allLogs };
-  }));
+  });
 
   updateProgress(cardsData);
 
@@ -621,7 +636,7 @@ async function renderMain(){
 async function refreshSingleCard(exerciseName, idx){
   const day = ROUTINE[currentDay];
   const ex = day.exercises[idx];
-  invalidateLogsCache(currentUser, exerciseName);
+  invalidateUserEntriesCache(currentUser);
   const allLogs = await getAllLogs(currentUser, exerciseName);
   const stats = computeStats(allLogs);
   const data = { ex, last: allLogs[0] || null, prev: allLogs[1] || null, stats, allLogs };
@@ -652,10 +667,34 @@ function wireCardEvents(cardsData){
 
 function wireSingleCard(card, data){
   const idx = parseInt(card.dataset.idx, 10);
+  const safeName = escapeHtml(data.ex.name);
 
   card.querySelector('.info-toggle').addEventListener('click', () => {
     card.querySelector('.exercise-cue').classList.toggle('show');
   });
+
+  const addSetBtn = card.querySelector('.add-set-btn');
+  if (addSetBtn){
+    addSetBtn.addEventListener('click', () => {
+      const container = card.querySelector('.sets-container');
+      const setNum = container.querySelectorAll('.set-row').length + 1;
+      const row = document.createElement('div');
+      row.className = 'set-row';
+      row.innerHTML = `
+        <div class="set-num">${setNum}</div>
+        <input type="number" inputmode="decimal" class="weight-input" placeholder="0" min="0" max="2000" aria-label="${safeName} set ${setNum} weight in pounds">
+        <input type="number" inputmode="numeric" class="reps-input" placeholder="0" min="0" max="200" aria-label="${safeName} set ${setNum} reps">`;
+      container.appendChild(row);
+      row.querySelectorAll('input[type=number]').forEach(inp => {
+        inp.addEventListener('input', () => {
+          const v = parseFloat(inp.value);
+          const max = parseFloat(inp.max);
+          inp.classList.toggle('input-error', inp.value !== '' && (isNaN(v) || v < 0 || (max && v > max)));
+        });
+      });
+      row.querySelector('.weight-input').focus();
+    });
+  }
 
   const repeatBtn = card.querySelector('.repeat-btn');
   if (repeatBtn && data.last){
@@ -755,7 +794,9 @@ async function logSingleExercise(card, exerciseName, data, idx){
   logBtn.textContent = 'Saving...';
 
   const date = todayISO();
-  const entry = { date, day: currentDay, user: currentUser, sets, timestamp: Date.now(), feel: feelBtn ? feelBtn.dataset.feel : null, exercise: exerciseName };
+  const notesInput = card.querySelector('.notes-input');
+  const notes = notesInput ? notesInput.value.trim() : '';
+  const entry = { date, day: currentDay, user: currentUser, sets, timestamp: Date.now(), feel: feelBtn ? feelBtn.dataset.feel : null, exercise: exerciseName, notes: notes || null };
 
   const priorMax = data.stats ? data.stats.max : 0;
   const newMax = topWeight(entry);
@@ -763,7 +804,8 @@ async function logSingleExercise(card, exerciseName, data, idx){
 
   try {
     await db.collection('users').doc(currentUser).collection('entries').add(entry);
-    logActivity(`${exerciseName} logged (${currentUser})`);
+    const setsSummary = sets.map(s => `${s.weight}lb x${s.reps}`).join(', ');
+    logActivity(`${exerciseName} (${currentDay}): ${setsSummary}, ${currentUser}`);
     if (isPR){
       logActivity(`New PR on ${exerciseName}: ${newMax}lb`);
       showToast(`New PR! ${newMax}lb on ${exerciseName}`, 'pr');
