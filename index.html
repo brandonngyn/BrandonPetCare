@@ -785,28 +785,6 @@ blockquote{
   display:block;
 }
 
-.phone-combo{
-  display:flex;
-  gap:8px;
-  margin-bottom:20px;
-}
-.phone-combo input[type=tel]{
-  flex:1;
-  min-width:0;
-  margin-bottom:0;
-}
-.phone-combo input[type=text]{
-  width:60px;
-  flex-shrink:0;
-  margin-bottom:0;
-  color:var(--ink-soft);
-  font-size:13px;
-  text-align:center;
-}
-.phone-combo input[type=text]::placeholder{
-  color:#7C8798;
-  font-size:12px;
-}
 .contact-form button{
   display:inline-flex;
   align-items:center;
@@ -1545,10 +1523,7 @@ a:focus-visible, .btn:focus-visible{
     <input type="text" id="cf-name" name="name" autocomplete="name" required>
 
     <label for="cf-phone">Phone</label>
-    <div class="phone-combo">
-      <input type="tel" id="cf-phone" name="phone" autocomplete="tel" placeholder="123-456-7890" maxlength="12" required>
-      <input type="text" id="cf-ext" name="extension" placeholder="ext" maxlength="6">
-    </div>
+    <input type="tel" id="cf-phone" name="phone" autocomplete="tel" placeholder="123-456-7890" maxlength="12" required>
 
     <label for="cf-message">Tell me about your pet and what you need</label>
     <textarea id="cf-message" name="message" required></textarea>
