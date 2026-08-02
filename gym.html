@@ -222,6 +222,67 @@
   .last-time.trend-up{ color:var(--hold-moss); }
   .last-time.trend-down{ color:var(--hold-rust); }
   .last-time.trend-flat{ color:var(--hold-gold); }
+  .bw-card{
+    background:var(--charcoal-2);
+    border:1px solid var(--hold-gold);
+    border-radius:10px;
+    padding:14px 16px;
+    margin-bottom:16px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .bw-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--hold-gold);
+    letter-spacing:1px;
+    text-transform:uppercase;
+    flex-shrink:0;
+  }
+  .bw-input{
+    width:70px;
+    flex-shrink:0;
+  }
+  .bw-trend{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--chalk-dim);
+    flex:1;
+  }
+  .bw-save{
+    background:var(--hold-gold);
+    color:var(--charcoal);
+    border:none;
+    border-radius:6px;
+    padding:8px 12px;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    font-size:11px;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .repeat-btn{
+    background:none;
+    border:1px solid var(--line);
+    color:var(--hold-blue);
+    border-radius:6px;
+    padding:4px 9px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .repeat-btn:active{ transform:scale(0.95); }
+  .pending-badge{
+    background:var(--hold-rust);
+    color:var(--chalk);
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    padding:1px 6px;
+    border-radius:10px;
+    margin-left:4px;
+  }
   .delete-entry{
     background:none;
     border:none;
@@ -460,6 +521,7 @@
       <div class="eyebrow-row">
         <span class="status-dot" id="statusDot"></span>
         <span class="eyebrow" id="eyebrowText">Post-climb strength</span>
+        <span id="pendingBadge"></span>
       </div>
       <h1>Send Log</h1>
     </div>
@@ -576,6 +638,26 @@ function showSetup(cancelable){
 function hideSetup(){
   document.getElementById('setupOverlay').style.display = 'none';
   document.getElementById('setupError').textContent = '';
+}
+
+function parseFirebaseConfig(raw){
+  // Pull out just the {...} block, ignoring any "const firebaseConfig ="
+  // wrapper, trailing semicolon, or comment lines Firebase includes.
+  const start = raw.indexOf('{');
+  const end = raw.lastIndexOf('}');
+  if (start === -1 || end === -1 || end <= start) return null;
+  const objText = raw.slice(start, end + 1);
+
+  // Try strict JSON first (in case someone already cleaned it up).
+  try { return JSON.parse(objText); } catch(e){}
+
+  // Fall back to parsing as a JS object literal (Firebase's snippet
+  // uses unquoted keys, which isn't valid JSON but is valid JS).
+  try {
+    const obj = Function('"use strict"; return (' + objText + ');')();
+    if (obj && typeof obj === 'object') return obj;
+  } catch(e){}
+  return null;
 }
 
 document.getElementById('connectBtn').addEventListener('click', async () => {
@@ -707,27 +789,132 @@ function buildTrend(last, prev){
   return { text: base + ' · ' + suggestion, cls };
 }
 
+// ---------- Bodyweight ----------
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+
+async function getBodyweightHistory(user, count){
+  try {
+    const snap = await db.collection('users').doc(user).collection('bodyweight').get();
+    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    docs.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    return docs.slice(0, count);
+  } catch(e){
+    return [];
+  }
+}
+
+async function saveBodyweight(user, weight){
+  const date = todayISO();
+  const entry = { date, weight, timestamp: Date.now() };
+  try {
+    await db.collection('users').doc(user).collection('bodyweight').doc(date).set(entry);
+    return true;
+  } catch(e){
+    queueOffline({ type: 'bodyweight', user, entry });
+    return false;
+  }
+}
+
+async function renderBodyweight(){
+  const wrap = document.getElementById('bwWrap');
+  const history = await getBodyweightHistory(currentUser, 2);
+  const today = history.find(h => h.date === todayISO());
+  const prior = history.find(h => h.date !== todayISO());
+  let trendText = 'No entries yet';
+  if (today && prior){
+    const diff = today.weight - prior.weight;
+    trendText = `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}lb since ${prior.date}`;
+  } else if (today){
+    trendText = 'Logged today';
+  } else if (history[0]){
+    trendText = `Last: ${history[0].weight}lb (${history[0].date})`;
+  }
+  wrap.innerHTML = `
+    <div class="bw-card">
+      <span class="bw-label">Weight</span>
+      <input type="number" inputmode="decimal" class="bw-input" id="bwInput" placeholder="lb" value="${today ? today.weight : ''}" min="0" step="0.1">
+      <span class="bw-trend">${trendText}</span>
+      <button type="button" class="bw-save" id="bwSaveBtn">Save</button>
+    </div>`;
+  document.getElementById('bwSaveBtn').addEventListener('click', async () => {
+    const val = parseFloat(document.getElementById('bwInput').value);
+    if (isNaN(val) || val <= 0){
+      showToast('Enter a valid weight', 'error');
+      return;
+    }
+    const ok = await saveBodyweight(currentUser, val);
+    showToast(ok ? 'Weight logged' : 'Saved offline — will sync when connected', ok ? 'success' : 'error');
+    renderBodyweight();
+  });
+}
+
+// ---------- Offline queue ----------
+function getQueue(){
+  try { return JSON.parse(localStorage.getItem('sendlog_queue') || '[]'); } catch(e){ return []; }
+}
+function setQueue(q){
+  try { localStorage.setItem('sendlog_queue', JSON.stringify(q)); } catch(e){}
+  updatePendingBadge();
+}
+function queueOffline(item){
+  const q = getQueue();
+  q.push(item);
+  setQueue(q);
+}
+function updatePendingBadge(){
+  const q = getQueue();
+  const badge = document.getElementById('pendingBadge');
+  badge.textContent = q.length ? `${q.length} pending` : '';
+  badge.className = q.length ? 'pending-badge' : '';
+}
+async function flushQueue(){
+  let q = getQueue();
+  if (!q.length || !db) return;
+  const remaining = [];
+  for (const item of q){
+    try {
+      if (item.type === 'bodyweight'){
+        await db.collection('users').doc(item.user).collection('bodyweight').doc(item.entry.date).set(item.entry);
+      } else if (item.type === 'entry'){
+        await db.collection('users').doc(item.user).collection('entries').add(item.entry);
+      }
+    } catch(e){
+      remaining.push(item);
+    }
+  }
+  setQueue(remaining);
+  if (remaining.length < q.length) {
+    showToast('Synced queued logs', 'success');
+    renderMain();
+  }
+}
+window.addEventListener('online', flushQueue);
+
 // ---------- Render ----------
 async function renderMain(){
   const mainEl = document.getElementById('main');
   document.getElementById('eyebrowText').textContent = `Post-climb strength — ${currentUser}`;
   const day = ROUTINE[currentDay];
 
-  mainEl.innerHTML = day.exercises.map(() => '<div class="skeleton"></div>').join('');
+  mainEl.innerHTML = '<div id="bwWrap"></div>' + day.exercises.map(() => '<div class="skeleton"></div>').join('');
+  renderBodyweight();
 
   const cardsData = await Promise.all(day.exercises.map(async (ex) => {
     const logs = await getLastLogs(currentUser, ex.name, 2);
     return { ex, last: logs[0] || null, prev: logs[1] || null };
   }));
 
-  let html = '';
+  let html = '<div id="bwWrap"></div>';
   cardsData.forEach(({ ex, last, prev }, idx) => {
     const trend = buildTrend(last, prev);
     html += `
     <div class="exercise-card" data-exercise="${ex.name}" data-last-id="${last ? last.id : ''}" style="animation-delay:${idx * 40}ms">
       <div class="exercise-head">
         <div class="exercise-name">${ex.name}</div>
-        <div class="exercise-target">${ex.target}</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          ${last ? '<button type="button" class="repeat-btn" title="Fill in last session\'s numbers">↻ repeat last</button>' : ''}
+          <div class="exercise-target">${ex.target}</div>
+        </div>
       </div>
       <div class="col-labels">
         <span></span><span>Weight (lb)</span><span>Reps</span><span></span>
@@ -754,6 +941,22 @@ async function renderMain(){
     </div>`;
   });
   mainEl.innerHTML = html;
+  renderBodyweight();
+
+  // wire up repeat-last buttons
+  mainEl.querySelectorAll('.exercise-card').forEach((card, idx) => {
+    const last = cardsData[idx].last;
+    const repeatBtn = card.querySelector('.repeat-btn');
+    if (repeatBtn && last){
+      repeatBtn.addEventListener('click', () => {
+        const weightInputs = card.querySelectorAll('.weight-input');
+        const repsInputs = card.querySelectorAll('.reps-input');
+        weightInputs.forEach((w, i) => { w.value = last.sets[i] ? (last.sets[i].weight || '') : ''; });
+        repsInputs.forEach((r, i) => { r.value = last.sets[i] ? (last.sets[i].reps || '') : ''; });
+        showToast('Filled in last session\'s numbers', 'success');
+      });
+    }
+  });
 
   // wire up feel buttons
   mainEl.querySelectorAll('.exercise-card').forEach(card => {
@@ -812,6 +1015,7 @@ async function saveSession(){
   btn.classList.add('saving');
 
   let errorCount = 0;
+  let queuedCount = 0;
   const summary = [];
 
   for (const card of cards){
@@ -839,7 +1043,8 @@ async function saveSession(){
         }
         summary.push(`${exerciseName}: ${pctText}`);
       } catch(e){
-        errorCount++;
+        queueOffline({ type: 'entry', user: currentUser, entry });
+        queuedCount++;
       }
     }
   }
@@ -848,9 +1053,18 @@ async function saveSession(){
   btn.disabled = false;
   btn.classList.remove('saving');
 
-  if (errorCount > 0){
+  if (queuedCount > 0 && summary.length === 0){
     btn.textContent = "Log today's session";
-    showToast(`${errorCount} exercise(s) failed to save — check your connection`, 'error');
+    showToast(`Saved offline — ${queuedCount} exercise(s) will sync when you're back online`, 'error');
+  } else if (queuedCount > 0){
+    btn.textContent = 'Logged ✓';
+    btn.classList.add('saved');
+    showToast(`${summary.join(' · ')} · ${queuedCount} queued offline`, 'success');
+    setTimeout(() => {
+      btn.textContent = "Log today's session";
+      btn.classList.remove('saved');
+      renderMain();
+    }, 1400);
   } else {
     btn.textContent = 'Logged ✓';
     btn.classList.add('saved');
@@ -869,8 +1083,12 @@ document.getElementById('saveBtn').addEventListener('click', saveSession);
 async function boot(){
   renderUserTabs();
   renderTabs();
+  updatePendingBadge();
   const ok = await testConnection();
-  if (ok) renderMain();
+  if (ok){
+    renderMain();
+    flushQueue();
+  }
 }
 
 (function start(){
