@@ -493,7 +493,7 @@
 
 <div id="setupOverlay" class="setup-overlay" style="display:none;">
   <h2>Connect your database</h2>
-  <p>This app stores your logs in Firebase so you, Brandon, and Justin all see the same data. Paste your Firebase config below — it's saved only in this browser, never uploaded anywhere else.</p>
+  <p>This app stores your logs in Firebase so everyone you add sees the same data. Paste your Firebase config below — it's saved only in this browser, never uploaded anywhere else.</p>
   <div class="setup-steps">
     <ol>
       <li>Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → create a project</li>
@@ -576,7 +576,7 @@ let currentUser = null;
 let db = null;
 let saving = false;
 
-const DEFAULT_USERS = ["Brandon", "Justin"];
+const DEFAULT_USERS = ["Brandon"];
 function loadUsers(){
   try {
     const saved = localStorage.getItem('sendlog_users');
