@@ -59,12 +59,14 @@
   .exercise-cue.show{ display:block; }
   .stat-strip{ display:flex; gap:14px; margin:8px 0 10px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--chalk-dim); }
   .stat-strip b{ color:var(--chalk); font-weight:700; }
-  .set-row{ display:grid; grid-template-columns:20px 1fr 1fr; gap:8px; align-items:center; margin-bottom:6px; }
+  .set-row{ display:grid; grid-template-columns:20px 1fr 1fr 24px; gap:8px; align-items:center; margin-bottom:6px; }
   .set-num{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--chalk-faint); text-align:center; }
   input[type=number], input[type=text]{ width:100%; background:var(--charcoal); border:1px solid var(--line); border-radius:6px; color:var(--chalk); padding:9px 6px; font-family:'JetBrains Mono',monospace; font-size:14px; text-align:center; }
   input:focus{ outline:none; border-color:var(--hold-blue); }
   input.input-error{ border-color:var(--hold-rust); }
-  .col-labels{ display:grid; grid-template-columns:20px 1fr 1fr; gap:8px; margin-bottom:4px; }
+  .col-labels{ display:grid; grid-template-columns:20px 1fr 1fr 24px; gap:8px; margin-bottom:4px; }
+  .remove-set-btn{ background:none; border:none; color:var(--chalk-faint); font-size:12px; cursor:pointer; padding:4px; }
+  .remove-set-btn:active{ color:var(--hold-rust); }
   .add-set-btn{ display:block; width:100%; background:none; border:1px dashed var(--line); color:var(--hold-blue); border-radius:6px; padding:8px 0; font-family:'JetBrains Mono',monospace; font-size:11px; cursor:pointer; margin:2px 0 8px; }
   .notes-label{ display:block; font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; color:var(--chalk-faint); margin:10px 0 6px; }
   .notes-input{ width:100%; min-height:52px; background:var(--charcoal); border:1px solid var(--line); border-radius:6px; color:var(--chalk); padding:8px 10px; font-family:'Archivo',sans-serif; font-size:13px; resize:vertical; }
@@ -112,6 +114,10 @@
   .setup-steps{ background:var(--charcoal-2); border:1px solid var(--line); border-radius:8px; padding:14px 16px; margin-bottom:16px; }
   .setup-steps ol{ margin:0; padding-left:18px; color:var(--chalk-dim); font-size:12.5px; line-height:1.9; }
   .setup-steps a{ color:var(--hold-blue); }
+  .user-manage-row{ display:flex; align-items:center; justify-content:space-between; background:var(--charcoal-2); border:1px solid var(--line); border-radius:8px; padding:10px 14px; margin-bottom:8px; }
+  .user-manage-row .name{ font-weight:600; }
+  .user-manage-row .pin-status{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--chalk-faint); margin-left:8px; }
+  .user-delete-btn{ background:none; border:1px solid var(--hold-rust); color:var(--hold-rust); border-radius:6px; padding:6px 12px; font-family:'JetBrains Mono',monospace; font-size:11px; cursor:pointer; }
   .security-note{ background:rgba(201,106,75,0.1); border:1px solid var(--hold-rust); border-radius:8px; padding:12px 14px; margin-bottom:16px; font-size:12px; line-height:1.6; color:var(--chalk-dim); }
   .security-note b{ color:var(--hold-rust); }
   .rules-block{ background:var(--charcoal-2); border:1px solid var(--line); border-radius:8px; padding:12px; margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--chalk-dim); white-space:pre-wrap; line-height:1.6; overflow-x:auto; }
@@ -144,6 +150,11 @@
 </div>
 
 <div id="setupOverlay" class="setup-overlay" style="display:none;">
+  <div id="manageUsersSection" style="margin-bottom:24px;">
+    <h2>Manage Users</h2>
+    <p>Each profile can be protected with a PIN so only its owner (or the master PIN) can remove it.</p>
+    <div id="userManageList"></div>
+  </div>
   <h2>Connect your database</h2>
   <p>This app stores your logs in Firebase so everyone you add sees the same data. Paste your Firebase config below, it's saved only in this browser, never uploaded anywhere else.</p>
   <div class="security-note">
@@ -263,6 +274,12 @@ function loadCurrentUser(users){
   return users[0];
 }
 function saveCurrentUser(user){ try { localStorage.setItem('sendlog_current_user', user); } catch(e){} }
+
+const MASTER_PIN = '20171996';
+function loadPins(){
+  try { return JSON.parse(localStorage.getItem('sendlog_user_pins') || '{}'); } catch(e){ return {}; }
+}
+function savePins(pins){ try { localStorage.setItem('sendlog_user_pins', JSON.stringify(pins)); } catch(e){} }
 let USERS = loadUsers();
 currentUser = loadCurrentUser(USERS);
 
@@ -330,6 +347,56 @@ function showSetup(cancelable){
   document.getElementById('cancelSetupBtn').style.display = cancelable ? 'block' : 'none';
   const stored = getStoredConfig();
   if (stored) document.getElementById('configInput').value = JSON.stringify(stored, null, 2);
+  renderUserManageList();
+}
+
+function renderUserManageList(){
+  const wrap = document.getElementById('userManageList');
+  const pins = loadPins();
+  wrap.innerHTML = USERS.map(user => {
+    const hasPin = !!pins[user];
+    const safeName = escapeHtml(user);
+    return `
+      <div class="user-manage-row">
+        <div><span class="name">${safeName}</span><span class="pin-status">${hasPin ? 'PIN protected' : 'no PIN set'}</span></div>
+        <button type="button" class="user-delete-btn" data-user="${safeName}">Delete</button>
+      </div>`;
+  }).join('');
+  wrap.querySelectorAll('.user-delete-btn').forEach(btn => {
+    btn.addEventListener('click', () => deleteUser(btn.dataset.user));
+  });
+}
+
+function deleteUser(name){
+  if (USERS.length <= 1){
+    showToast('At least one profile has to stay', 'error');
+    return;
+  }
+  const pins = loadPins();
+  const requiredPin = pins[name];
+  const entered = prompt(requiredPin
+    ? `Enter the PIN for "${name}" (or the master PIN) to delete this profile:`
+    : `No PIN is set for "${name}". Enter the master PIN to delete this profile:`);
+  if (entered === null) return; // cancelled
+  const valid = entered === MASTER_PIN || (requiredPin && entered === requiredPin);
+  if (!valid){
+    showToast('Incorrect PIN, profile not deleted', 'error');
+    return;
+  }
+  USERS = USERS.filter(u => u !== name);
+  saveUsers(USERS);
+  delete pins[name];
+  savePins(pins);
+  if (currentUser === name){
+    currentUser = USERS[0];
+    saveCurrentUser(currentUser);
+  }
+  invalidateUserEntriesCache(name);
+  logActivity(`Profile deleted: ${name}`);
+  showToast(`${name} removed`, 'success');
+  renderUserManageList();
+  renderUserTabs();
+  renderMain();
 }
 function hideSetup(){
   document.getElementById('setupOverlay').style.display = 'none';
@@ -383,7 +450,14 @@ function renderUserTabs(){
   addBtn.onclick = () => {
     const name = prompt('Name to add:');
     if (name && name.trim() && !USERS.includes(name.trim())){
-      USERS.push(name.trim()); saveUsers(USERS); currentUser = name.trim(); saveCurrentUser(currentUser);
+      const trimmedName = name.trim();
+      const pin = prompt('Set a PIN to protect this profile from being deleted (numbers only, leave blank to skip):');
+      if (pin && pin.trim()){
+        const pins = loadPins();
+        pins[trimmedName] = pin.trim();
+        savePins(pins);
+      }
+      USERS.push(trimmedName); saveUsers(USERS); currentUser = trimmedName; saveCurrentUser(currentUser);
       renderUserTabs(); renderMain();
     }
   };
@@ -572,7 +646,7 @@ function buildCardHtml(ex, last, prev, stats, idx){
       <div class="exercise-cue">${safeCue}</div>
       ${statHtml}
       ${lastNotesHtml}
-      <div class="col-labels"><span></span><span>Weight (lb)</span><span>Reps</span></div>
+      <div class="col-labels"><span></span><span>Weight (lb)</span><span>Reps</span><span></span></div>
       <div class="sets-container">
         ${[1,2,3].map(setNum => {
           return `
@@ -580,6 +654,7 @@ function buildCardHtml(ex, last, prev, stats, idx){
             <div class="set-num">${setNum}</div>
             <input type="number" inputmode="decimal" class="weight-input" placeholder="0" min="0" max="2000" aria-label="${safeName} set ${setNum} weight in pounds">
             <input type="number" inputmode="numeric" class="reps-input" placeholder="0" min="0" max="200" aria-label="${safeName} set ${setNum} reps">
+            <button type="button" class="remove-set-btn" aria-label="Remove set ${setNum}">&#10005;</button>
           </div>`;
         }).join('')}
       </div>
@@ -673,6 +748,36 @@ function wireSingleCard(card, data){
     card.querySelector('.exercise-cue').classList.toggle('show');
   });
 
+  function renumberSets(){
+    card.querySelectorAll('.sets-container .set-row').forEach((row, i) => {
+      row.querySelector('.set-num').textContent = i + 1;
+    });
+  }
+
+  function wireSetRow(row){
+    row.querySelectorAll('input[type=number]').forEach(inp => {
+      inp.addEventListener('input', () => {
+        const v = parseFloat(inp.value);
+        const max = parseFloat(inp.max);
+        inp.classList.toggle('input-error', inp.value !== '' && (isNaN(v) || v < 0 || (max && v > max)));
+      });
+    });
+    const removeBtn = row.querySelector('.remove-set-btn');
+    if (removeBtn){
+      removeBtn.addEventListener('click', () => {
+        const container = card.querySelector('.sets-container');
+        if (container.querySelectorAll('.set-row').length <= 1){
+          showToast('Keep at least one set', 'error');
+          return;
+        }
+        row.remove();
+        renumberSets();
+      });
+    }
+  }
+
+  card.querySelectorAll('.sets-container .set-row').forEach(wireSetRow);
+
   const addSetBtn = card.querySelector('.add-set-btn');
   if (addSetBtn){
     addSetBtn.addEventListener('click', () => {
@@ -683,15 +788,10 @@ function wireSingleCard(card, data){
       row.innerHTML = `
         <div class="set-num">${setNum}</div>
         <input type="number" inputmode="decimal" class="weight-input" placeholder="0" min="0" max="2000" aria-label="${safeName} set ${setNum} weight in pounds">
-        <input type="number" inputmode="numeric" class="reps-input" placeholder="0" min="0" max="200" aria-label="${safeName} set ${setNum} reps">`;
+        <input type="number" inputmode="numeric" class="reps-input" placeholder="0" min="0" max="200" aria-label="${safeName} set ${setNum} reps">
+        <button type="button" class="remove-set-btn" aria-label="Remove set ${setNum}">&#10005;</button>`;
       container.appendChild(row);
-      row.querySelectorAll('input[type=number]').forEach(inp => {
-        inp.addEventListener('input', () => {
-          const v = parseFloat(inp.value);
-          const max = parseFloat(inp.max);
-          inp.classList.toggle('input-error', inp.value !== '' && (isNaN(v) || v < 0 || (max && v > max)));
-        });
-      });
+      wireSetRow(row);
       row.querySelector('.weight-input').focus();
     });
   }
@@ -733,14 +833,6 @@ function wireSingleCard(card, data){
       }
     });
   }
-
-  card.querySelectorAll('input[type=number]').forEach(inp => {
-    inp.addEventListener('input', () => {
-      const v = parseFloat(inp.value);
-      const max = parseFloat(inp.max);
-      inp.classList.toggle('input-error', inp.value !== '' && (isNaN(v) || v < 0 || (max && v > max)));
-    });
-  });
 
   const logBtn = card.querySelector('.log-btn');
   const exerciseName = card.dataset.exercise;
