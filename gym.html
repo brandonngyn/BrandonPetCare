@@ -432,7 +432,7 @@
 
 <div id="setupOverlay" class="setup-overlay" style="display:none;">
   <h2>Connect your database</h2>
-  <p>This app stores your logs in Firebase so you, Brandon, and Justin all see the same data. Paste your Firebase config below — it's saved only in this browser, never uploaded anywhere else. <span style="color:var(--chalk-faint);">(Or type a name you know.)</span></p>
+  <p>This app stores your logs in Firebase so you, Brandon, and Justin all see the same data. Paste your Firebase config below — it's saved only in this browser, never uploaded anywhere else.</p>
   <div class="setup-steps">
     <ol>
       <li>Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → create a project</li>
@@ -578,35 +578,16 @@ function hideSetup(){
   document.getElementById('setupError').textContent = '';
 }
 
-// Preset config — unlocked via secret phrase in the setup box
-const PRESET_CONFIGS = {
-  brandon: {
-    apiKey: "AIzaSyD9ueHLtaWs5W0EZZWWJ-nYYs86SV4NxE8",
-    authDomain: "gymlog-dd7c6.firebaseapp.com",
-    projectId: "gymlog-dd7c6",
-    storageBucket: "gymlog-dd7c6.firebasestorage.app",
-    messagingSenderId: "223642020897",
-    appId: "1:223642020897:web:55ae3b7514eebd73d24760",
-    measurementId: "G-J1E9SGVWV6"
-  }
-};
-
 document.getElementById('connectBtn').addEventListener('click', async () => {
   const raw = document.getElementById('configInput').value.trim();
   const errEl = document.getElementById('setupError');
   errEl.textContent = '';
   let config;
-
-  const presetKey = raw.toLowerCase();
-  if (PRESET_CONFIGS[presetKey]){
-    config = PRESET_CONFIGS[presetKey];
-  } else {
-    try {
-      config = JSON.parse(raw);
-    } catch(e){
-      errEl.textContent = "That doesn't look like valid JSON — copy the config object exactly as Firebase gave it to you.";
-      return;
-    }
+  try {
+    config = JSON.parse(raw);
+  } catch(e){
+    errEl.textContent = "That doesn't look like valid JSON — copy the config object exactly as Firebase gave it to you.";
+    return;
   }
   if (!config.apiKey || !config.projectId){
     errEl.textContent = "Missing apiKey or projectId — make sure you copied the full config object.";
