@@ -75,7 +75,7 @@ h1,h2,h3{
 }
 
 /* signature: hairline that draws in under section headings on reveal */
-.section-head{ text-align:center; margin-bottom:48px; position:relative; }
+.section-head{ text-align:center; margin-bottom:48px; position:relative; max-width:640px; margin-left:auto; margin-right:auto; }
 .section-head .eyebrow{ display:block; margin-bottom:16px; }
 .section-head h2::after{
   content:"";
@@ -270,6 +270,9 @@ h2{
   grid-template-columns:1fr;
   gap:26px;
   text-align:center;
+  max-width:680px;
+  margin-left:auto;
+  margin-right:auto;
 }
 .intro-grid p{
   max-width:660px;
@@ -760,6 +763,26 @@ blockquote{
 .date-field{
   width:200px;
   max-width:100%;
+}
+
+.more-details-toggle{
+  display:block;
+  width:100%;
+  background:transparent;
+  border:1px dashed rgba(255,255,255,0.3);
+  border-radius:8px;
+  color:var(--gold-light);
+  font-size:14px;
+  font-weight:600;
+  padding:13px;
+  cursor:pointer;
+  margin-bottom:18px;
+}
+.more-details{
+  display:none;
+}
+.more-details.show{
+  display:block;
 }
 
 .phone-combo{
@@ -1480,7 +1503,7 @@ a:focus-visible, .btn:focus-visible{
 <section class="section-alt reveal">
   <div class="offer">
     <span class="eyebrow">Special Offer</span>
-    <p>Ask about returning client and referral discounts.</p>
+    <p>Know someone who'd love this? Referrals and returning clients both save.</p>
     <p>Mention the code below for $50 off per night.</p>
     <span class="code">EXTRACare</span>
   </div>
@@ -1521,39 +1544,46 @@ a:focus-visible, .btn:focus-visible{
     <label for="cf-name">Name</label>
     <input type="text" id="cf-name" name="name" autocomplete="name" required>
 
-    <label for="cf-email">Email (optional)</label>
-    <input type="email" id="cf-email" name="email" autocomplete="email">
-
     <label for="cf-phone">Phone</label>
     <div class="phone-combo">
       <input type="tel" id="cf-phone" name="phone" autocomplete="tel" placeholder="123-456-7890" maxlength="12" required>
       <input type="text" id="cf-ext" name="extension" placeholder="ext" maxlength="6">
     </div>
 
-    <label for="cf-city">City (optional)</label>
-    <input type="text" id="cf-city" name="city" autocomplete="address-level2" placeholder="e.g. Coto de Caza">
-
-    <label for="cf-start">Start date</label>
-    <input type="date" id="cf-start" name="start_date" class="date-field">
-
-    <label for="cf-end">End date</label>
-    <input type="date" id="cf-end" name="end_date" class="date-field">
-    <p class="form-note" style="text-align:left; margin-top:-10px;">Leave blank if this is just a general inquiry. Dates are requests, not confirmed bookings, until Brandon replies.</p>
-
-    <label for="cf-updates">How often would you like updates?</label>
-    <select id="cf-updates" name="update_frequency">
-      <option value="Every 2 days (default)" selected>Every 2 days (default)</option>
-      <option value="Daily">Daily</option>
-      <option value="Every 3 days">Every 3 days</option>
-      <option value="Every 4 days">Every 4 days</option>
-      <option value="No updates needed">No updates needed</option>
-    </select>
-
-    <label for="cf-pets">Pet(s) name and age (optional)</label>
-    <input type="text" id="cf-pets" name="pets" placeholder="e.g. Zeus, 4 years old">
-
     <label for="cf-message">Tell me about your pet and what you need</label>
     <textarea id="cf-message" name="message" required></textarea>
+
+    <button type="button" class="more-details-toggle" id="moreDetailsToggle">+ Add more details (optional)</button>
+
+    <div class="more-details" id="moreDetails">
+      <label for="cf-email">Email (optional)</label>
+      <input type="email" id="cf-email" name="email" autocomplete="email">
+
+      <label for="cf-city">City (optional)</label>
+      <input type="text" id="cf-city" name="city" autocomplete="address-level2" placeholder="e.g. Coto de Caza">
+
+      <label for="cf-referral">Who referred you? (optional)</label>
+      <input type="text" id="cf-referral" name="referral_source" placeholder="e.g. a friend's name, Instagram">
+
+      <label for="cf-start">Start date</label>
+      <input type="date" id="cf-start" name="start_date" class="date-field">
+
+      <label for="cf-end">End date</label>
+      <input type="date" id="cf-end" name="end_date" class="date-field">
+      <p class="form-note" style="text-align:left; margin-top:-10px;">Leave blank if this is just a general inquiry. Dates are requests, not confirmed bookings, until Brandon replies.</p>
+
+      <label for="cf-updates">How often would you like updates?</label>
+      <select id="cf-updates" name="update_frequency">
+        <option value="Every 2 days (default)" selected>Every 2 days (default)</option>
+        <option value="Daily">Daily</option>
+        <option value="Every 3 days">Every 3 days</option>
+        <option value="Every 4 days">Every 4 days</option>
+        <option value="No updates needed">No updates needed</option>
+      </select>
+
+      <label for="cf-pets">Pet(s) name and age (optional)</label>
+      <input type="text" id="cf-pets" name="pets" placeholder="e.g. Zeus, 4 years old">
+    </div>
 
     <button type="submit">Send Message</button>
     <p class="form-status" id="formStatus"></p>
@@ -1610,6 +1640,16 @@ a:focus-visible, .btn:focus-visible{
     if (entries[0].isIntersecting) bar.classList.remove('show');
   }, { threshold: 0.2 });
   contactObserver.observe(contactSection);
+})();
+
+(function(){
+  var toggle = document.getElementById('moreDetailsToggle');
+  var section = document.getElementById('moreDetails');
+  if (!toggle || !section) return;
+  toggle.addEventListener('click', function(){
+    var isOpen = section.classList.toggle('show');
+    toggle.textContent = isOpen ? '\u2212 Hide extra details' : '+ Add more details (optional)';
+  });
 })();
 
 (function(){
