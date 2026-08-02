@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Send Log — Gym Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --charcoal:#1c1a18;
+    --charcoal-2:#26231f;
+    --chalk:#f2ede2;
+    --chalk-dim:#c9c2b3;
+    --hold-blue:#3f7ea6;
+    --hold-gold:#c9a24b;
+    --hold-moss:#6a8a5f;
+    --line:#3a352e;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--charcoal);
+    color:var(--chalk);
+    font-family:'Archivo',sans-serif;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  header{
+    padding:28px 20px 18px;
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:0;
+    background:var(--charcoal);
+    z-index:10;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--hold-gold);
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Archivo Black',sans-serif;
+    font-size:28px;
+    margin:0 0 16px;
+    letter-spacing:-0.5px;
+  }
+  .day-tabs{
+    display:flex;
+    gap:8px;
+  }
+  .day-tab{
+    flex:1;
+    padding:10px 0;
+    text-align:center;
+    background:var(--charcoal-2);
+    border:1px solid var(--line);
+    border-radius:6px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:1px;
+    color:var(--chalk-dim);
+    cursor:pointer;
+    transition:all 0.15s;
+  }
+  .day-tab.active{
+    background:var(--hold-blue);
+    color:var(--chalk);
+    border-color:var(--hold-blue);
+  }
+  main{
+    padding:20px;
+    max-width:520px;
+    margin:0 auto;
+  }
+  .exercise-card{
+    background:var(--charcoal-2);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px;
+    margin-bottom:14px;
+  }
+  .exercise-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:12px;
+  }
+  .exercise-name{
+    font-size:16px;
+    font-weight:700;
+  }
+  .exercise-target{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--hold-gold);
+  }
+  .set-row{
+    display:grid;
+    grid-template-columns:28px 1fr 1fr 60px;
+    gap:8px;
+    align-items:center;
+    margin-bottom:8px;
+  }
+  .set-num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    color:var(--chalk-dim);
+    text-align:center;
+  }
+  input[type=number]{
+    width:100%;
+    background:var(--charcoal);
+    border:1px solid var(--line);
+    border-radius:6px;
+    color:var(--chalk);
+    padding:8px 6px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:14px;
+    text-align:center;
+  }
+  input[type=number]:focus{
+    outline:none;
+    border-color:var(--hold-blue);
+  }
+  .unit-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    color:var(--chalk-dim);
+    text-align:center;
+  }
+  .last-time{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--chalk-dim);
+    margin-top:8px;
+    min-height:14px;
+    line-height:1.5;
+  }
+  .last-time.trend-up{ color:var(--hold-moss); }
+  .last-time.trend-down{ color:#c96a4b; }
+  .last-time.trend-flat{ color:var(--hold-gold); }
+  .save-bar{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    padding:14px 20px;
+    background:linear-gradient(to top, var(--charcoal) 70%, transparent);
+  }
+  .save-btn{
+    max-width:480px;
+    margin:0 auto;
+    display:block;
+    width:100%;
+    padding:15px;
+    background:var(--hold-gold);
+    color:var(--charcoal);
+    border:none;
+    border-radius:8px;
+    font-family:'Archivo Black',sans-serif;
+    font-size:15px;
+    letter-spacing:0.5px;
+    cursor:pointer;
+  }
+  .save-btn:active{ transform: scale(0.98); }
+  .save-btn.saved{
+    background:var(--hold-moss);
+  }
+  .col-labels{
+    display:grid;
+    grid-template-columns:28px 1fr 1fr 60px;
+    gap:8px;
+    margin-bottom:6px;
+  }
+  .col-labels span{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--chalk-dim);
+    text-align:center;
+  }
+  .empty-state{
+    text-align:center;
+    padding:40px 20px;
+    color:var(--chalk-dim);
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Post-climb strength</div>
+  <h1>Send Log</h1>
+  <div class="day-tabs" id="dayTabs"></div>
+</header>
+
+<main id="main"></main>
+
+<div class="save-bar">
+  <button class="save-btn" id="saveBtn">Log today's session</button>
+</div>
+
+<script>
+const ROUTINE = {
+  Mon: {
+    label: "Monday — Heavy Compound",
+    exercises: [
+      { name: "Squat", target: "3 × 8-10" },
+      { name: "Bench Press", target: "3 × 8-12" },
+      { name: "Romanian Deadlift", target: "3 × 8-10" },
+      { name: "Overhead Press", target: "3 × 8-10" },
+      { name: "Hanging Leg Raise", target: "3 × 10-15" },
+    ]
+  },
+  Wed: {
+    label: "Wednesday — Light / Core",
+    exercises: [
+      { name: "Goblet Squat", target: "3 × 8-10" },
+      { name: "Push-ups", target: "3 × 8-12" },
+      { name: "Walking Lunges", target: "2 × 10/leg" },
+      { name: "Plank", target: "3 × 30-45s" },
+      { name: "Pallof Press", target: "2 × 10/side" },
+    ]
+  },
+  Fri: {
+    label: "Friday — Mixed / Catch-up",
+    exercises: [
+      { name: "Squat or Lunge", target: "3 × 8-10" },
+      { name: "Dips", target: "2 × 10-12" },
+      { name: "Overhead Press", target: "3 × 8-10" },
+      { name: "Hanging Leg Raise", target: "3 × 10-15" },
+      { name: "Plank", target: "3 × 30-45s" },
+    ]
+  }
+};
+
+let currentDay = "Mon";
+let lastLogsCache = {};
+
+function todayKey(day){
+  const d = new Date();
+  return `log:${day}:${d.toISOString().slice(0,10)}`;
+}
+
+function renderTabs(){
+  const tabsEl = document.getElementById('dayTabs');
+  tabsEl.innerHTML = '';
+  Object.keys(ROUTINE).forEach(day => {
+    const btn = document.createElement('div');
+    btn.className = 'day-tab' + (day === currentDay ? ' active' : '');
+    btn.textContent = day.toUpperCase();
+    btn.onclick = () => { currentDay = day; renderTabs(); renderMain(); };
+    tabsEl.appendChild(btn);
+  });
+}
+
+async function getLastLogs(exerciseName, count){
+  try {
+    const keysResult = await window.storage.list(`entry:${exerciseName}:`);
+    if (!keysResult || !keysResult.keys || keysResult.keys.length === 0) return [];
+    const sortedKeys = keysResult.keys.sort().reverse().slice(0, count);
+    const logs = [];
+    for (const k of sortedKeys){
+      const result = await window.storage.get(k);
+      if (result) logs.push(JSON.parse(result.value));
+    }
+    return logs;
+  } catch(e){
+    return [];
+  }
+}
+
+function sessionVolume(entry){
+  if (!entry || !entry.sets) return 0;
+  return entry.sets.reduce((sum, s) => {
+    const w = parseFloat(s.weight) || 0;
+    const r = parseFloat(s.reps) || 0;
+    return sum + (w * r);
+  }, 0);
+}
+
+function topWeight(entry){
+  if (!entry || !entry.sets) return 0;
+  return entry.sets.reduce((max, s) => Math.max(max, parseFloat(s.weight) || 0), 0);
+}
+
+function buildTrend(last, prev){
+  if (!last) return { text: 'No previous log yet', cls: '' };
+  const lastParts = last.sets.filter(s => s.weight || s.reps).map(s => `${s.weight||'-'}×${s.reps||'-'}`);
+  const base = `Last: ${lastParts.join(', ')} (${last.date})`;
+  if (!prev) return { text: base + ' — first entry, repeat this next time', cls: '' };
+
+  const lastVol = sessionVolume(last);
+  const prevVol = sessionVolume(prev);
+  if (prevVol === 0) return { text: base, cls: '' };
+
+  const pct = ((lastVol - prevVol) / prevVol) * 100;
+  const lastTop = topWeight(last);
+  let suggestion, cls;
+  if (pct > 3){
+    const bump = lastTop >= 60 ? 5 : 2.5;
+    suggestion = `↑ ${pct.toFixed(0)}% vs prior — try +${bump}lb next session`;
+    cls = 'trend-up';
+  } else if (pct < -3){
+    suggestion = `↓ ${Math.abs(pct).toFixed(0)}% vs prior — hold weight, focus on form/reps`;
+    cls = 'trend-down';
+  } else {
+    suggestion = `→ steady vs prior — same weight, aim for +1 rep/set`;
+    cls = 'trend-flat';
+  }
+  return { text: base + ' · ' + suggestion, cls };
+}
+
+async function renderMain(){
+  const mainEl = document.getElementById('main');
+  mainEl.innerHTML = '<div class="empty-state">Loading your log...</div>';
+  const day = ROUTINE[currentDay];
+  let html = '';
+  for (const ex of day.exercises){
+    const logs = await getLastLogs(ex.name, 2);
+    const last = logs[0] || null;
+    const prev = logs[1] || null;
+    const trend = buildTrend(last, prev);
+
+    html += `
+    <div class="exercise-card" data-exercise="${ex.name}">
+      <div class="exercise-head">
+        <div class="exercise-name">${ex.name}</div>
+        <div class="exercise-target">${ex.target}</div>
+      </div>
+      <div class="col-labels">
+        <span></span><span>Weight (lb)</span><span>Reps</span><span></span>
+      </div>
+      ${[1,2,3].map(setNum => {
+        const prefill = last && last.sets && last.sets[setNum-1] ? last.sets[setNum-1].weight : '';
+        return `
+        <div class="set-row">
+          <div class="set-num">${setNum}</div>
+          <input type="number" inputmode="decimal" class="weight-input" placeholder="0" value="${prefill || ''}" min="0">
+          <input type="number" inputmode="numeric" class="reps-input" placeholder="0" min="0">
+          <div class="unit-label">set ${setNum}</div>
+        </div>`;
+      }).join('')}
+      <div class="last-time ${trend.cls}">${trend.text}</div>
+    </div>`;
+  }
+  mainEl.innerHTML = html;
+}
+
+async function saveSession(){
+  const btn = document.getElementById('saveBtn');
+  const cards = document.querySelectorAll('.exercise-card');
+  const date = new Date().toISOString().slice(0,10);
+  const time = Date.now();
+  const summary = [];
+
+  for (const card of cards){
+    const exerciseName = card.dataset.exercise;
+    const weightInputs = card.querySelectorAll('.weight-input');
+    const repsInputs = card.querySelectorAll('.reps-input');
+    const sets = [];
+    weightInputs.forEach((w, i) => {
+      sets.push({ weight: w.value, reps: repsInputs[i].value });
+    });
+    const hasData = sets.some(s => s.weight || s.reps);
+    if (hasData){
+      const priorLogs = await getLastLogs(exerciseName, 1);
+      const prior = priorLogs[0] || null;
+      const entry = { date, day: currentDay, sets };
+      try {
+        await window.storage.set(`entry:${exerciseName}:${time}`, JSON.stringify(entry));
+        const newVol = sessionVolume(entry);
+        const priorVol = sessionVolume(prior);
+        let pctText = 'first log';
+        if (prior && priorVol > 0){
+          const pct = ((newVol - priorVol) / priorVol) * 100;
+          pctText = (pct >= 0 ? '+' : '') + pct.toFixed(0) + '% volume';
+        }
+        summary.push({ name: exerciseName, pctText });
+      } catch(e){
+        console.error('Save failed for', exerciseName, e);
+      }
+    }
+  }
+
+  if (summary.length){
+    showSummary(summary);
+  }
+
+  btn.textContent = 'Logged ✓';
+  btn.classList.add('saved');
+  setTimeout(() => {
+    btn.textContent = "Log today's session";
+    btn.classList.remove('saved');
+    renderMain();
+  }, 1400);
+}
+
+function showSummary(summary){
+  const mainEl = document.getElementById('main');
+  const panel = document.createElement('div');
+  panel.className = 'exercise-card';
+  panel.style.borderColor = 'var(--hold-gold)';
+  panel.innerHTML = `
+    <div class="exercise-head">
+      <div class="exercise-name">Session logged</div>
+    </div>
+    ${summary.map(s => `<div class="last-time">${s.name}: ${s.pctText}</div>`).join('')}
+  `;
+  mainEl.prepend(panel);
+}
+
+document.getElementById('saveBtn').addEventListener('click', saveSession);
+
+renderTabs();
+renderMain();
+</script>
+
+</body>
+</html>
