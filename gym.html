@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Send Log — Gym Tracker</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Send Log">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
@@ -412,7 +416,6 @@
   .toast.error{ border-color:var(--hold-rust); color:var(--hold-rust); }
   .toast.success{ border-color:var(--hold-moss); color:var(--hold-moss); }
 
-  /* Settings / setup screen */
   .setup-overlay{
     position:fixed;
     inset:0;
@@ -485,6 +488,17 @@
     line-height:1.9;
   }
   .setup-steps a{ color:var(--hold-blue); }
+  .security-note{
+    background:rgba(201,106,75,0.1);
+    border:1px solid var(--hold-rust);
+    border-radius:8px;
+    padding:12px 14px;
+    margin-bottom:16px;
+    font-size:12px;
+    line-height:1.6;
+    color:var(--chalk-dim);
+  }
+  .security-note b{ color:var(--hold-rust); }
 </style>
 </head>
 <body>
@@ -493,12 +507,15 @@
 
 <div id="setupOverlay" class="setup-overlay" style="display:none;">
   <h2>Connect your database</h2>
-  <p>This app stores your logs in Firebase so everyone you add sees the same data. Paste your Firebase config below — it's saved only in this browser, never uploaded anywhere else.</p>
+  <p>This app stores your logs in Firebase so everyone you add sees the same data. Paste your Firebase config below, it's saved only in this browser, never uploaded anywhere else.</p>
+  <div class="security-note">
+    <b>Security note:</b> Firestore's "test mode" (step 2 below) leaves your database open to anyone who has your config, with no login required. That's fine for a private tool between people you trust, but don't paste this config anywhere public. If you want real access control later, Firebase's docs cover adding proper security rules.
+  </div>
   <div class="setup-steps">
     <ol>
-      <li>Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → create a project</li>
-      <li>Build → Firestore Database → Create database → <b>test mode</b></li>
-      <li>⚙️ Project settings → scroll to "Your apps" → click <code>&lt;/&gt;</code> → register app</li>
+      <li>Go to <a href="https://console.firebase.google.com" target="_blank" rel="noopener">console.firebase.google.com</a> &rarr; create a project</li>
+      <li>Build &rarr; Firestore Database &rarr; Create database &rarr; <b>test mode</b></li>
+      <li>&#9881;&#65039; Project settings &rarr; scroll to "Your apps" &rarr; click <code>&lt;/&gt;</code> &rarr; register app</li>
       <li>Copy the <code>firebaseConfig</code> object shown and paste it below</li>
     </ol>
   </div>
@@ -525,7 +542,7 @@
       </div>
       <h1>Send Log</h1>
     </div>
-    <button class="settings-btn" id="settingsBtn" title="Settings">⚙</button>
+    <button class="settings-btn" id="settingsBtn" title="Settings" aria-label="Settings">&#9881;</button>
   </div>
   <div class="user-tabs" id="userTabs"></div>
   <div class="day-tabs" id="dayTabs"></div>
@@ -540,33 +557,33 @@
 <script>
 const ROUTINE = {
   Mon: {
-    label: "Monday — Heavy Compound",
+    label: "Monday, Heavy Compound",
     exercises: [
-      { name: "Squat", target: "3 × 8-10" },
-      { name: "Bench Press", target: "3 × 8-12" },
-      { name: "Romanian Deadlift", target: "3 × 8-10" },
-      { name: "Overhead Press", target: "3 × 8-10" },
-      { name: "Hanging Leg Raise", target: "3 × 10-15" },
+      { name: "Squat", target: "3 x 8-10" },
+      { name: "Bench Press", target: "3 x 8-12" },
+      { name: "Romanian Deadlift", target: "3 x 8-10" },
+      { name: "Overhead Press", target: "3 x 8-10" },
+      { name: "Hanging Leg Raise", target: "3 x 10-15" },
     ]
   },
   Wed: {
-    label: "Wednesday — Light / Core",
+    label: "Wednesday, Light / Core",
     exercises: [
-      { name: "Goblet Squat", target: "3 × 8-10" },
-      { name: "Push-ups", target: "3 × 8-12" },
-      { name: "Walking Lunges", target: "2 × 10/leg" },
-      { name: "Plank", target: "3 × 30-45s" },
-      { name: "Pallof Press", target: "2 × 10/side" },
+      { name: "Goblet Squat", target: "3 x 8-10" },
+      { name: "Push-ups", target: "3 x 8-12" },
+      { name: "Walking Lunges", target: "2 x 10/leg" },
+      { name: "Plank", target: "3 x 30-45s" },
+      { name: "Pallof Press", target: "2 x 10/side" },
     ]
   },
   Fri: {
-    label: "Friday — Mixed / Catch-up",
+    label: "Friday, Mixed / Catch-up",
     exercises: [
-      { name: "Squat or Lunge", target: "3 × 8-10" },
-      { name: "Dips", target: "2 × 10-12" },
-      { name: "Overhead Press", target: "3 × 8-10" },
-      { name: "Hanging Leg Raise", target: "3 × 10-15" },
-      { name: "Plank", target: "3 × 30-45s" },
+      { name: "Squat or Lunge", target: "3 x 8-10" },
+      { name: "Dips", target: "2 x 10-12" },
+      { name: "Overhead Press", target: "3 x 8-10" },
+      { name: "Hanging Leg Raise", target: "3 x 10-15" },
+      { name: "Plank", target: "3 x 30-45s" },
     ]
   }
 };
@@ -575,6 +592,17 @@ let currentDay = "Mon";
 let currentUser = null;
 let db = null;
 let saving = false;
+
+// ---------- Escaping helper (fixes: unescaped Firestore data going into innerHTML/attributes) ----------
+function escapeHtml(str){
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 const DEFAULT_USERS = ["Brandon"];
 function loadUsers(){
@@ -624,7 +652,7 @@ async function testConnection(){
     return true;
   } catch(e){
     dot.className = 'status-dot offline';
-    showToast('Connection issue — check your Firebase setup', 'error');
+    showToast('Connection issue, check your Firebase setup', 'error');
     return false;
   }
 }
@@ -641,18 +669,11 @@ function hideSetup(){
 }
 
 function parseFirebaseConfig(raw){
-  // Pull out just the {...} block, ignoring any "const firebaseConfig ="
-  // wrapper, trailing semicolon, or comment lines Firebase includes.
   const start = raw.indexOf('{');
   const end = raw.lastIndexOf('}');
   if (start === -1 || end === -1 || end <= start) return null;
   const objText = raw.slice(start, end + 1);
-
-  // Try strict JSON first (in case someone already cleaned it up).
   try { return JSON.parse(objText); } catch(e){}
-
-  // Fall back to parsing as a JS object literal (Firebase's snippet
-  // uses unquoted keys, which isn't valid JSON but is valid JS).
   try {
     const obj = Function('"use strict"; return (' + objText + ');')();
     if (obj && typeof obj === 'object') return obj;
@@ -666,11 +687,11 @@ document.getElementById('connectBtn').addEventListener('click', async () => {
   errEl.textContent = '';
   let config = parseFirebaseConfig(raw);
   if (!config){
-    errEl.textContent = "Couldn't read that — copy the whole firebaseConfig block from Firebase (the const line through the closing };) and paste it as-is.";
+    errEl.textContent = "Couldn't read that, copy the whole firebaseConfig block from Firebase (the const line through the closing };) and paste it as-is.";
     return;
   }
   if (!config.apiKey || !config.projectId){
-    errEl.textContent = "Missing apiKey or projectId — make sure you copied the full config object.";
+    errEl.textContent = "Missing apiKey or projectId, make sure you copied the full config object.";
     return;
   }
   try {
@@ -691,7 +712,6 @@ document.getElementById('connectBtn').addEventListener('click', async () => {
 document.getElementById('cancelSetupBtn').addEventListener('click', hideSetup);
 document.getElementById('settingsBtn').addEventListener('click', () => showSetup(true));
 
-// ---------- Users ----------
 function renderUserTabs(){
   const tabsEl = document.getElementById('userTabs');
   tabsEl.innerHTML = '';
@@ -699,12 +719,16 @@ function renderUserTabs(){
     const btn = document.createElement('div');
     btn.className = 'user-tab' + (user === currentUser ? ' active' : '');
     btn.textContent = user;
+    btn.setAttribute('role', 'button');
+    btn.setAttribute('tabindex', '0');
     btn.onclick = () => { currentUser = user; renderMain(); };
     tabsEl.appendChild(btn);
   });
   const addBtn = document.createElement('div');
   addBtn.className = 'user-tab add-tab';
   addBtn.textContent = '+ add';
+  addBtn.setAttribute('role', 'button');
+  addBtn.setAttribute('tabindex', '0');
   addBtn.onclick = () => {
     const name = prompt('Name to add:');
     if (name && name.trim() && !USERS.includes(name.trim())){
@@ -718,7 +742,6 @@ function renderUserTabs(){
   tabsEl.appendChild(addBtn);
 }
 
-// ---------- Day tabs ----------
 function renderTabs(){
   const tabsEl = document.getElementById('dayTabs');
   tabsEl.innerHTML = '';
@@ -726,12 +749,13 @@ function renderTabs(){
     const btn = document.createElement('div');
     btn.className = 'day-tab' + (day === currentDay ? ' active' : '');
     btn.textContent = day.toUpperCase();
+    btn.setAttribute('role', 'button');
+    btn.setAttribute('tabindex', '0');
     btn.onclick = () => { currentDay = day; renderTabs(); renderMain(); };
     tabsEl.appendChild(btn);
   });
 }
 
-// ---------- Data helpers ----------
 async function getLastLogs(user, exerciseName, count){
   try {
     const snap = await db.collection('users').doc(user).collection('entries')
@@ -760,10 +784,10 @@ function topWeight(entry){
 
 function buildTrend(last, prev){
   if (!last) return { text: 'No previous log yet', cls: '' };
-  const lastParts = last.sets.filter(s => s.weight || s.reps).map(s => `${s.weight||'-'}×${s.reps||'-'}`);
-  const feelTag = last.feel ? ` · felt ${last.feel}` : '';
+  const lastParts = last.sets.filter(s => s.weight || s.reps).map(s => `${s.weight||'-'}x${s.reps||'-'}`);
+  const feelTag = last.feel ? `, felt ${last.feel}` : '';
   const base = `Last: ${lastParts.join(', ')} (${last.date})${feelTag}`;
-  if (!prev) return { text: base + ' — first entry, repeat this next time', cls: '' };
+  if (!prev) return { text: base + ', first entry, repeat this next time', cls: '' };
 
   const lastVol = sessionVolume(last);
   const prevVol = sessionVolume(prev);
@@ -773,23 +797,22 @@ function buildTrend(last, prev){
   const lastTop = topWeight(last);
   let suggestion, cls;
   if (last.feel === 'Hard' && pct >= 0){
-    suggestion = `↑ ${pct.toFixed(0)}% but felt hard — hold weight this time`;
+    suggestion = `up ${pct.toFixed(0)}% but felt hard, hold weight this time`;
     cls = 'trend-flat';
   } else if (pct > 3){
     const bump = lastTop >= 60 ? 5 : 2.5;
-    suggestion = `↑ ${pct.toFixed(0)}% vs prior — try +${bump}lb next session`;
+    suggestion = `up ${pct.toFixed(0)}% vs prior, try +${bump}lb next session`;
     cls = 'trend-up';
   } else if (pct < -3){
-    suggestion = `↓ ${Math.abs(pct).toFixed(0)}% vs prior — hold weight, focus on form/reps`;
+    suggestion = `down ${Math.abs(pct).toFixed(0)}% vs prior, hold weight, focus on form/reps`;
     cls = 'trend-down';
   } else {
-    suggestion = `→ steady vs prior — same weight, aim for +1 rep/set`;
+    suggestion = `steady vs prior, same weight, aim for +1 rep/set`;
     cls = 'trend-flat';
   }
-  return { text: base + ' · ' + suggestion, cls };
+  return { text: base + ', ' + suggestion, cls };
 }
 
-// ---------- Bodyweight ----------
 function todayISO(){ return new Date().toISOString().slice(0,10); }
 
 async function getBodyweightHistory(user, count){
@@ -817,6 +840,7 @@ async function saveBodyweight(user, weight){
 
 async function renderBodyweight(){
   const wrap = document.getElementById('bwWrap');
+  if (!wrap) return;
   const history = await getBodyweightHistory(currentUser, 2);
   const today = history.find(h => h.date === todayISO());
   const prior = history.find(h => h.date !== todayISO());
@@ -829,11 +853,13 @@ async function renderBodyweight(){
   } else if (history[0]){
     trendText = `Last: ${history[0].weight}lb (${history[0].date})`;
   }
+  const safeToday = today ? escapeHtml(today.weight) : '';
+  const safeTrend = escapeHtml(trendText);
   wrap.innerHTML = `
     <div class="bw-card">
-      <span class="bw-label">Weight</span>
-      <input type="number" inputmode="decimal" class="bw-input" id="bwInput" placeholder="lb" value="${today ? today.weight : ''}" min="0" step="0.1">
-      <span class="bw-trend">${trendText}</span>
+      <label class="bw-label" for="bwInput">Weight</label>
+      <input type="number" inputmode="decimal" class="bw-input" id="bwInput" placeholder="lb" value="${safeToday}" min="0" step="0.1" aria-label="Body weight in pounds">
+      <span class="bw-trend">${safeTrend}</span>
       <button type="button" class="bw-save" id="bwSaveBtn">Save</button>
     </div>`;
   document.getElementById('bwSaveBtn').addEventListener('click', async () => {
@@ -843,12 +869,11 @@ async function renderBodyweight(){
       return;
     }
     const ok = await saveBodyweight(currentUser, val);
-    showToast(ok ? 'Weight logged' : 'Saved offline — will sync when connected', ok ? 'success' : 'error');
+    showToast(ok ? 'Weight logged' : 'Saved offline, will sync when connected', ok ? 'success' : 'error');
     renderBodyweight();
   });
 }
 
-// ---------- Offline queue ----------
 function getQueue(){
   try { return JSON.parse(localStorage.getItem('sendlog_queue') || '[]'); } catch(e){ return []; }
 }
@@ -890,10 +915,9 @@ async function flushQueue(){
 }
 window.addEventListener('online', flushQueue);
 
-// ---------- Render ----------
 async function renderMain(){
   const mainEl = document.getElementById('main');
-  document.getElementById('eyebrowText').textContent = `Post-climb strength — ${currentUser}`;
+  document.getElementById('eyebrowText').textContent = `Post-climb strength, ${currentUser}`;
   const day = ROUTINE[currentDay];
 
   mainEl.innerHTML = '<div id="bwWrap"></div>' + day.exercises.map(() => '<div class="skeleton"></div>').join('');
@@ -907,25 +931,35 @@ async function renderMain(){
   let html = '<div id="bwWrap"></div>';
   cardsData.forEach(({ ex, last, prev }, idx) => {
     const trend = buildTrend(last, prev);
+    // FIX: every value below that originates from Firestore (or could be attacker-controlled
+    // if the open test-mode database is ever written to by something other than this app)
+    // is escaped before going into the template. ex.name/ex.target come from the hardcoded
+    // ROUTINE object, but are escaped too for defense in depth.
+    const safeName = escapeHtml(ex.name);
+    const safeTarget = escapeHtml(ex.target);
+    const safeTrendText = escapeHtml(trend.text);
+    const safeLastId = last ? escapeHtml(last.id) : '';
+
     html += `
-    <div class="exercise-card" data-exercise="${ex.name}" data-last-id="${last ? last.id : ''}" style="animation-delay:${idx * 40}ms">
+    <div class="exercise-card" data-exercise="${safeName}" data-last-id="${safeLastId}" style="animation-delay:${idx * 40}ms">
       <div class="exercise-head">
-        <div class="exercise-name">${ex.name}</div>
+        <div class="exercise-name">${safeName}</div>
         <div style="display:flex; align-items:center; gap:8px;">
-          ${last ? '<button type="button" class="repeat-btn" title="Fill in last session\'s numbers">↻ repeat last</button>' : ''}
-          <div class="exercise-target">${ex.target}</div>
+          ${last ? '<button type="button" class="repeat-btn" title="Fill in last session\'s numbers">repeat last</button>' : ''}
+          <div class="exercise-target">${safeTarget}</div>
         </div>
       </div>
       <div class="col-labels">
         <span></span><span>Weight (lb)</span><span>Reps</span><span></span>
       </div>
       ${[1,2,3].map(setNum => {
-        const prefill = last && last.sets && last.sets[setNum-1] ? last.sets[setNum-1].weight : '';
+        const rawPrefill = last && last.sets && last.sets[setNum-1] ? last.sets[setNum-1].weight : '';
+        const safePrefill = escapeHtml(rawPrefill);
         return `
         <div class="set-row">
           <div class="set-num">${setNum}</div>
-          <input type="number" inputmode="decimal" class="weight-input" placeholder="0" value="${prefill || ''}" min="0">
-          <input type="number" inputmode="numeric" class="reps-input" placeholder="0" min="0">
+          <input type="number" inputmode="decimal" class="weight-input" placeholder="0" value="${safePrefill}" min="0" aria-label="${safeName} set ${setNum} weight in pounds">
+          <input type="number" inputmode="numeric" class="reps-input" placeholder="0" min="0" aria-label="${safeName} set ${setNum} reps">
           <div class="unit-label">set ${setNum}</div>
         </div>`;
       }).join('')}
@@ -935,15 +969,14 @@ async function renderMain(){
         <button type="button" class="feel-btn" data-feel="Hard">Hard</button>
       </div>
       <div class="last-time ${trend.cls}">
-        <span>${trend.text}</span>
-        ${last ? '<button type="button" class="delete-entry" title="Delete last entry">✕</button>' : ''}
+        <span>${safeTrendText}</span>
+        ${last ? '<button type="button" class="delete-entry" title="Delete last entry" aria-label="Delete last entry">&#10005;</button>' : ''}
       </div>
     </div>`;
   });
   mainEl.innerHTML = html;
   renderBodyweight();
 
-  // wire up repeat-last buttons
   mainEl.querySelectorAll('.exercise-card').forEach((card, idx) => {
     const last = cardsData[idx].last;
     const repeatBtn = card.querySelector('.repeat-btn');
@@ -958,7 +991,6 @@ async function renderMain(){
     }
   });
 
-  // wire up feel buttons
   mainEl.querySelectorAll('.exercise-card').forEach(card => {
     card.querySelectorAll('.feel-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -981,7 +1013,6 @@ async function renderMain(){
         }
       });
     }
-    // basic input validation styling
     card.querySelectorAll('input[type=number]').forEach(inp => {
       inp.addEventListener('input', () => {
         const v = parseFloat(inp.value);
@@ -991,7 +1022,6 @@ async function renderMain(){
   });
 }
 
-// ---------- Save ----------
 async function saveSession(){
   const btn = document.getElementById('saveBtn');
   if (saving) return;
@@ -1014,7 +1044,6 @@ async function saveSession(){
   btn.textContent = 'Saving...';
   btn.classList.add('saving');
 
-  let errorCount = 0;
   let queuedCount = 0;
   const summary = [];
 
@@ -1031,7 +1060,10 @@ async function saveSession(){
     if (hasData){
       const priorLogs = await getLastLogs(currentUser, exerciseName, 1);
       const prior = priorLogs[0] || null;
-      const entry = { date, day: currentDay, user: currentUser, sets, timestamp: time, feel: feelBtn ? feelBtn.dataset.feel : null };
+      // FIX: original code never wrote `exercise` onto the entry it saved, so
+      // getLastLogs()'s `.where('exercise','==',exerciseName)` query would never
+      // have matched anything, and "Last: ..." would never have shown up.
+      const entry = { date, day: currentDay, user: currentUser, sets, timestamp: time, feel: feelBtn ? feelBtn.dataset.feel : null, exercise: exerciseName };
       try {
         await db.collection('users').doc(currentUser).collection('entries').add(entry);
         const newVol = sessionVolume(entry);
@@ -1055,20 +1087,20 @@ async function saveSession(){
 
   if (queuedCount > 0 && summary.length === 0){
     btn.textContent = "Log today's session";
-    showToast(`Saved offline — ${queuedCount} exercise(s) will sync when you're back online`, 'error');
+    showToast(`Saved offline, ${queuedCount} exercise(s) will sync when you're back online`, 'error');
   } else if (queuedCount > 0){
-    btn.textContent = 'Logged ✓';
+    btn.textContent = 'Logged';
     btn.classList.add('saved');
-    showToast(`${summary.join(' · ')} · ${queuedCount} queued offline`, 'success');
+    showToast(`${summary.join(', ')}, ${queuedCount} queued offline`, 'success');
     setTimeout(() => {
       btn.textContent = "Log today's session";
       btn.classList.remove('saved');
       renderMain();
     }, 1400);
   } else {
-    btn.textContent = 'Logged ✓';
+    btn.textContent = 'Logged';
     btn.classList.add('saved');
-    showToast(summary.join(' · '), 'success');
+    showToast(summary.join(', '), 'success');
     setTimeout(() => {
       btn.textContent = "Log today's session";
       btn.classList.remove('saved');
@@ -1079,7 +1111,6 @@ async function saveSession(){
 
 document.getElementById('saveBtn').addEventListener('click', saveSession);
 
-// ---------- Boot ----------
 async function boot(){
   renderUserTabs();
   renderTabs();
