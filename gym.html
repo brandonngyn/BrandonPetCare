@@ -86,8 +86,8 @@
   .delete-entry:active{ color:var(--hold-rust); }
   .bw-card{ background:var(--charcoal-2); border:1px solid var(--hold-gold); border-radius:10px; padding:12px 14px; margin-bottom:12px; display:flex; align-items:center; gap:10px; }
   .bw-label{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--hold-gold); letter-spacing:0.5px; text-transform:uppercase; flex-shrink:0; }
-  .bw-input{ width:64px; flex-shrink:0; }
-  .bw-trend{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--chalk-dim); flex:1; }
+  input.bw-input{ width:64px; flex-shrink:0; }
+  .bw-trend{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--chalk-dim); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .bw-save{ background:var(--hold-gold); color:var(--charcoal); border:none; border-radius:6px; padding:7px 11px; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:10.5px; cursor:pointer; }
   .skeleton{ background:var(--charcoal-2); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:12px; height:150px; position:relative; overflow:hidden; }
   .skeleton::after{ content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg, transparent, rgba(242,237,226,0.06), transparent); animation:shimmer 1.3s infinite; }
@@ -516,36 +516,18 @@ function updateProgress(cardsData){
   document.getElementById('progressWrap').classList.toggle('complete', done === total && total > 0);
 }
 
-async function renderMain(){
-  const mainEl = document.getElementById('main');
-  document.getElementById('eyebrowText').textContent = `Post-climb strength, ${currentUser}`;
-  const day = ROUTINE[currentDay];
+function buildCardHtml(ex, last, prev, stats, idx){
+  const trend = buildTrend(last, prev);
+  const safeName = escapeHtml(ex.name);
+  const safeTarget = escapeHtml(ex.target);
+  const safeCue = escapeHtml(ex.cue || '');
+  const safeTrendText = escapeHtml(trend.text);
+  const safeLastId = last ? escapeHtml(last.id) : '';
+  const loggedToday = last && last.date === todayISO();
+  const barPct = Math.abs(trend.pct);
+  const statHtml = stats ? `<div class="stat-strip"><span>Max: <b>${stats.max}lb</b></span><span>Avg: <b>${stats.avg.toFixed(0)}lb</b></span></div>` : '';
 
-  mainEl.innerHTML = '<div id="bwWrap"></div>' + day.exercises.map(() => '<div class="skeleton"></div>').join('');
-  renderBodyweight();
-
-  const cardsData = await Promise.all(day.exercises.map(async (ex) => {
-    const logs = await getLastLogs(currentUser, ex.name, 2);
-    const allLogs = await getAllLogs(currentUser, ex.name);
-    const stats = computeStats(allLogs);
-    return { ex, last: logs[0] || null, prev: logs[1] || null, stats, allLogs };
-  }));
-
-  updateProgress(cardsData);
-
-  let html = '<div id="bwWrap"></div>';
-  cardsData.forEach(({ ex, last, prev, stats }, idx) => {
-    const trend = buildTrend(last, prev);
-    const safeName = escapeHtml(ex.name);
-    const safeTarget = escapeHtml(ex.target);
-    const safeCue = escapeHtml(ex.cue || '');
-    const safeTrendText = escapeHtml(trend.text);
-    const safeLastId = last ? escapeHtml(last.id) : '';
-    const loggedToday = last && last.date === todayISO();
-    const barPct = Math.abs(trend.pct);
-    const statHtml = stats ? `<div class="stat-strip"><span>Max: <b>${stats.max}lb</b></span><span>Avg: <b>${stats.avg.toFixed(0)}lb</b></span></div>` : '';
-
-    html += `
+  return `
     <div class="exercise-card${loggedToday ? ' logged-today' : ''}" data-exercise="${safeName}" data-last-id="${safeLastId}" data-idx="${idx}" style="animation-delay:${idx * 30}ms">
       <div class="exercise-head">
         <div class="exercise-name-row">
@@ -559,12 +541,10 @@ async function renderMain(){
       ${statHtml}
       <div class="col-labels"><span></span><span>Weight (lb)</span><span>Reps</span></div>
       ${[1,2,3].map(setNum => {
-        const rawPrefill = last && last.sets && last.sets[setNum-1] ? last.sets[setNum-1].weight : '';
-        const safePrefill = escapeHtml(rawPrefill);
         return `
         <div class="set-row">
           <div class="set-num">${setNum}</div>
-          <input type="number" inputmode="decimal" class="weight-input" placeholder="0" value="${safePrefill}" min="0" max="2000" aria-label="${safeName} set ${setNum} weight in pounds">
+          <input type="number" inputmode="decimal" class="weight-input" placeholder="0" min="0" max="2000" aria-label="${safeName} set ${setNum} weight in pounds">
           <input type="number" inputmode="numeric" class="reps-input" placeholder="0" min="0" max="200" aria-label="${safeName} set ${setNum} reps">
         </div>`;
       }).join('')}
@@ -583,94 +563,164 @@ async function renderMain(){
         ${last ? '<button type="button" class="delete-entry" title="Delete last entry" aria-label="Delete last entry">&#10005;</button>' : ''}
       </div>
     </div>`;
+}
+
+async function renderMain(){
+  const mainEl = document.getElementById('main');
+  document.getElementById('eyebrowText').textContent = `Post-climb strength, ${currentUser}`;
+  const day = ROUTINE[currentDay];
+
+  mainEl.innerHTML = '<div id="bwWrap"></div>' + day.exercises.map(() => '<div class="skeleton"></div>').join('');
+  renderBodyweight();
+
+  const cardsData = await Promise.all(day.exercises.map(async (ex) => {
+    const allLogs = await getAllLogs(currentUser, ex.name);
+    const stats = computeStats(allLogs);
+    return { ex, last: allLogs[0] || null, prev: allLogs[1] || null, stats, allLogs };
+  }));
+
+  updateProgress(cardsData);
+
+  let html = '<div id="bwWrap"></div>';
+  cardsData.forEach(({ ex, last, prev, stats }, idx) => {
+    html += buildCardHtml(ex, last, prev, stats, idx);
   });
   mainEl.innerHTML = html;
   renderBodyweight();
   wireCardEvents(cardsData);
 }
 
+// FIX (lag): logging or deleting one exercise used to call the full renderMain(),
+// which refetched and rebuilt every exercise card on the page even though only one
+// changed. This refreshes just the single affected card instead, cutting both the
+// number of Firestore reads and the DOM work down to one card's worth.
+async function refreshSingleCard(exerciseName, idx){
+  const day = ROUTINE[currentDay];
+  const ex = day.exercises[idx];
+  const allLogs = await getAllLogs(currentUser, exerciseName);
+  const stats = computeStats(allLogs);
+  const data = { ex, last: allLogs[0] || null, prev: allLogs[1] || null, stats, allLogs };
+
+  const oldCard = document.querySelector(`.exercise-card[data-idx="${idx}"]`);
+  if (!oldCard) { renderMain(); return; }
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = buildCardHtml(ex, data.last, data.prev, data.stats, idx).trim();
+  const newCard = wrapper.firstChild;
+  oldCard.replaceWith(newCard);
+  wireSingleCard(newCard, data);
+
+  // update the progress bar from current DOM state, no extra query needed
+  const total = day.exercises.length;
+  const done = document.querySelectorAll('.exercise-card.logged-today').length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${done}/${total} today`;
+  document.getElementById('progressWrap').classList.toggle('complete', done === total && total > 0);
+}
+
 function wireCardEvents(cardsData){
   document.querySelectorAll('.exercise-card').forEach((card) => {
     const idx = parseInt(card.dataset.idx, 10);
-    const data = cardsData[idx];
-
-    card.querySelector('.info-toggle').addEventListener('click', () => {
-      card.querySelector('.exercise-cue').classList.toggle('show');
-    });
-
-    const repeatBtn = card.querySelector('.repeat-btn');
-    if (repeatBtn && data.last){
-      repeatBtn.addEventListener('click', () => {
-        const weightInputs = card.querySelectorAll('.weight-input');
-        const repsInputs = card.querySelectorAll('.reps-input');
-        weightInputs.forEach((w, i) => { w.value = data.last.sets[i] ? (data.last.sets[i].weight || '') : ''; });
-        repsInputs.forEach((r, i) => { r.value = data.last.sets[i] ? (data.last.sets[i].reps || '') : ''; });
-        showToast("Filled in last session's numbers", 'success');
-      });
-    }
-
-    card.querySelectorAll('.feel-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        card.querySelectorAll('.feel-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-      });
-    });
-
-    const delBtn = card.querySelector('.delete-entry');
-    if (delBtn){
-      delBtn.addEventListener('click', async () => {
-        const lastId = card.dataset.lastId;
-        if (!lastId) return;
-        if (!confirm('Delete this entry?')) return;
-        try {
-          await db.collection('users').doc(currentUser).collection('entries').doc(lastId).delete();
-          logActivity(`Deleted entry: ${card.dataset.exercise}`);
-          showToast('Entry deleted', 'success');
-          renderMain();
-        } catch(e){ showToast('Delete failed', 'error'); }
-      });
-    }
-
-    card.querySelectorAll('input[type=number]').forEach(inp => {
-      inp.addEventListener('input', () => {
-        const v = parseFloat(inp.value);
-        const max = parseFloat(inp.max);
-        inp.classList.toggle('input-error', inp.value !== '' && (isNaN(v) || v < 0 || (max && v > max)));
-      });
-    });
-
-    const logBtn = card.querySelector('.log-btn');
-    const exerciseName = card.dataset.exercise;
-    logBtn.addEventListener('click', async () => {
-      if (!confirmArmed[exerciseName]){
-        confirmArmed[exerciseName] = true;
-        logBtn.textContent = 'Tap again to confirm';
-        logBtn.classList.add('confirm-armed');
-        setTimeout(() => {
-          if (confirmArmed[exerciseName]){
-            confirmArmed[exerciseName] = false;
-            logBtn.textContent = 'Log this exercise';
-            logBtn.classList.remove('confirm-armed');
-          }
-        }, 3000);
-        return;
-      }
-      confirmArmed[exerciseName] = false;
-      await logSingleExercise(card, exerciseName, data);
-    });
+    wireSingleCard(card, cardsData[idx]);
   });
 }
 
-async function logSingleExercise(card, exerciseName, data){
+function wireSingleCard(card, data){
+  const idx = parseInt(card.dataset.idx, 10);
+
+  card.querySelector('.info-toggle').addEventListener('click', () => {
+    card.querySelector('.exercise-cue').classList.toggle('show');
+  });
+
+  const repeatBtn = card.querySelector('.repeat-btn');
+  if (repeatBtn && data.last){
+    repeatBtn.addEventListener('click', () => {
+      const weightInputs = card.querySelectorAll('.weight-input');
+      const repsInputs = card.querySelectorAll('.reps-input');
+      weightInputs.forEach((w, i) => { w.value = data.last.sets[i] ? (data.last.sets[i].weight || '') : ''; });
+      repsInputs.forEach((r, i) => { r.value = data.last.sets[i] ? (data.last.sets[i].reps || '') : ''; });
+      showToast("Filled in last session's numbers", 'success');
+    });
+  }
+
+  card.querySelectorAll('.feel-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      card.querySelectorAll('.feel-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+  });
+
+  const delBtn = card.querySelector('.delete-entry');
+  if (delBtn){
+    delBtn.addEventListener('click', async () => {
+      const lastId = card.dataset.lastId;
+      const exerciseName = card.dataset.exercise;
+      if (!lastId) return;
+      if (!confirm('Delete this entry?')) return;
+      delBtn.disabled = true;
+      try {
+        await db.collection('users').doc(currentUser).collection('entries').doc(lastId).delete();
+        logActivity(`Deleted entry: ${exerciseName}`);
+        showToast('Entry deleted', 'success');
+        await refreshSingleCard(exerciseName, idx);
+      } catch(e){
+        showToast('Delete failed, check your connection', 'error');
+        delBtn.disabled = false;
+      }
+    });
+  }
+
+  card.querySelectorAll('input[type=number]').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const v = parseFloat(inp.value);
+      const max = parseFloat(inp.max);
+      inp.classList.toggle('input-error', inp.value !== '' && (isNaN(v) || v < 0 || (max && v > max)));
+    });
+  });
+
+  const logBtn = card.querySelector('.log-btn');
+  const exerciseName = card.dataset.exercise;
+  logBtn.addEventListener('click', async () => {
+    if (!confirmArmed[exerciseName]){
+      confirmArmed[exerciseName] = true;
+      logBtn.textContent = 'Tap again to confirm';
+      logBtn.classList.add('confirm-armed');
+      setTimeout(() => {
+        if (confirmArmed[exerciseName]){
+          confirmArmed[exerciseName] = false;
+          logBtn.textContent = 'Log this exercise';
+          logBtn.classList.remove('confirm-armed');
+        }
+      }, 3000);
+      return;
+    }
+    confirmArmed[exerciseName] = false;
+    await logSingleExercise(card, exerciseName, data, idx);
+  });
+}
+
+async function logSingleExercise(card, exerciseName, data, idx){
   const logBtn = card.querySelector('.log-btn');
   const weightInputs = card.querySelectorAll('.weight-input');
   const repsInputs = card.querySelectorAll('.reps-input');
   const feelBtn = card.querySelector('.feel-btn.selected');
   const sets = [];
-  weightInputs.forEach((w, i) => { sets.push({ weight: w.value, reps: repsInputs[i].value }); });
-  const hasData = sets.some(s => s.weight || s.reps);
-  if (!hasData){
-    showToast('Add at least one weight or rep first', 'error');
+  let incomplete = false;
+  weightInputs.forEach((w, i) => {
+    const weight = w.value.trim();
+    const reps = repsInputs[i].value.trim();
+    if (!weight && !reps) return; // both empty: skip this set entirely, that's fine
+    if (!weight || !reps) { incomplete = true; return; } // only one filled: that's the bug, block it
+    sets.push({ weight, reps });
+  });
+  if (incomplete){
+    showToast('Fill in both weight and reps for each set you log', 'error');
+    logBtn.textContent = 'Log this exercise';
+    logBtn.classList.remove('confirm-armed');
+    return;
+  }
+  if (!sets.length){
+    showToast('Add at least one complete set first', 'error');
     logBtn.textContent = 'Log this exercise';
     logBtn.classList.remove('confirm-armed');
     return;
@@ -695,7 +745,7 @@ async function logSingleExercise(card, exerciseName, data){
     } else {
       showToast(`${exerciseName} logged`, 'success');
     }
-    renderMain();
+    await refreshSingleCard(exerciseName, idx);
   } catch(e){
     queueOffline({ type: 'entry', user: currentUser, entry });
     logActivity(`${exerciseName} saved offline (will sync)`);
