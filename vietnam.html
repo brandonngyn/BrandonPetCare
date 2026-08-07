@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>The Ledger - Vietnam & Cambodia</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #F4EFE3;
+    --card: #FFFDF7;
+    --ink: #22201B;
+    --muted: #6B6555;
+    --muted2: #8C8578;
+    --faint: #B0A88F;
+    --border: #D8CFB8;
+    --border-faint: #EAE3D2;
+    --teal: #1F4E45;
+    --teal-dark: #17372F;
+    --red: #A63D2F;
+    --amber: #A6702F;
+    --pretrip-bg: #EFE9D8;
+    --pretrip-border: #DDD4BF;
+    --backup-bg: #EFE1D8;
+    --backup-border: #D9BFA8;
+    --backup-text: #6B4530;
+    --current-bg: #F0EAD8;
+    --banner2: #3A4A3F;
+  }
+  .dark {
+    --bg: #17140F;
+    --card: #211D17;
+    --ink: #EDE6D5;
+    --muted: #A79E8A;
+    --muted2: #8C8271;
+    --faint: #5C5646;
+    --border: #3A3527;
+    --border-faint: #2C2820;
+    --teal: #3D8672;
+    --teal-dark: #2E6B5A;
+    --red: #D4685A;
+    --amber: #D19654;
+    --pretrip-bg: #2A2620;
+    --pretrip-border: #3A3527;
+    --backup-bg: #332B23;
+    --backup-border: #4A3C2E;
+    --backup-text: #E0B896;
+    --current-bg: #2E2A20;
+    --banner2: #2E3A31;
+  }
+  .wrap { transition: background .2s, color .2s; }
+  .wrap.large-text { zoom: 1.18; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; }
+  .wrap { background: var(--bg); min-height: 100vh; font-family: 'Inter', sans-serif; color: var(--ink); padding: 24px 16px 60px; }
+  .container { max-width: 640px; margin: 0 auto; }
+  .masthead { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid var(--ink); padding-bottom: 10px; margin-bottom: 4px; }
+  .masthead h1 { font-family: 'Fraunces', serif; font-weight: 700; font-size: 26px; letter-spacing: -0.01em; margin: 0; }
+  .masthead .route { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .location-banner { display:flex; justify-content:space-between; align-items:center; background:#22201B; color:#F4EFE3; border-radius:3px; padding:12px 14px; margin-bottom:6px; cursor:pointer; }
+  .util-banner { background: var(--card); color: var(--ink); border: 1px solid var(--border); margin-top: 10px; }
+  .util-banner .loc-sub { color: var(--muted2); }
+  .util-banner .loc-caret { color: var(--muted); }
+  .insurance-card { background: var(--border-faint); border-radius: 3px; padding: 12px 14px; margin-top: 4px; }
+  .insurance-row { display:flex; justify-content:space-between; align-items:center; padding: 6px 0; border-bottom: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; font-size: 12px; gap: 10px; }
+  .insurance-row:last-of-type { border-bottom: none; }
+  .insurance-row span { color: var(--muted); flex-shrink: 0; }
+  .insurance-row b { color: var(--ink); text-align: right; }
+  .insurance-row a { color: var(--teal); text-decoration: none; }
+  .insurance-qr { text-align: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .insurance-qr img { border-radius: 4px; background: #fff; padding: 6px; }
+  .insurance-qr a { display: block; margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--teal); text-decoration: none; }
+  .checkin-card { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--red); border-radius: 3px; padding: 12px 14px; margin-bottom: 10px; }
+  .checkin-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 4px; }
+  .checkin-text { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; color: var(--ink); }
+  .local-time-line { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--teal); margin-top: 4px; }
+  .viewer-time-line { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+  .checkin-meta { display:flex; justify-content: space-between; align-items:center; margin-top: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--muted2); }
+  .checkin-meta a, .history-toggle-link { color: var(--teal); text-decoration: none; border-bottom: 1px dotted var(--teal); background: none; border-top: none; border-left: none; border-right: none; font-family: 'IBM Plex Mono', monospace; font-size: inherit; cursor: pointer; padding: 0; }
+  .checkin-history { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-faint); }
+  .checkin-hist-row { display:flex; align-items:center; padding: 6px 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; border-bottom: 1px solid var(--border-faint); gap: 8px; }
+  .checkin-hist-row .hp { color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1 1 auto; min-width: 0; }
+  .checkin-hist-row .ht { color: var(--muted2); flex: 0 0 auto; font-size: 10.5px; }
+  .checkin-hist-row .hdel { background: none; border: none; color: var(--faint); font-size: 15px; cursor: pointer; padding: 8px 9px; margin: -8px -6px -8px 0; flex: 0 0 auto; line-height: 1; }
+  .checkin-hist-row .hdel.confirm { color: var(--red); font-size: 10.5px; font-weight: 600; background: var(--border-faint); border-radius: 3px; padding: 8px 9px; }
+  .checkin-hist-empty { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--muted2); padding: 6px 0; }
+  .checkin-meta.stale .checkin-time-val { color: var(--amber); }
+  .locate-btn { width:100%; margin-top:10px; background: none; border: 1px dashed var(--border); color: var(--teal); font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 9px; border-radius: 3px; cursor: pointer; }
+  .locate-btn:active { background: var(--border-faint); }
+  .locate-btn:disabled { opacity: 0.5; }
+  .locate-result { margin-top: 10px; padding: 10px; background: var(--border-faint); border-radius: 3px; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; }
+  .locate-result .locate-place { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+  .locate-result .locate-actions { display:flex; gap:8px; margin-top:8px; }
+  .locate-result button, .locate-result a { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; padding: 6px 10px; border-radius: 3px; cursor: pointer; text-decoration: none; text-align:center; }
+  .locate-result .copy-btn { background: var(--teal); color: var(--card); border: none; flex:1; }
+  .locate-result .go-edit-link { background: none; color: var(--muted); border: 1px solid var(--border); flex:1; }
+  .locate-result.error { color: var(--red); }
+  .oneTap-setup-link { width:100%; margin-top:8px; background:none; border:none; color:var(--muted2); font-family:'IBM Plex Mono', monospace; font-size:10.5px; text-decoration:underline dotted; cursor:pointer; padding:4px; }
+  .packing-banner { background:var(--banner2); }
+  .pack-group-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--amber); margin: 14px 0 6px; }
+  .pack-group-label:first-child { margin-top: 0; }
+  .pack-item { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--border-faint); }
+  .pack-item input[type=checkbox] { width:18px; height:18px; accent-color:var(--teal); flex-shrink:0; }
+  .pack-item label { font-size:13.5px; flex:1; cursor:pointer; }
+  .pack-item.checked label { color:var(--muted2); text-decoration: line-through; }
+  .pack-item .pack-del { background:none; border:none; color:var(--faint); font-size:14px; cursor:pointer; padding:8px 8px; margin: -8px -6px -8px 0; }
+  .pack-add-form { display:flex; gap:8px; margin-top:12px; }
+  .pack-add-form input { flex:1; font-family:'Inter', sans-serif; font-size:14px; padding:8px 9px; border:1px solid var(--border); border-radius:3px; background:var(--card); }
+  .pack-add-form button { background:var(--teal); color:var(--bg); border:none; border-radius:3px; padding:0 16px; font-size:16px; cursor:pointer; }
+  .loc-main { display:flex; flex-direction:column; gap:2px; }
+  .loc-label { font-family:'Fraunces', serif; font-size:16px; font-weight:600; }
+  .loc-sub { font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--faint); }
+  .loc-caret { font-size:20px; color:var(--faint); transition: transform .2s; }
+  .loc-caret.open { transform: rotate(90deg); }
+  .itin-row { display:grid; grid-template-columns: 22px 1fr 68px 130px; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--border-faint); }
+  .itin-weather { font-size: 12px; font-family: 'IBM Plex Mono', monospace; color: var(--muted); text-align: center; white-space: nowrap; }
+  .itin-row.current { background:var(--current-bg); margin:0 -8px; padding:6px 8px; border-radius:3px; }
+  .itin-row .itin-dot { width:8px; height:8px; border-radius:50%; background:var(--border); }
+  .itin-row.current .itin-dot { background:var(--red); }
+  .itin-row .itin-name { font-size:13.5px; font-weight:500; }
+  .itin-row input[type=date] { font-family:'IBM Plex Mono', monospace; font-size:11.5px; padding:5px 6px; border:1px solid var(--border); border-radius:3px; background:var(--card); }
+  .subline { display:flex; justify-content: space-between; align-items:center; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--muted); margin: 0 0 10px; flex-wrap: wrap; gap: 6px; }
+  .subline .days { cursor: pointer; text-decoration: underline dotted; }
+  .subline .site-link { color: var(--muted); text-decoration: none; border-bottom: 1px dotted var(--faint); }
+  .theme-toggle { background: none; border: 1px solid var(--faint); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 4px 9px; border-radius: 999px; cursor: pointer; }
+  .currency-toggle { background: none; border: 1px dashed var(--border); color: var(--teal); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 4px 9px; border-radius: 999px; cursor: pointer; margin-bottom: 6px; }
+  .itin-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .temp-toggle { background: none; border: 1px dashed var(--border); color: var(--teal); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 3px 9px; border-radius: 999px; cursor: pointer; }
+  .offline-badge { background: var(--backup-bg); border: 1px solid var(--backup-border); color: var(--backup-text); font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 8px 10px; border-radius: 3px; margin-bottom: 14px; line-height: 1.4; }
+  .rate-line { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 18px; cursor: pointer; display:flex; align-items:center; gap:6px; }
+  .rate-line .dot { width:6px; height:6px; border-radius:50%; background:var(--teal); }
+  .rate-line.stale .dot { background:var(--amber); }
+  .backup-banner { background:var(--backup-bg); border:1px solid var(--backup-border); border-radius:3px; padding:10px 12px; margin-bottom:14px; font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--backup-text); display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .backup-banner button { background:var(--red); color:var(--card); border:none; border-radius:3px; padding:6px 10px; font-family:'IBM Plex Mono', monospace; font-size:11px; cursor:pointer; white-space:nowrap; }
+  .backup-banner .dismiss { background:none; color:var(--amber); text-decoration:underline; padding:0; }
+  .today-line { font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--muted); margin-top:2px; }
+  .undo-toast { position: fixed; left:16px; right:16px; bottom:20px; max-width:608px; margin:0 auto; background:#22201B; color:#F4EFE3; border-radius:4px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; font-family:'IBM Plex Mono', monospace; font-size:12.5px; box-shadow:0 4px 16px rgba(0,0,0,0.25); z-index: 40; }
+  .undo-toast button { background:var(--red); color:var(--bg); border:none; border-radius:3px; padding:6px 10px; font-family:'IBM Plex Mono', monospace; font-size:11.5px; cursor:pointer; }
+  .convert-toggle { font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--teal); background:none; border:none; text-decoration:underline; cursor:pointer; padding:0; margin-top:4px; text-align:left; }
+  .convert-panel { display:none; grid-template-columns: 1fr 1fr; gap:8px; margin-top:8px; padding:10px; background:var(--bg); border-radius:3px; border:1px solid var(--border); }
+  .convert-panel.open { display:grid; }
+  .convert-result { grid-column: 1/-1; font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink); display:flex; justify-content:space-between; align-items:center; }
+  .convert-result button { background:var(--teal); color:var(--bg); border:none; border-radius:3px; padding:6px 10px; font-family:'IBM Plex Mono', monospace; font-size:11px; cursor:pointer; }
+  .ledger-card { background: var(--card); border: 1px solid var(--border); border-radius: 3px; padding: 18px 18px 16px; margin-bottom: 16px; }
+  .pretrip-card { background: var(--pretrip-bg); }
+  .pretrip-head { display: flex; justify-content: space-between; align-items: baseline; font-family: 'IBM Plex Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  .pretrip-total { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; color: var(--ink); text-transform: none; letter-spacing: normal; }
+  .pretrip-note { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted2); margin: 4px 0 10px; }
+  .pretrip-row { display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; padding: 4px 0; border-top: 1px solid var(--pretrip-border); }
+  .totals-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
+  .totals-row .spent { font-family: 'Fraunces', serif; font-size: 34px; font-weight: 600; line-height: 1; color: var(--teal); transition: color .3s; }
+  .totals-row .spent.warn { color: var(--amber); }
+  .totals-row .spent.danger { color: var(--red); }
+  .totals-row .of { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); }
+  .budget-edit { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); background: transparent; border: none; border-bottom: 1px dashed var(--faint); width: 64px; text-align: right; padding: 0 2px; }
+  .budget-edit:focus { outline: none; border-bottom-color: var(--teal); }
+  .edit-budget-btn { background: none; border: none; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--red); cursor: pointer; text-decoration: underline; padding: 0; }
+  .route-bar { position: relative; height: 34px; margin: 6px 0 4px; }
+  .route-track { position: absolute; top: 15px; left: 0; right: 0; height: 3px; background: repeating-linear-gradient(90deg, var(--border) 0 6px, transparent 6px 10px); }
+  .route-fill { position: absolute; top: 15px; left: 0; height: 3px; background: var(--teal); transition: width 0.4s ease, background .3s; }
+  .route-fill.warn { background: var(--amber); }
+  .route-fill.danger { background: var(--red); }
+  .route-marker { position: absolute; top: 6px; width: 20px; height: 20px; margin-left: -10px; background: var(--red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--bg); font-size: 10px; font-family: 'IBM Plex Mono', monospace; transition: left 0.4s ease; box-shadow: 0 0 0 3px var(--card); }
+  .remaining-line { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .remaining-line.over { color: var(--red); font-weight: 600; }
+  .pace-line { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--muted); margin-top: 4px; padding-top: 8px; border-top: 1px solid var(--border-faint); }
+  .pace-line b { color: var(--ink); }
+  .pace-line.tight b.req { color: var(--amber); }
+  .cat-bars { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-faint); }
+  .cat-row { display: grid; grid-template-columns: 90px 1fr 56px; align-items: center; gap: 8px; margin-bottom: 7px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+  .cat-track { height: 6px; background: var(--border-faint); border-radius: 3px; overflow: hidden; }
+  .cat-fill { height: 100%; border-radius: 3px; }
+  .cat-row .amt { text-align: right; color: var(--ink); }
+
+  .presets-title { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 8px; }
+  .ref-note { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--muted2); margin-bottom: 12px; line-height: 1.5; }
+  .ref-group-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--amber); margin: 12px 0 6px; }
+  .ref-group-label:first-of-type { margin-top: 0; }
+  .ref-row { display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: var(--ink); padding: 8px 0; border-bottom: 1px solid var(--border-faint); font-size: 13px; }
+  .ref-row span:first-child { font-weight: 500; }
+  .ref-row span:last-child { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--teal); }
+  .presets-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
+  .preset-chip { font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 7px 11px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--ink); cursor: pointer; }
+  .preset-chip:active { background: var(--border-faint); }
+
+  form.entry { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field.full { grid-column: 1 / -1; }
+  .field label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  .field select, .field input { font-family: 'Inter', sans-serif; font-size: 16px; padding: 8px 9px; border: 1px solid var(--border); border-radius: 3px; background: var(--card); color: var(--ink); }
+  .field select:focus, .field input:focus { outline: none; border-color: var(--teal); }
+  .amount-field { position: relative; }
+  .amount-field span.dollar { position: absolute; left: 9px; top: 32px; font-size: 14px; color: var(--muted); }
+  .amount-field input { padding-left: 20px; }
+  .toggle-row { display: flex; gap: 8px; }
+  .toggle-btn { flex: 1; font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 8px 6px; border: 1px solid var(--border); border-radius: 3px; background: var(--card); color: var(--muted); cursor: pointer; }
+  .toggle-btn.active { background: #22201B; color: #F4EFE3; border-color: #22201B; }
+  .add-btn { grid-column: 1 / -1; background: var(--teal); color: var(--bg); border: none; border-radius: 3px; padding: 11px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; letter-spacing: 0.03em; cursor: pointer; margin-top: 2px; }
+  .add-btn:active { background: var(--teal-dark); }
+  .add-btn.added { background: var(--red); transition: background .15s; }
+  .error-msg { grid-column: 1 / -1; color: var(--red); font-size: 12px; font-family: 'IBM Plex Mono', monospace; }
+  .list-header { display: flex; justify-content: space-between; align-items: center; margin: 22px 0 10px; gap: 8px; flex-wrap: wrap; }
+  .list-header h2 { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; margin: 0; }
+  .list-controls { display: flex; gap: 8px; align-items: center; }
+  .leg-filter { font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--card); color: var(--ink); }
+  .export-btn { font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 5px 10px; border: 1px solid var(--teal); border-radius: 3px; background: var(--card); color: var(--teal); cursor: pointer; }
+  .export-btn:active { background: var(--teal); color: var(--card); }
+  .entry-row { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-faint); }
+  .entry-row .catmark { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--card); flex-shrink: 0; }
+  .entry-row .info { min-width: 0; cursor: pointer; }
+  .entry-row .info .note { font-size: 13.5px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .entry-row .info .meta { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--muted2); margin-top: 1px; }
+  .entry-row .amt { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer; }
+  .entry-row .del { background: none; border: none; color: var(--faint); font-size: 16px; cursor: pointer; padding: 8px 8px; margin: -8px -6px -8px 0; line-height: 1; }
+  .entry-row .del.confirm { color: var(--red); font-size: 11px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; background: var(--border-faint); border-radius: 3px; padding: 8px 8px; }
+  .empty { text-align: center; padding: 30px 10px; color: var(--muted2); font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; }
+  .save-note { text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--faint); margin-top: 24px; }
+  .trip-dates-panel { display:none; gap:10px; margin-top:10px; padding-top:10px; border-top:1px solid var(--border-faint); }
+  .trip-dates-panel.open { display:grid; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 380px) { form.entry { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrapEl"><div class="container">
+
+  <div class="masthead">
+    <h1>The Ledger</h1>
+    <div class="route">Hanoi → Siem Reap</div>
+  </div>
+  <div class="location-banner" id="locationBanner">
+    <div class="loc-main">
+      <span class="loc-label" id="locLabel">Loading...</span>
+      <span class="loc-sub" id="locSub"></span>
+    </div>
+    <span class="loc-caret" id="itinCaret">›</span>
+  </div>
+
+  <div class="checkin-card" id="checkinCard">
+    <div class="checkin-label">Brandon's last check-in</div>
+    <div class="checkin-text" id="checkinText">Loading...</div>
+    <div class="local-time-line" id="localTimeLine"></div>
+    <div class="viewer-time-line" id="viewerTimeLine"></div>
+    <div class="checkin-meta">
+      <span id="checkinTime"></span>
+      <button type="button" class="history-toggle-link" id="historyToggleLink">History</button>
+    </div>
+    <div class="checkin-history" id="checkinHistory" style="display:none;"></div>
+    <button type="button" class="locate-btn" id="locateBtn">📍 Detect my current city</button>
+    <div class="locate-result" id="locateResult" style="display:none;"></div>
+    <button type="button" class="oneTap-setup-link" id="oneTapSetupLink">⚙ Set up one-tap check-in saving</button>
+  </div>
+
+  <div class="subline">
+    <a href="https://brandonpetcare.com" target="_blank" rel="noopener" class="site-link">BrandonPetCare.com</a>
+    <button class="theme-toggle" id="themeToggle">Dark mode</button>
+    <button class="theme-toggle" id="textSizeToggle">Aa Larger text</button>
+  </div>
+  <div class="rate-line" id="rateLine"><span class="dot"></span>Loading rates...</div>
+  <div class="offline-badge" id="offlineBadge" style="display:none;">⚠ Offline, expenses still save fine, prices/weather/check-in need a connection</div>
+  <div id="backupBanner"></div>
+
+  <div class="location-banner packing-banner" id="packingBanner">
+    <div class="loc-main">
+      <span class="loc-label" id="packLabel">Packing checklist</span>
+      <span class="loc-sub" id="packSub"></span>
+    </div>
+    <span class="loc-caret" id="packCaret">›</span>
+  </div>
+  <div class="ledger-card" id="packingCard" style="display:none;">
+    <div id="packingList"></div>
+    <form id="packAddForm" class="pack-add-form">
+      <input type="text" id="packAddInput" placeholder="Add an item..." />
+      <button type="submit">+</button>
+    </form>
+  </div>
+
+  <div class="ledger-card" id="itineraryCard" style="display:none;">
+    <div class="itin-header-row">
+      <div class="presets-title" style="margin-bottom:0;">Itinerary</div>
+      <button type="button" class="temp-toggle" id="tempToggle">°F</button>
+    </div>
+    <div id="itineraryList"></div>
+    <div class="field" style="margin-top:10px;">
+      <label>Trip ends (leaving Siem Reap)</label>
+      <input type="date" id="tripEnd" />
+    </div>
+  </div>
+
+  <div id="pretripCard"></div>
+
+  <div class="ledger-card">
+    <div class="totals-row">
+      <div><div class="spent" id="spentTotal">$0.00</div></div>
+      <div class="of" id="budgetDisplay"></div>
+    </div>
+    <button type="button" class="currency-toggle" id="currencyToggle">Show in ₫ VND</button>
+    <div class="route-bar">
+      <div class="route-track"></div>
+      <div class="route-fill" id="routeFill" style="width:0%"></div>
+      <div class="route-marker" id="routeMarker" style="left:0%"></div>
+    </div>
+    <div class="remaining-line" id="remainingLine"></div>
+    <div class="today-line" id="todayLine"></div>
+    <div class="pace-line" id="paceLine"></div>
+    <div class="cat-bars" id="catBars"></div>
+  </div>
+
+  <div class="ledger-card">
+    <div class="presets-title">Quick add</div>
+    <div class="presets-row" id="presetsRow"></div>
+
+    <form class="entry" id="entryForm">
+      <div class="field full">
+        <label>Type</label>
+        <div class="toggle-row">
+          <button type="button" class="toggle-btn active" id="btnOnground">On the ground</button>
+          <button type="button" class="toggle-btn" id="btnPretrip">Pre-trip</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="fDate" />
+      </div>
+      <div class="field" id="legField">
+        <label>Leg</label>
+        <select id="fLeg"></select>
+      </div>
+      <div class="field full">
+        <label>Category</label>
+        <select id="fCategory"></select>
+      </div>
+      <div class="field amount-field full">
+        <label>Amount (USD)</label>
+        <span class="dollar">$</span>
+        <input type="number" inputmode="decimal" step="0.01" placeholder="0.00" id="fAmount" />
+        <button type="button" class="convert-toggle" id="convertToggle">🔁 Convert from VND / KHR</button>
+        <div class="convert-panel" id="convertPanel">
+          <div class="field">
+            <label>Local amount</label>
+            <input type="number" inputmode="decimal" placeholder="0" id="cAmount" />
+          </div>
+          <div class="field">
+            <label>Currency</label>
+            <select id="cCurrency">
+              <option value="VND">VND (Vietnam)</option>
+              <option value="KHR">KHR (Cambodia)</option>
+            </select>
+          </div>
+          <div class="convert-result">
+            <span id="convertResult">≈ $0.00</span>
+            <button type="button" id="useConverted">Use this →</button>
+          </div>
+        </div>
+      </div>
+      <div class="field full">
+        <label>Note</label>
+        <input type="text" placeholder="e.g. dorm bed, night bus, pho" id="fNote" />
+      </div>
+      <div class="error-msg" id="formError"></div>
+      <button class="add-btn" id="addBtn" type="submit">+ Add expense</button>
+    </form>
+  </div>
+
+  <div class="list-header">
+    <h2>Entries</h2>
+    <div class="list-controls">
+      <button class="export-btn" id="exportBtn">Export CSV</button>
+      <select class="leg-filter" id="legFilter"><option value="All">All legs</option></select>
+    </div>
+  </div>
+  <div id="entryList"></div>
+
+  <div class="location-banner util-banner" id="pricesBanner">
+    <div class="loc-main">
+      <span class="loc-label">Prices & things to do</span>
+      <span class="loc-sub">Tours, activities, tap to check live</span>
+    </div>
+    <span class="loc-caret" id="pricesCaret">›</span>
+  </div>
+  <div class="ledger-card" id="pricesCard" style="display:none;">
+    <div class="ref-note">Not live data, sites block that. Researched ballpark prices, tap through to each operator's own page for the real current number. Free things (Old Quarter walking, beaches, Dragon Bridge, Pub Street) aren't listed since there's nothing to budget.</div>
+    <div id="pricesList"></div>
+  </div>
+
+  <div class="location-banner util-banner" id="borderBanner">
+    <div class="loc-main">
+      <span class="loc-label">Cambodia border checklist</span>
+      <span class="loc-sub" id="borderSub"></span>
+    </div>
+    <span class="loc-caret" id="borderCaret">›</span>
+  </div>
+  <div class="ledger-card" id="borderCard" style="display:none;">
+    <div id="borderList"></div>
+  </div>
+
+  <div class="location-banner util-banner" id="emergencyBanner">
+    <div class="loc-main">
+      <span class="loc-label">Emergency numbers</span>
+      <span class="loc-sub">US Embassy, local emergency lines</span>
+    </div>
+    <span class="loc-caret" id="emergencyCaret">›</span>
+  </div>
+  <div class="ledger-card" id="emergencyCard" style="display:none;">
+    <div class="ref-group-label">US Embassy / Consulate, 24/7 emergency line</div>
+    <a class="ref-row" href="tel:+842438505000"><span>Hanoi (covers north of Hue)</span><span>+84 24 3850 5000</span></a>
+    <a class="ref-row" href="tel:+842835204200"><span>Ho Chi Minh City (south of/incl. Hue)</span><span>+84 28 3520 4200</span></a>
+    <a class="ref-row" href="tel:+85523728000"><span>Phnom Penh, Cambodia</span><span>+855 23 728 000</span></a>
+    <a class="ref-row" href="tel:+18884074747"><span>State Dept Overseas Citizen Svcs (US toll-free)</span><span>1-888-407-4747</span></a>
+    <a class="ref-row" href="tel:+16102548771"><span>Travel insurance emergency (collect call)</span><span>+1 610-254-8771</span></a>
+    <div class="ref-group-label">Local emergency lines, Vietnam</div>
+    <a class="ref-row" href="tel:113"><span>Police</span><span>113</span></a>
+    <a class="ref-row" href="tel:114"><span>Fire</span><span>114</span></a>
+    <a class="ref-row" href="tel:115"><span>Ambulance</span><span>115</span></a>
+    <div class="ref-group-label">Local emergency lines, Cambodia</div>
+    <a class="ref-row" href="tel:117"><span>Police</span><span>117</span></a>
+    <a class="ref-row" href="tel:119"><span>Ambulance</span><span>119</span></a>
+
+    <div class="ref-group-label">Travel insurance policy (SquareMouth)</div>
+    <div class="insurance-card">
+      <div class="insurance-row"><span>Primary insured</span><b>Brandon Nguyen</b></div>
+      <div class="insurance-row"><span>Provider</span><b>Blue Cross Blue Shield Global Solutions</b></div>
+      <div class="insurance-row"><span>Policy purchased</span><b>Single Trip Platinum excl US</b></div>
+      <div class="insurance-row"><span>Policy number</span><b>977688940</b></div>
+      <div class="insurance-row"><span>Emergency (collect call)</span><a href="tel:+16102548771"><b>610-254-8771</b></a></div>
+      <div class="insurance-row"><span>Claims phone</span><a href="tel:+18554816647"><b>855-481-6647</b></a></div>
+      <div class="insurance-row"><span>Customer service phone</span><a href="tel:+18554816647"><b>855-481-6647</b></a></div>
+      <div class="insurance-row"><span>Trip dates</span><b>Aug 8 - Sep 16, 2026</b></div>
+      <div class="insurance-row"><span>Policy effective</span><b>Aug 8, 2026</b></div>
+      <div class="insurance-row"><span>Policy termination</span><b>Sep 16, 2026</b></div>
+      <div class="insurance-qr">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https%3A%2F%2Fwww.squaremouth.com%2Forder%2Ff3c12418dafd591c15a7cb063e93b-d2e1d7e73800ba628162be04c21fffa4dd1" alt="QR code to policy page" width="140" height="140" />
+        <a href="https://www.squaremouth.com/order/f3c12418dafd591c15a7cb063e93b-d2e1d7e73800ba628162be04c21fffa4dd1" target="_blank" rel="noopener">Open full policy page ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="save-note">Tap the day counter to edit trip dates. Tap an entry's note or amount to edit it.</div>
+
+</div></div>
+
+<script>
+const LS_THEME = "vn-kh-theme-v1";
+function updateOfflineBadge(){
+  const badge = document.getElementById("offlineBadge");
+  if (!badge) return;
+  badge.style.display = navigator.onLine ? "none" : "block";
+}
+window.addEventListener("online", updateOfflineBadge);
+window.addEventListener("offline", updateOfflineBadge);
+updateOfflineBadge();
+function loadTheme(){
+  try {
+    const v = localStorage.getItem(LS_THEME);
+    if (v) return v;
+  } catch(e){}
+  return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+}
+function applyTheme(t){
+  document.getElementById("wrapEl").classList.toggle("dark", t === "dark");
+  document.getElementById("themeToggle").textContent = t === "dark" ? "Light mode" : "Dark mode";
+}
+let theme = loadTheme();
+applyTheme(theme);
+document.getElementById("themeToggle").addEventListener("click", () => {
+  theme = theme === "dark" ? "light" : "dark";
+  try { localStorage.setItem(LS_THEME, theme); } catch(e){}
+  applyTheme(theme);
+});
+
+const LS_TEXTSIZE = "vn-kh-textsize-v1";
+function loadTextSize(){
+  try { return localStorage.getItem(LS_TEXTSIZE) === "large"; } catch(e){ return false; }
+}
+function applyTextSize(large){
+  document.getElementById("wrapEl").classList.toggle("large-text", large);
+  document.getElementById("textSizeToggle").textContent = large ? "Aa Normal text" : "Aa Larger text";
+}
+let largeText = loadTextSize();
+applyTextSize(largeText);
+document.getElementById("textSizeToggle").addEventListener("click", () => {
+  largeText = !largeText;
+  try { localStorage.setItem(LS_TEXTSIZE, largeText ? "large" : "normal"); } catch(e){}
+  applyTextSize(largeText);
+});
+
+const LS_CURRENCY = "vn-kh-currency-v1";
+let displayCurrency = "USD";
+try { displayCurrency = localStorage.getItem(LS_CURRENCY) || "USD"; } catch(e){}
+function fmtMoney(usd){
+  if (displayCurrency === "VND") {
+    const rate = (typeof rates !== "undefined" && rates.VND) ? rates.VND : FALLBACK_RATES.VND;
+    return `${Math.round(usd * rate).toLocaleString()}₫`;
+  }
+  return `$${usd.toFixed(2)}`;
+}
+document.getElementById("currencyToggle").textContent = displayCurrency === "USD" ? "Show in ₫ VND" : "Show in $ USD";
+document.getElementById("currencyToggle").addEventListener("click", () => {
+  displayCurrency = displayCurrency === "USD" ? "VND" : "USD";
+  try { localStorage.setItem(LS_CURRENCY, displayCurrency); } catch(e){}
+  document.getElementById("currencyToggle").textContent = displayCurrency === "USD" ? "Show in ₫ VND" : "Show in $ USD";
+  render();
+  renderPricesCard();
+});
+
+const LEGS = ["Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Siem Reap","Other"];
+const CATEGORIES = [
+  { key:"Stay", label:"Stay", mark:"⌂" },
+  { key:"Food", label:"Food", mark:"✦" },
+  { key:"Transport", label:"Transport", mark:"→" },
+  { key:"Tours", label:"Tours", mark:"◈" },
+  { key:"Visa/Fees", label:"Visa / Fees", mark:"§" },
+  { key:"Misc", label:"Misc", mark:"○" },
+];
+const PRETRIP_CATEGORIES = [
+  { key:"Flight", label:"Flight", mark:"✈" },
+  { key:"Insurance", label:"Insurance", mark:"◆" },
+  { key:"Gear", label:"Gear", mark:"▲" },
+  { key:"Pre-trip Other", label:"Other", mark:"○" },
+];
+const CAT_COLOR = { Stay:"#8A6D3B", Food:"#A63D2F", Transport:"#1F4E45", Tours:"#5B7C8D", "Visa/Fees":"#6B4A82", Misc:"#8C8578", Flight:"#2E5A8F", Insurance:"#4A7A6E", Gear:"#9C6B3E", "Pre-trip Other":"#8C8578" };
+
+const PRESETS = [
+  { label:"Dorm bed · $8", category:"Stay", note:"Dorm bed", amount:8 },
+  { label:"Street food · $3", category:"Food", note:"Street food", amount:3 },
+  { label:"Water · $0.50", category:"Food", note:"Bottled water", amount:0.5 },
+  { label:"Coffee · $1.50", category:"Food", note:"Coffee", amount:1.5 },
+  { label:"Beer · $1", category:"Food", note:"Beer", amount:1 },
+  { label:"Local bus/Grab · $4", category:"Transport", note:"Local transport", amount:4 },
+  { label:"SIM/data (30-day) · $12", category:"Misc", note:"SIM / data top-up", amount:12 },
+  { label:"Laundry (per load) · $3", category:"Misc", note:"Laundry", amount:3 },
+];
+
+const LS_EXPENSES = "vn-kh-expenses-v1";
+const LS_BUDGET = "vn-kh-budget-v1";
+const LS_PACKING = "vn-kh-packing-v1";
+const LS_PACKING_CUSTOM = "vn-kh-packing-custom-v1";
+const DEFAULT_PACKING = [
+  { cat:"Wear on plane", name:"Patagonia Terrevia Peak pants" },
+  { cat:"Wear on plane", name:"Hoka shoes" },
+  { cat:"Wear on plane", name:"T-shirt" },
+  { cat:"Wear on plane", name:"Sun hoodie" },
+  { cat:"Clothes", name:"Patagonia Terrebonne joggers" },
+  { cat:"Clothes", name:"Patagonia Terrebonne shorts (x3)" },
+  { cat:"Clothes", name:"Swim shorts" },
+  { cat:"Clothes", name:"T-shirts (x5)" },
+  { cat:"Clothes", name:"Underwear (5-7)" },
+  { cat:"Clothes", name:"Socks (5-7)" },
+  { cat:"Clothes", name:"Bedrock Cairn sandals" },
+  { cat:"Clothes", name:"Patagonia R1 Air fleece" },
+  { cat:"Clothes", name:"Patagonia Storm rain jacket" },
+  { cat:"Tech", name:"Phone" },
+  { cat:"Tech", name:"Power bank" },
+  { cat:"Tech", name:"Universal travel adapter" },
+  { cat:"Tech", name:"Charging cables" },
+  { cat:"Tech", name:"AirPods" },
+  { cat:"Toiletries", name:"Toothbrush" },
+  { cat:"Toiletries", name:"Toothpaste" },
+  { cat:"Toiletries", name:"Deodorant" },
+  { cat:"Toiletries", name:"Face wash" },
+  { cat:"Toiletries", name:"Moisturizer" },
+  { cat:"Toiletries", name:"Sunscreen" },
+  { cat:"Toiletries", name:"Razor" },
+  { cat:"Toiletries", name:"Nail clippers" },
+  { cat:"Toiletries", name:"Basic medications" },
+  { cat:"Toiletries", name:"Electrolytes" },
+  { cat:"Toiletries", name:"Imodium" },
+  { cat:"Toiletries", name:"Quick-dry towel" },
+  { cat:"Toiletries", name:"Liquid IV (30 packs)" },
+  { cat:"Travel essentials", name:"Passport" },
+  { cat:"Travel essentials", name:"Vietnam eVisa" },
+  { cat:"Travel essentials", name:"Copies of passport" },
+  { cat:"Travel essentials", name:"Debit card" },
+  { cat:"Travel essentials", name:"Credit card" },
+  { cat:"Travel essentials", name:"$500 USD cash" },
+  { cat:"Travel essentials", name:"Packing cubes" },
+  { cat:"Travel essentials", name:"8L dry bag for laundry" },
+  { cat:"Travel essentials", name:"Small lock for hostels" },
+];
+const LS_ITINERARY = "vn-kh-itinerary-v1";
+const LS_TRIP_END = "vn-kh-trip-end-v1";
+const LS_RATES = "vn-kh-rates-v1";
+const LS_LAST_EXPORT = "vn-kh-last-export-v1";
+const LS_BANNER_DISMISS = "vn-kh-banner-dismiss-v1";
+const FALLBACK_RATES = { VND: 25500, KHR: 4100 };
+
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function daysBetween(a,b){ return Math.round((new Date(b) - new Date(a)) / 86400000); }
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, ch => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[ch]));
+}
+function getCurrentLeg(today){
+  let best = null;
+  ITINERARY_LEGS.forEach(l => {
+    if (itinerary[l] <= today && (!best || itinerary[l] > itinerary[best])) best = l;
+  });
+  return best;
+}
+
+const CHECKIN_GIST_ID = "67e1390e31c93e97aaec5cb9fde54019";
+const LS_GH_TOKEN = "vn-kh-gh-token-v1";
+function getGhToken(){
+  try { return localStorage.getItem(LS_GH_TOKEN) || ""; } catch(e){ return ""; }
+}
+function setGhToken(t){
+  try {
+    if (t) localStorage.setItem(LS_GH_TOKEN, t);
+    else localStorage.removeItem(LS_GH_TOKEN);
+  } catch(e){}
+}
+
+async function fetchCheckinGist(){
+  // cache-bust: mobile networks/browsers can silently serve a stale cached
+  // GET response, which makes saves look successful but not actually show up
+  const res = await fetch(`https://api.github.com/gists/${CHECKIN_GIST_ID}?_=${Date.now()}`, {
+    cache: "no-store",
+    headers: { "Accept": "application/vnd.github+json" },
+  });
+  if (!res.ok) throw new Error("gist fetch failed");
+  const data = await res.json();
+  const filename = Object.keys(data.files || {})[0] || "gistfile1.txt";
+  const raw = (data.files[filename] && data.files[filename].content) || "";
+  let list;
+  try {
+    list = JSON.parse(raw);
+    if (!Array.isArray(list)) throw new Error("not array");
+  } catch(e) {
+    // legacy plain-text check-in, wrap as a single history entry
+    list = raw.trim() ? [{ place: raw.trim(), ts: new Date(data.updated_at).getTime() }] : [];
+  }
+  return { list, filename };
+}
+async function saveCheckinList(list, filename){
+  const token = getGhToken();
+  if (!token) throw new Error("no token configured on this device");
+  const res = await fetch(`https://api.github.com/gists/${CHECKIN_GIST_ID}`, {
+    method: "PATCH",
+    cache: "no-store",
+    headers: {
+      "Authorization": `token ${token}`,
+      "Content-Type": "application/json",
+      "Accept": "application/vnd.github+json",
+    },
+    body: JSON.stringify({ files: { [filename]: { content: JSON.stringify(list) } } }),
+  });
+  if (!res.ok) throw new Error(`Gist update failed: ${res.status}`);
+  return res.json();
+}
+// Verifies a write actually landed by re-reading right after saving.
+// GitHub's write can succeed while a near-simultaneous save from another
+// tap/tab clobbers it (last-write-wins), so we confirm rather than assume.
+async function writeCheckinAndVerify(mutateFn, attempt = 1){
+  const { list, filename } = await fetchCheckinGist();
+  const newList = mutateFn(list);
+  await saveCheckinList(newList, filename);
+  const check = await fetchCheckinGist();
+  const matches = JSON.stringify(check.list) === JSON.stringify(newList);
+  if (!matches && attempt < 3) {
+    return writeCheckinAndVerify(mutateFn, attempt + 1);
+  }
+  if (!matches) throw new Error("Could not confirm the save landed, try again");
+  return check.list;
+}
+async function addCheckin(place){
+  return writeCheckinAndVerify(list => [...list, { place, ts: Date.now() }]);
+}
+async function deleteCheckinEntry(index){
+  return writeCheckinAndVerify(list => list.filter((_, i) => i !== index));
+}
+
+function updateLocalTime(){
+  const el = document.getElementById("localTimeLine");
+  if (!el) return;
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString("en-US", { timeZone: "Asia/Ho_Chi_Minh", hour: "numeric", minute: "2-digit" });
+  const dateStr = now.toLocaleDateString("en-US", { timeZone: "Asia/Ho_Chi_Minh", weekday: "short", month: "short", day: "numeric" });
+  el.textContent = `Vietnam/Cambodia time: ${dateStr}, ${timeStr} (ICT, UTC+7)`;
+  updateViewerTime(now);
+}
+function updateViewerTime(now){
+  const el = document.getElementById("viewerTimeLine");
+  if (!el) return;
+  try {
+    const viewerTimeStr = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
+    const ictOffsetMinutes = 7 * 60;
+    const viewerOffsetMinutes = -now.getTimezoneOffset();
+    const diffMinutes = ictOffsetMinutes - viewerOffsetMinutes;
+    const diffHoursAbs = Math.abs(diffMinutes) / 60;
+    const diffLabel = diffHoursAbs % 1 === 0 ? `${diffHoursAbs}h` : `${diffHoursAbs.toFixed(1)}h`;
+    let relation;
+    if (diffMinutes === 0) relation = "same time as Brandon";
+    else if (diffMinutes > 0) relation = `Brandon is ${diffLabel} ahead of you`;
+    else relation = `Brandon is ${diffLabel} behind you`;
+    el.textContent = `Your time: ${viewerTimeStr}, ${relation}`;
+  } catch(e) {
+    el.textContent = "";
+  }
+}
+function timeAgo(ts){
+  const diffMs = Date.now() - ts;
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+let checkinHistoryOpen = false;
+let lastCheckinList = [];
+function renderCheckinHistory(){
+  const wrap = document.getElementById("checkinHistory");
+  if (!checkinHistoryOpen) { wrap.style.display = "none"; return; }
+  wrap.style.display = "block";
+  if (lastCheckinList.length === 0) {
+    wrap.innerHTML = `<div class="checkin-hist-empty">No check-ins yet.</div>`;
+    return;
+  }
+  const reversed = [...lastCheckinList].map((e, i) => ({ ...e, idx: i })).reverse();
+  wrap.innerHTML = reversed.map(e => `
+    <div class="checkin-hist-row">
+      <span class="hp">${escapeHtml(e.place)}</span>
+      <span class="ht">${timeAgo(e.ts)}</span>
+      <button class="hdel" data-idx="${e.idx}">✕</button>
+    </div>
+  `).join("");
+  wrap.querySelectorAll(".hdel").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (btn.dataset.confirming === "1") {
+        clearTimeout(btn._t);
+        const idx = parseInt(btn.getAttribute("data-idx"));
+        btn.disabled = true;
+        deleteCheckinEntry(idx).then(() => refreshCheckin()).catch(() => { btn.disabled = false; });
+      } else {
+        btn.dataset.confirming = "1";
+        btn.textContent = "✓ sure?";
+        btn.classList.add("confirm");
+        btn._t = setTimeout(() => {
+          btn.dataset.confirming = "0";
+          btn.textContent = "✕";
+          btn.classList.remove("confirm");
+        }, 3000);
+      }
+    });
+  });
+}
+document.getElementById("historyToggleLink").addEventListener("click", (e) => {
+  e.stopPropagation();
+  checkinHistoryOpen = !checkinHistoryOpen;
+  document.getElementById("historyToggleLink").textContent = checkinHistoryOpen ? "Hide history" : "History";
+  renderCheckinHistory();
+});
+async function refreshCheckin(){
+  const textEl = document.getElementById("checkinText");
+  const timeEl = document.getElementById("checkinTime");
+  const metaEl = document.querySelector(".checkin-meta");
+  try {
+    const { list } = await fetchCheckinGist();
+    lastCheckinList = list;
+    const latest = list[list.length - 1];
+    if (latest) {
+      textEl.textContent = latest.place.slice(0, 120);
+      const hrsAgo = (Date.now() - latest.ts) / 3600000;
+      timeEl.innerHTML = `<span class="checkin-time-val">Updated ${timeAgo(latest.ts)}</span>`;
+      metaEl.classList.toggle("stale", hrsAgo > 30);
+    } else {
+      textEl.textContent = "No check-in yet";
+      timeEl.textContent = "";
+      metaEl.classList.remove("stale");
+    }
+    renderCheckinHistory();
+  } catch (e) {
+    textEl.textContent = "Couldn't load check-in";
+    timeEl.textContent = "Check connection, tap to retry";
+    metaEl.classList.add("stale");
+  }
+}
+document.getElementById("checkinCard").addEventListener("click", (e) => {
+  if (e.target.closest("button, .locate-result, .checkin-history")) return;
+  refreshCheckin();
+});
+
+document.getElementById("oneTapSetupLink").addEventListener("click", (e) => {
+  e.stopPropagation();
+  const existing = getGhToken();
+  if (existing) {
+    const remove = confirm("One-tap check-in is already set up on this device. Tap OK to remove it, or Cancel to keep it.");
+    if (remove) {
+      setGhToken("");
+      alert("Removed. You'll go back to copy/paste check-ins.");
+    }
+    return;
+  }
+  alert("One-time setup:\n\n1. Go to github.com/settings/tokens\n2. \"Generate new token\" > \"Generate new token (classic)\"\n3. Name it anything, check ONLY the \"gist\" scope box\n4. Generate, then copy the token\n5. Come back here and paste it in the next box\n\nThis token is saved only on THIS device, never in the shared page.");
+  const token = prompt("Paste your GitHub token (starts with ghp_):");
+  if (token && token.trim()) {
+    setGhToken(token.trim());
+    alert("Set up! Now when you detect your location, you'll get a 'Save' button that updates your check-in in one tap.");
+  }
+});
+
+document.getElementById("locateBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("locateBtn");
+  const resultEl = document.getElementById("locateResult");
+  if (!navigator.geolocation) {
+    resultEl.style.display = "block";
+    resultEl.className = "locate-result error";
+    resultEl.textContent = "Your browser doesn't support location detection.";
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = "Detecting...";
+  resultEl.style.display = "none";
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    try {
+      const { latitude, longitude } = pos.coords;
+      const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
+      const data = await res.json();
+      const place = [data.city || data.locality, data.countryName].filter(Boolean).join(", ") || "Unknown location";
+      const hasToken = !!getGhToken();
+      resultEl.className = "locate-result";
+      resultEl.innerHTML = `
+        <div class="locate-place">📍 ${escapeHtml(place)}</div>
+        <div>${hasToken ? "Tap Save to check in instantly." : 'Tap "Copy" then paste this into your check-in.'}</div>
+        <div class="locate-actions">
+          ${hasToken
+            ? `<button class="copy-btn" id="saveDirectBtn">✓ Save as check-in</button>`
+            : `<button class="copy-btn" id="copyLocateBtn">Copy "${escapeHtml(place)}"</button>
+               <a class="go-edit-link" href="https://gist.github.com/brandonngyn/67e1390e31c93e97aaec5cb9fde54019/edit" target="_blank" rel="noopener">Open check-in</a>`
+          }
+        </div>
+      `;
+      resultEl.style.display = "block";
+      if (hasToken) {
+        document.getElementById("saveDirectBtn").addEventListener("click", async (e) => {
+          e.target.disabled = true;
+          e.target.textContent = "Saving...";
+          try {
+            await addCheckin(place);
+            e.target.textContent = "✓ Saved!";
+            refreshCheckin();
+            setTimeout(() => { resultEl.style.display = "none"; }, 2000);
+          } catch (err) {
+            e.target.disabled = false;
+            e.target.textContent = "Failed, tap to retry";
+          }
+        });
+      } else {
+        document.getElementById("copyLocateBtn").addEventListener("click", (e) => {
+          navigator.clipboard.writeText(place).then(() => {
+            e.target.textContent = "Copied!";
+            setTimeout(() => { e.target.textContent = `Copy "${place}"`; }, 1500);
+          }).catch(() => {
+            e.target.textContent = "Couldn't copy, select manually";
+          });
+        });
+      }
+    } catch (e) {
+      resultEl.className = "locate-result error";
+      resultEl.textContent = "Detected your position, but couldn't look up the city name. Check your connection and try again.";
+      resultEl.style.display = "block";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "📍 Detect my current city";
+    }
+  }, (err) => {
+    resultEl.style.display = "block";
+    resultEl.className = "locate-result error";
+    resultEl.textContent = err.code === err.PERMISSION_DENIED
+      ? "Location permission denied. Enable it in Settings > Safari > Location if you want to use this."
+      : "Couldn't get your location. Try again in a bit.";
+    btn.disabled = false;
+    btn.textContent = "📍 Detect my current city";
+  }, { enableHighAccuracy: true, timeout: 12000 });
+});
+
+function loadExpenses(){
+  try {
+    const raw = localStorage.getItem(LS_EXPENSES);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  const seed = [
+    { leg:"Pre-trip", type:"pretrip", category:"Flight", note:"One-way ticket to Hanoi", amount:580 },
+    { leg:"Pre-trip", type:"pretrip", category:"Flight", note:"One-way ticket to Los Angeles", amount:600 },
+    { leg:"Pre-trip", type:"pretrip", category:"Insurance", note:"Travel insurance, 2 months", amount:95 },
+    { leg:"Hanoi", type:"onground", category:"Visa/Fees", note:"Vietnam visa", amount:75 },
+    { leg:"Hanoi", type:"onground", category:"Transport", note:"Ibis bus", amount:37 },
+    { leg:"Hanoi", type:"onground", category:"Stay", note:"Backpackers hostel, rooftop bar", amount:20.53 },
+  ].map(s => ({ id: uid(), date: todayStr(), ...s }));
+  saveExpenses(seed);
+  return seed;
+}
+function saveExpenses(list){ try { localStorage.setItem(LS_EXPENSES, JSON.stringify(list)); } catch(e){} }
+function loadBudget(){ try { const v = localStorage.getItem(LS_BUDGET); return v ? Number(v) : 2000; } catch(e){ return 2000; } }
+function saveBudget(v){ try { localStorage.setItem(LS_BUDGET, String(v)); } catch(e){} }
+const ITINERARY_LEGS = ["Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Siem Reap"];
+const DEFAULT_ITINERARY = {
+  "Hanoi": "2026-08-09",
+  "Ha Giang": "2026-08-11",
+  "Sapa": "2026-08-15",
+  "Ha Long / Lan Ha": "2026-08-18",
+  "Ninh Binh": "2026-08-20",
+  "Da Nang": "2026-08-23",
+  "Hoi An": "2026-08-25",
+  "Ho Chi Minh City": "2026-08-30",
+  "Phnom Penh": "2026-09-08",
+  "Siem Reap": "2026-09-10",
+};
+const DEFAULT_TRIP_END = "2026-09-15";
+
+const LEG_COORDS = {
+  "Hanoi": [21.0285, 105.8542],
+  "Ha Giang": [22.8025, 104.9784],
+  "Sapa": [22.3364, 103.8438],
+  "Ha Long / Lan Ha": [20.9101, 107.1839],
+  "Ninh Binh": [20.2506, 105.9744],
+  "Da Nang": [16.0544, 108.2022],
+  "Hoi An": [15.8801, 108.3380],
+  "Ho Chi Minh City": [10.8231, 106.6297],
+  "Phnom Penh": [11.5564, 104.9282],
+  "Siem Reap": [13.3633, 103.8564],
+};
+function weatherIcon(code){
+  if (code === 0) return "☀️";
+  if (code <= 3) return "⛅";
+  if (code === 45 || code === 48) return "🌫️";
+  if (code >= 51 && code <= 67) return "🌧️";
+  if (code >= 71 && code <= 77) return "🌨️";
+  if (code >= 80 && code <= 82) return "🌦️";
+  if (code >= 95) return "⛈️";
+  return "🌤️";
+}
+const LS_TEMPUNIT = "vn-kh-tempunit-v1";
+let tempUnit = "F";
+try { tempUnit = localStorage.getItem(LS_TEMPUNIT) || "F"; } catch(e){}
+function fmtTemp(celsius){
+  if (tempUnit === "F") return `${Math.round(celsius * 9/5 + 32)}°F`;
+  return `${Math.round(celsius)}°C`;
+}
+let weatherCache = {};
+let weatherCacheTime = 0;
+async function fetchWeatherForLegs(){
+  const now = Date.now();
+  if (now - weatherCacheTime < 30 * 60 * 1000 && Object.keys(weatherCache).length) return weatherCache;
+  const entries = Object.entries(LEG_COORDS);
+  const results = await Promise.all(entries.map(async ([leg, [lat, lon]]) => {
+    try {
+      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+      const data = await res.json();
+      return [leg, data.current_weather];
+    } catch (e) {
+      return [leg, null];
+    }
+  }));
+  const map = {};
+  results.forEach(([leg, w]) => { map[leg] = w; });
+  weatherCache = map;
+  weatherCacheTime = now;
+  return map;
+}
+
+function loadPackingChecked(){
+  try {
+    const raw = localStorage.getItem(LS_PACKING);
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  return {};
+}
+function savePackingChecked(obj){ try { localStorage.setItem(LS_PACKING, JSON.stringify(obj)); } catch(e){} }
+function loadPackingCustom(){
+  try {
+    const raw = localStorage.getItem(LS_PACKING_CUSTOM);
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  return [];
+}
+function savePackingCustom(list){ try { localStorage.setItem(LS_PACKING_CUSTOM, JSON.stringify(list)); } catch(e){} }
+
+function loadItinerary(){
+  try {
+    const raw = localStorage.getItem(LS_ITINERARY);
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  saveItinerary(DEFAULT_ITINERARY);
+  return { ...DEFAULT_ITINERARY };
+}
+function saveItinerary(it){ try { localStorage.setItem(LS_ITINERARY, JSON.stringify(it)); } catch(e){} }
+function loadTripEnd(){
+  try {
+    const v = localStorage.getItem(LS_TRIP_END);
+    if (v) return v;
+  } catch(e){}
+  saveTripEnd(DEFAULT_TRIP_END);
+  return DEFAULT_TRIP_END;
+}
+function saveTripEnd(v){ try { localStorage.setItem(LS_TRIP_END, v); } catch(e){} }
+
+function loadRates(){
+  try {
+    const raw = localStorage.getItem(LS_RATES);
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  return { VND: FALLBACK_RATES.VND, KHR: FALLBACK_RATES.KHR, fetchedAt: null };
+}
+function saveRates(r){ try { localStorage.setItem(LS_RATES, JSON.stringify(r)); } catch(e){} }
+
+let rates = loadRates();
+
+async function refreshRates(force){
+  const now = Date.now();
+  if (!force && rates.fetchedAt && (now - rates.fetchedAt) < 12 * 60 * 60 * 1000) {
+    renderRateLine();
+    return;
+  }
+  try {
+    const res = await fetch("https://open.er-api.com/v6/latest/USD");
+    const data = await res.json();
+    if (data && data.rates && data.rates.VND && data.rates.KHR) {
+      rates = { VND: data.rates.VND, KHR: data.rates.KHR, fetchedAt: now };
+      saveRates(rates);
+    }
+  } catch(e) {
+    // offline or blocked, keep using cached/fallback rates
+  }
+  renderRateLine();
+  if (displayCurrency === "VND") { render(); renderPricesCard(); }
+}
+
+function renderRateLine(){
+  const el = document.getElementById("rateLine");
+  const vnd = Math.round(rates.VND).toLocaleString();
+  const khr = Math.round(rates.KHR).toLocaleString();
+  if (!rates.fetchedAt) {
+    el.className = "rate-line stale";
+    el.innerHTML = `<span class="dot"></span>1 USD ≈ ${vnd} VND · ${khr} KHR (offline estimate, tap to try live)`;
+  } else {
+    const hrsAgo = Math.max(0, Math.round((Date.now() - rates.fetchedAt) / 3600000));
+    const stale = hrsAgo > 30;
+    el.className = "rate-line" + (stale ? " stale" : "");
+    el.innerHTML = `<span class="dot"></span>1 USD ≈ ${vnd} VND · ${khr} KHR (updated ${hrsAgo === 0 ? "just now" : hrsAgo + "h ago"})`;
+  }
+}
+document.getElementById("rateLine").addEventListener("click", () => refreshRates(true));
+
+let expenses = loadExpenses();
+let budget = loadBudget();
+let itinerary = loadItinerary();
+let packingChecked = loadPackingChecked();
+let packingCustom = loadPackingCustom();
+let tripEnd = loadTripEnd();
+let formType = "onground";
+let filterLeg = "All";
+let legManuallySet = false;
+
+const fLeg = document.getElementById("fLeg");
+fLeg.addEventListener("change", () => { legManuallySet = true; });
+LEGS.forEach(l => { const o=document.createElement("option"); o.value=l; o.textContent=l; fLeg.appendChild(o); });
+const legFilter = document.getElementById("legFilter");
+
+document.getElementById("presetsRow").innerHTML = PRESETS.map((p,i) =>
+  `<button type="button" class="preset-chip" data-i="${i}">${p.label}</button>`
+).join("");
+document.querySelectorAll(".preset-chip").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const p = PRESETS[parseInt(btn.getAttribute("data-i"))];
+    formType = "onground";
+    document.getElementById("btnOnground").classList.add("active");
+    document.getElementById("btnPretrip").classList.remove("active");
+    document.getElementById("legField").style.display = "";
+    populateCategorySelect();
+    document.getElementById("fCategory").value = p.category;
+    document.getElementById("fNote").value = p.note;
+    document.getElementById("fAmount").value = p.amount;
+    document.getElementById("fAmount").focus();
+    document.getElementById("fAmount").select();
+  });
+});
+
+function populateCategorySelect(){
+  const sel = document.getElementById("fCategory");
+  sel.innerHTML = "";
+  const list = formType === "onground" ? CATEGORIES : PRETRIP_CATEGORIES;
+  list.forEach(c => { const o=document.createElement("option"); o.value=c.key; o.textContent=c.label; sel.appendChild(o); });
+}
+populateCategorySelect();
+document.getElementById("fDate").value = todayStr();
+
+document.getElementById("btnOnground").addEventListener("click", () => {
+  formType = "onground";
+  document.getElementById("btnOnground").classList.add("active");
+  document.getElementById("btnPretrip").classList.remove("active");
+  document.getElementById("legField").style.display = "";
+  populateCategorySelect();
+});
+document.getElementById("btnPretrip").addEventListener("click", () => {
+  formType = "pretrip";
+  document.getElementById("btnPretrip").classList.add("active");
+  document.getElementById("btnOnground").classList.remove("active");
+  document.getElementById("legField").style.display = "none";
+  populateCategorySelect();
+});
+
+// currency converter panel
+const convertPanel = document.getElementById("convertPanel");
+document.getElementById("convertToggle").addEventListener("click", () => {
+  convertPanel.classList.toggle("open");
+});
+function updateConvertResult(){
+  const amt = parseFloat(document.getElementById("cAmount").value) || 0;
+  const cur = document.getElementById("cCurrency").value;
+  const rate = rates[cur] || FALLBACK_RATES[cur];
+  const usd = rate > 0 ? amt / rate : 0;
+  document.getElementById("convertResult").textContent = `≈ $${usd.toFixed(2)}`;
+}
+document.getElementById("cAmount").addEventListener("input", updateConvertResult);
+document.getElementById("cCurrency").addEventListener("change", updateConvertResult);
+document.getElementById("useConverted").addEventListener("click", () => {
+  const amt = parseFloat(document.getElementById("cAmount").value) || 0;
+  const cur = document.getElementById("cCurrency").value;
+  const rate = rates[cur] || FALLBACK_RATES[cur];
+  const usd = rate > 0 ? amt / rate : 0;
+  document.getElementById("fAmount").value = usd.toFixed(2);
+  convertPanel.classList.remove("open");
+  document.getElementById("cAmount").value = "";
+  document.getElementById("convertResult").textContent = "≈ $0.00";
+});
+
+document.getElementById("entryForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const amt = parseFloat(document.getElementById("fAmount").value);
+  const errEl = document.getElementById("formError");
+  if (!amt || amt <= 0) { errEl.textContent = "Enter an amount greater than 0."; return; }
+  errEl.textContent = "";
+  const entry = {
+    id: uid(),
+    date: document.getElementById("fDate").value || todayStr(),
+    leg: formType === "pretrip" ? "Pre-trip" : fLeg.value,
+    type: formType,
+    category: document.getElementById("fCategory").value,
+    note: document.getElementById("fNote").value.trim(),
+    amount: Math.round(amt * 100) / 100,
+  };
+  expenses = [entry, ...expenses];
+  saveExpenses(expenses);
+  document.getElementById("fNote").value = "";
+  document.getElementById("fAmount").value = "";
+  const btn = document.getElementById("addBtn");
+  const original = btn.textContent;
+  btn.textContent = "Added";
+  btn.classList.add("added");
+  setTimeout(() => { btn.textContent = original; btn.classList.remove("added"); }, 700);
+  render();
+});
+
+let lastDeleted = null;
+let undoTimer = null;
+
+function removeExpense(id){
+  const idx = expenses.findIndex(x => x.id === id);
+  if (idx === -1) return;
+  lastDeleted = { entry: expenses[idx], index: idx };
+  expenses = expenses.filter(x => x.id !== id);
+  saveExpenses(expenses);
+  render();
+  showUndoToast();
+}
+
+function showUndoToast(){
+  let toast = document.getElementById("undoToast");
+  if (toast) toast.remove();
+  clearTimeout(undoTimer);
+  toast = document.createElement("div");
+  toast.className = "undo-toast";
+  toast.id = "undoToast";
+  toast.innerHTML = `<span>Entry removed</span><button id="undoBtn">Undo</button>`;
+  document.body.appendChild(toast);
+  document.getElementById("undoBtn").addEventListener("click", () => {
+    if (lastDeleted) {
+      expenses.splice(Math.min(lastDeleted.index, expenses.length), 0, lastDeleted.entry);
+      saveExpenses(expenses);
+      lastDeleted = null;
+      render();
+    }
+    toast.remove();
+  });
+  undoTimer = setTimeout(() => { if (toast) toast.remove(); }, 5000);
+}
+
+function editEntry(id){
+  const x = expenses.find(e => e.id === id);
+  if (!x) return;
+  const newNote = prompt("Edit note:", x.note || "");
+  if (newNote === null) return;
+  const newAmountStr = prompt("Edit amount (USD):", x.amount);
+  if (newAmountStr === null) return;
+  const newAmount = parseFloat(newAmountStr);
+  if (!newAmount || newAmount <= 0) { alert("Amount must be greater than 0. Not saved."); return; }
+  x.note = newNote.trim();
+  x.amount = Math.round(newAmount * 100) / 100;
+  saveExpenses(expenses);
+  render();
+}
+
+document.getElementById("packingBanner").addEventListener("click", () => {
+  const panel = document.getElementById("packingCard");
+  const caret = document.getElementById("packCaret");
+  const isOpen = panel.style.display !== "none";
+  panel.style.display = isOpen ? "none" : "block";
+  caret.classList.toggle("open", !isOpen);
+});
+function allPackingItems(){
+  return [...DEFAULT_PACKING, ...packingCustom];
+}
+function itemKey(item){ return item.cat + "::" + item.name; }
+function renderPackingCard(){
+  const items = allPackingItems();
+  const total = items.length;
+  const checkedCount = items.filter(it => packingChecked[itemKey(it)]).length;
+  document.getElementById("packSub").textContent = `${checkedCount}/${total} packed`;
+
+  const cats = [];
+  items.forEach(it => { if (!cats.includes(it.cat)) cats.push(it.cat); });
+  const listEl = document.getElementById("packingList");
+  listEl.innerHTML = cats.map(cat => {
+    const rows = items.filter(it => it.cat === cat).map(it => {
+      const key = itemKey(it);
+      const safeKey = escapeHtml(key);
+      const checked = !!packingChecked[key];
+      const isCustom = packingCustom.some(c => itemKey(c) === key);
+      return `<div class="pack-item ${checked ? "checked" : ""}">
+        <input type="checkbox" data-key="${safeKey}" ${checked ? "checked" : ""} id="pk-${safeKey}" />
+        <label for="pk-${safeKey}">${escapeHtml(it.name)}</label>
+        ${isCustom ? `<button class="pack-del" data-key="${safeKey}">x</button>` : ""}
+      </div>`;
+    }).join("");
+    return `<div class="pack-group-label">${escapeHtml(cat)}</div>${rows}`;
+  }).join("");
+
+  listEl.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    cb.addEventListener("change", (e) => {
+      packingChecked[e.target.getAttribute("data-key")] = e.target.checked;
+      savePackingChecked(packingChecked);
+      renderPackingCard();
+    });
+  });
+  listEl.querySelectorAll(".pack-del").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const key = btn.getAttribute("data-key");
+      packingCustom = packingCustom.filter(c => itemKey(c) !== key);
+      delete packingChecked[key];
+      savePackingCustom(packingCustom);
+      savePackingChecked(packingChecked);
+      renderPackingCard();
+    });
+  });
+}
+document.getElementById("packAddForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const input = document.getElementById("packAddInput");
+  const name = input.value.trim();
+  if (!name) return;
+  packingCustom.push({ cat:"Added", name });
+  savePackingCustom(packingCustom);
+  input.value = "";
+  renderPackingCard();
+});
+
+const LS_BORDER_CHECKED = "vn-kh-border-checklist-v1";
+const BORDER_ITEMS = [
+  "Cambodia e-visa approved and saved (PDF + screenshot)",
+  "Passport valid 6+ months from entry date",
+  "2 blank visa pages available",
+  "1-2 spare passport photos (paper, just in case)",
+  "Small USD bills for any on-the-spot fees",
+  "HCMC to Phnom Penh bus ticket confirmed",
+  "Know the border crossing point (Bavet/Moc Bai)",
+  "Screenshot of hotel booking in Phnom Penh",
+  "Watch for anyone at the border asking for unofficial 'processing fees'",
+];
+function loadBorderChecked(){
+  try {
+    const raw = localStorage.getItem(LS_BORDER_CHECKED);
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  return {};
+}
+function saveBorderChecked(obj){ try { localStorage.setItem(LS_BORDER_CHECKED, JSON.stringify(obj)); } catch(e){} }
+let borderChecked = loadBorderChecked();
+function renderBorderChecklist(){
+  const doneCount = BORDER_ITEMS.filter((_, i) => borderChecked[i]).length;
+  document.getElementById("borderSub").textContent = `${doneCount}/${BORDER_ITEMS.length} done`;
+  document.getElementById("borderList").innerHTML = BORDER_ITEMS.map((item, i) => `
+    <div class="pack-item ${borderChecked[i] ? "checked" : ""}">
+      <input type="checkbox" id="border-${i}" data-i="${i}" ${borderChecked[i] ? "checked" : ""} />
+      <label for="border-${i}">${escapeHtml(item)}</label>
+    </div>
+  `).join("");
+  document.querySelectorAll('#borderList input[type=checkbox]').forEach(cb => {
+    cb.addEventListener("change", (e) => {
+      borderChecked[e.target.getAttribute("data-i")] = e.target.checked;
+      saveBorderChecked(borderChecked);
+      renderBorderChecklist();
+    });
+  });
+}
+const PRICE_GROUPS = [
+  { group: "Hanoi", rows: [
+    { label: "Ho Chi Minh Mausoleum", type: "approx", usd: 1 },
+    { label: "Temple of Literature", type: "approx", usd: 1.20 },
+    { label: "Water Puppet Show", type: "approx", usd: 7 },
+    { label: "Train Street cafe (min. drink order)", type: "approx", usd: 3 },
+  ]},
+  { group: "Ha Giang Loop (3-4 day, easy rider)", rows: [
+    { label: "Road Kings, 4-day private room", type: "range", low: 305, high: 335, url: "https://www.roadkingshagiang.com/products/p/4-day-tour" },
+    { label: "Road Kings, 4-day dorm style (est.)", type: "range", low: 230, high: 260, url: "https://www.roadkingshagiang.com/products/p/4-day-tour-492jg" },
+    { label: "Bong Hostel, 4-day private room", type: "range", low: 245, high: 270, url: "https://bongbackpackerhostel.com/tours" },
+    { label: "Bong Hostel, 4-day dorm/group (est.)", type: "range", low: 170, high: 200, url: "https://bongbackpackerhostel.com/tours/motorbike-group-tour/ha-giang-group-4d3n" },
+  ]},
+  { group: "Sapa", rows: [
+    { label: "Fansipan cable car, round trip", type: "approx", usd: 33 },
+    { label: "Cat Cat Village entrance", type: "approx", usd: 2 },
+    { label: "Rong May Glass Bridge (glass skywalk)", type: "range", low: 19, high: 20, url: "https://www.klook.com/en-US/activity/57672-rong-may-sapa-glass-bridge-ticket/" },
+  ]},
+  { group: "Ha Long / Lan Ha Bay (2-day, 1-night cruise)", rows: [
+    { label: "Hanoi: 2-Day Ha Long & Lan Ha Cruise w/ Kayaking (4.6★, 386 reviews)", type: "exact", usd: 112, url: "https://www.getyourguide.com/hanoi-l205/from-hanoi2-days-ha-long-lan-ha-bay-boat-tour-t540900/" },
+  ]},
+  { group: "Ninh Binh (Tam Coc / Trang An boats)", rows: [
+    { label: "Tam Coc rowing boat", type: "range", low: 8, high: 10, url: "https://ninhbinhtourist.com.vn" },
+    { label: "Trang An boat tour", type: "range", low: 8, high: 10, url: "https://ninhbinhtourist.com.vn" },
+    { label: "Hang Mua viewpoint (500-step climb)", type: "approx", usd: 4 },
+  ]},
+  { group: "Da Nang", rows: [
+    { label: "Marble Mountains + elevator", type: "approx", usd: 2.50 },
+    { label: "Ba Na Hills / Golden Bridge (cable car + entry)", type: "approx", usd: 39 },
+  ]},
+  { group: "Hoi An", rows: [
+    { label: "Ancient Town ticket (5 sites)", type: "approx", usd: 5 },
+    { label: "Basket/lantern boat ride, per boat (2p)", type: "approx", usd: 5 },
+    { label: "Tailor to check out", type: "text", text: "Map ↗", url: "https://maps.app.goo.gl/7dKAxt1as77BXtKC7" },
+  ]},
+  { group: "Ho Chi Minh City", rows: [
+    { label: "Cu Chi Tunnels entrance", type: "approx", usd: 1.40 },
+    { label: "Cu Chi Tunnels, guided half-day tour", type: "from", usd: 15 },
+    { label: "War Remnants Museum", type: "approx", usd: 1.50 },
+  ]},
+  { group: "Cambodia border bus", rows: [
+    { label: "HCMC to Phnom Penh", type: "exact", usd: 37, url: "https://www.giantibis.com" },
+    { label: "Phnom Penh to Siem Reap", type: "exact", usd: 27, url: "https://www.giantibis.com" },
+  ]},
+  { group: "Phnom Penh", rows: [
+    { label: "Killing Fields + Tuol Sleng, guided tour", type: "range", low: 19, high: 20 },
+  ]},
+  { group: "Siem Reap / Angkor Wat", rows: [
+    { label: "3-day Angkor pass (official)", type: "exact", usd: 62, url: "https://angkorenterprise.gov.kh" },
+  ]},
+];
+function fmtPrice(usd){
+  if (displayCurrency === "VND") {
+    const rate = (typeof rates !== "undefined" && rates.VND) ? rates.VND : FALLBACK_RATES.VND;
+    return `${Math.round(usd * rate).toLocaleString()}₫`;
+  }
+  return usd % 1 === 0 ? `$${usd}` : `$${usd.toFixed(2)}`;
+}
+function renderPricesCard(){
+  const listEl = document.getElementById("pricesList");
+  if (!listEl) return;
+  listEl.innerHTML = PRICE_GROUPS.map(g => {
+    const rows = g.rows.map(r => {
+      let priceText;
+      if (r.type === "text") priceText = r.text;
+      else if (r.type === "approx") priceText = `~${fmtPrice(r.usd)}`;
+      else if (r.type === "exact") priceText = fmtPrice(r.usd);
+      else if (r.type === "from") priceText = `from ${fmtPrice(r.usd)}`;
+      else if (r.type === "range") priceText = displayCurrency === "VND" ? `~${fmtPrice(r.low)}-${fmtPrice(r.high)}` : `~$${r.low}-${r.high}`;
+      const tag = r.url ? "a" : "div";
+      const attrs = r.url ? `href="${r.url}" target="_blank" rel="noopener"` : "";
+      return `<${tag} class="ref-row" ${attrs}><span>${escapeHtml(r.label)}</span><span>${priceText}</span></${tag}>`;
+    }).join("");
+    return `<div class="ref-group-label">${escapeHtml(g.group)}</div>${rows}`;
+  }).join("");
+}
+
+document.getElementById("pricesBanner").addEventListener("click", () => {
+  const panel = document.getElementById("pricesCard");
+  const caret = document.getElementById("pricesCaret");
+  const isOpen = panel.style.display !== "none";
+  panel.style.display = isOpen ? "none" : "block";
+  caret.classList.toggle("open", !isOpen);
+  if (!isOpen) renderPricesCard();
+});
+document.getElementById("borderBanner").addEventListener("click", () => {
+  const panel = document.getElementById("borderCard");
+  const caret = document.getElementById("borderCaret");
+  const isOpen = panel.style.display !== "none";
+  panel.style.display = isOpen ? "none" : "block";
+  caret.classList.toggle("open", !isOpen);
+});
+renderBorderChecklist();
+
+document.getElementById("emergencyBanner").addEventListener("click", () => {
+  const panel = document.getElementById("emergencyCard");
+  const caret = document.getElementById("emergencyCaret");
+  const isOpen = panel.style.display !== "none";
+  panel.style.display = isOpen ? "none" : "block";
+  caret.classList.toggle("open", !isOpen);
+});
+
+document.getElementById("tempToggle").textContent = tempUnit === "F" ? "°F" : "°C";
+document.getElementById("tempToggle").addEventListener("click", (e) => {
+  e.stopPropagation();
+  tempUnit = tempUnit === "F" ? "C" : "F";
+  try { localStorage.setItem(LS_TEMPUNIT, tempUnit); } catch(err){}
+  document.getElementById("tempToggle").textContent = tempUnit === "F" ? "°F" : "°C";
+  renderItineraryPanel();
+});
+document.getElementById("locationBanner").addEventListener("click", () => {
+  const panel = document.getElementById("itineraryCard");
+  const caret = document.getElementById("itinCaret");
+  const isOpen = panel.style.display !== "none";
+  panel.style.display = isOpen ? "none" : "block";
+  caret.classList.toggle("open", !isOpen);
+  if (!isOpen) renderItineraryPanel();
+});
+function renderItineraryPanel(){
+  const listEl = document.getElementById("itineraryList");
+  const today = todayStr();
+  let currentLeg = getCurrentLeg(today);
+  listEl.innerHTML = ITINERARY_LEGS.map(l => `
+    <div class="itin-row ${l === currentLeg ? "current" : ""}">
+      <span class="itin-dot"></span>
+      <span class="itin-name">${l}</span>
+      <span class="itin-weather" id="wx-${l.replace(/[^a-zA-Z0-9]/g, "")}">···</span>
+      <input type="date" data-leg="${l}" value="${itinerary[l]}" />
+    </div>
+  `).join("");
+  fetchWeatherForLegs().then(map => {
+    ITINERARY_LEGS.forEach(l => {
+      const el = document.getElementById(`wx-${l.replace(/[^a-zA-Z0-9]/g, "")}`);
+      if (!el) return;
+      const w = map[l];
+      el.textContent = w ? `${weatherIcon(w.weathercode)} ${fmtTemp(w.temperature)}` : "–";
+    });
+  });
+  listEl.querySelectorAll("input[type=date]").forEach(inp => {
+    inp.addEventListener("change", (e) => {
+      itinerary[e.target.getAttribute("data-leg")] = e.target.value;
+      saveItinerary(itinerary);
+      render();
+      renderItineraryPanel();
+    });
+  });
+  document.getElementById("tripEnd").value = tripEnd;
+}
+document.getElementById("tripEnd").addEventListener("change", (e) => { tripEnd = e.target.value; saveTripEnd(tripEnd); render(); });
+
+document.getElementById("exportBtn").addEventListener("click", () => {
+  const csvSafe = (v) => {
+    let s = String(v);
+    if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+    return s;
+  };
+  const rows = [["Date","Leg","Type","Category","Note","Amount (USD)"]];
+  [...expenses].sort((a,b) => a.date.localeCompare(b.date)).forEach(x => {
+    rows.push([x.date, x.leg, x.type === "pretrip" ? "Pre-trip" : "On the ground", x.category, csvSafe((x.note||"").replace(/,/g," ")), x.amount.toFixed(2)]);
+  });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `vietnam-cambodia-expenses-${todayStr()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  try { localStorage.setItem(LS_LAST_EXPORT, String(Date.now())); } catch(e){}
+  render();
+});
+
+function render(){
+  const onGround = expenses.filter(x => x.type !== "pretrip");
+  const pretrip = expenses.filter(x => x.type === "pretrip");
+  const total = onGround.reduce((s,x)=>s+x.amount,0);
+  const pretripTotal = pretrip.reduce((s,x)=>s+x.amount,0);
+
+  // location banner, based on itinerary
+  const today = todayStr();
+  const tripStart = itinerary[ITINERARY_LEGS[0]];
+  const totalDays = Math.max(1, daysBetween(tripStart, tripEnd));
+  let elapsed = daysBetween(tripStart, today);
+  elapsed = Math.max(0, Math.min(totalDays, elapsed));
+  const daysLeft = Math.max(0, totalDays - elapsed);
+
+  let currentLeg = getCurrentLeg(today);
+  const locLabelEl = document.getElementById("locLabel");
+  const locSubEl = document.getElementById("locSub");
+  if (today < tripStart) {
+    locLabelEl.textContent = `${daysBetween(today, tripStart)}d until Hanoi`;
+    locSubEl.textContent = "Trip hasn't started yet";
+  } else if (today > tripEnd) {
+    locLabelEl.textContent = "Trip complete";
+    locSubEl.textContent = "Tap to review the itinerary";
+  } else {
+    locLabelEl.textContent = `You're in ${currentLeg || ITINERARY_LEGS[0]}`;
+    locSubEl.textContent = `Day ${elapsed + 1} of ${totalDays}, ${daysLeft}d left`;
+  }
+
+  if (!legManuallySet && currentLeg) {
+    fLeg.value = currentLeg;
+  }
+
+  // pretrip card
+  const pretripCard = document.getElementById("pretripCard");
+  if (pretrip.length > 0){
+    const byCat = {};
+    PRETRIP_CATEGORIES.forEach(c => byCat[c.key]=0);
+    pretrip.forEach(x => byCat[x.category] = (byCat[x.category]||0) + x.amount);
+    let rows = PRETRIP_CATEGORIES.filter(c => byCat[c.key] > 0).map(c =>
+      `<div class="pretrip-row"><span>${c.mark} ${c.label}</span><span>${fmtMoney(byCat[c.key])}</span></div>`
+    ).join("");
+    pretripCard.innerHTML = `<div class="ledger-card pretrip-card">
+      <div class="pretrip-head"><span>Pre-trip costs</span><span class="pretrip-total">${fmtMoney(pretripTotal)}</span></div>
+      <div class="pretrip-note">Flight + insurance, outside the on-ground budget below</div>
+      ${rows}
+    </div>`;
+  } else { pretripCard.innerHTML = ""; }
+
+  const pct = budget > 0 ? Math.min(100, (total/budget)*100) : 0;
+  const spentEl = document.getElementById("spentTotal");
+  const fillEl = document.getElementById("routeFill");
+  spentEl.textContent = fmtMoney(total);
+  spentEl.className = "spent" + (pct >= 100 ? " danger" : pct >= 80 ? " warn" : "");
+  fillEl.className = "route-fill" + (pct >= 100 ? " danger" : pct >= 80 ? " warn" : "");
+
+  document.getElementById("budgetDisplay").innerHTML = `of <span id="budgetVal">${fmtMoney(budget)}</span> <button class="edit-budget-btn" id="editBudgetBtn">edit</button>`;
+  document.getElementById("editBudgetBtn").addEventListener("click", () => {
+    const v = prompt("Set on-the-ground budget (USD):", budget);
+    const num = parseFloat(v);
+    if (num > 0) { budget = num; saveBudget(budget); render(); }
+  });
+
+  fillEl.style.width = pct + "%";
+  document.getElementById("routeMarker").style.left = pct + "%";
+  document.getElementById("routeMarker").textContent = pct >= 100 ? "!" : "";
+  const remaining = budget - total;
+  const remEl = document.getElementById("remainingLine");
+  if (remaining >= 0){ remEl.textContent = `${fmtMoney(remaining)} left in the budget`; remEl.classList.remove("over"); }
+  else { remEl.textContent = `${fmtMoney(Math.abs(remaining))} over budget`; remEl.classList.add("over"); }
+
+  const todaySpend = onGround.filter(x => x.date === today).reduce((s,x)=>s+x.amount,0);
+  document.getElementById("todayLine").textContent = todaySpend > 0 ? `${fmtMoney(todaySpend)} spent today` : `Nothing logged today yet`;
+
+  // backup banner
+  const bannerEl = document.getElementById("backupBanner");
+  let lastExport = null;
+  try { const v = localStorage.getItem(LS_LAST_EXPORT); if (v) lastExport = Number(v); } catch(e){}
+  let dismissedAt = null;
+  try { const v = localStorage.getItem(LS_BANNER_DISMISS); if (v) dismissedAt = Number(v); } catch(e){}
+  const daysSinceExport = lastExport ? (Date.now() - lastExport) / 86400000 : Infinity;
+  const daysSinceDismiss = dismissedAt ? (Date.now() - dismissedAt) / 86400000 : Infinity;
+  if (expenses.length >= 5 && daysSinceExport > 5 && daysSinceDismiss > 2) {
+    bannerEl.innerHTML = `<div class="backup-banner">
+      <span>${lastExport ? "It's been a few days" : "You haven't backed up yet"} , export a copy in case you switch devices.</span>
+      <span style="display:flex;gap:8px;">
+        <button id="bannerExportBtn">Export</button>
+        <button class="dismiss" id="bannerDismissBtn">Dismiss</button>
+      </span>
+    </div>`;
+    document.getElementById("bannerExportBtn").addEventListener("click", () => document.getElementById("exportBtn").click());
+    document.getElementById("bannerDismissBtn").addEventListener("click", () => {
+      try { localStorage.setItem(LS_BANNER_DISMISS, String(Date.now())); } catch(e){}
+      render();
+    });
+  } else {
+    bannerEl.innerHTML = "";
+  }
+
+  // pace line
+  const paceEl = document.getElementById("paceLine");
+  const paceSoFar = total / Math.max(1, elapsed || 1);
+  if (today >= tripStart && today <= tripEnd) {
+    const reqPace = daysLeft > 0 ? Math.max(0, remaining) / daysLeft : 0;
+    const tight = reqPace < paceSoFar && remaining > 0;
+    paceEl.className = "pace-line" + (tight ? " tight" : "");
+    if (remaining >= 0) {
+      paceEl.innerHTML = `<b>${fmtMoney(paceSoFar)}</b>/day so far · need <b class="req">${fmtMoney(reqPace)}</b>/day to stay on budget`;
+    } else {
+      paceEl.innerHTML = `<b>${fmtMoney(paceSoFar)}</b>/day so far · already over, ${daysLeft}d left`;
+    }
+  } else {
+    paceEl.innerHTML = "";
+  }
+
+  // category bars
+  const catBars = document.getElementById("catBars");
+  if (onGround.length > 0){
+    const byCat = {};
+    CATEGORIES.forEach(c => byCat[c.key]=0);
+    onGround.forEach(x => byCat[x.category] = (byCat[x.category]||0) + x.amount);
+    catBars.innerHTML = CATEGORIES.map(c => {
+      const amt = byCat[c.key] || 0;
+      const w = total > 0 ? (amt/total)*100 : 0;
+      return `<div class="cat-row"><span>${c.mark} ${c.label}</span><div class="cat-track"><div class="cat-fill" style="width:${w}%;background:${CAT_COLOR[c.key]}"></div></div><span class="amt">${fmtMoney(amt)}</span></div>`;
+    }).join("");
+  } else { catBars.innerHTML = ""; }
+
+  // leg filter options
+  const legsWithSpend = LEGS.filter(l => onGround.some(x => x.leg === l));
+  legFilter.innerHTML = '<option value="All">All legs</option>' + legsWithSpend.map(l => `<option value="${l}">${l}</option>`).join("");
+  legFilter.value = filterLeg;
+
+  // entries list
+  const filtered = filterLeg === "All" ? expenses : expenses.filter(x => x.leg === filterLeg);
+  const listEl = document.getElementById("entryList");
+  if (filtered.length === 0){
+    listEl.innerHTML = `<div class="empty">No expenses logged yet. Add your first one above.</div>`;
+  } else {
+    listEl.innerHTML = filtered.map(x => {
+      const cat = [...CATEGORIES, ...PRETRIP_CATEGORIES].find(c => c.key === x.category);
+      const mark = cat ? cat.mark : "○";
+      const label = escapeHtml(x.note || (cat ? cat.label : "Expense"));
+      return `<div class="entry-row">
+        <div class="catmark" style="background:${CAT_COLOR[x.category]||'#8C8578'}">${mark}</div>
+        <div class="info" data-id="${x.id}"><div class="note">${label}</div><div class="meta">${x.date} · ${x.leg}</div></div>
+        <div class="amt" data-id="${x.id}">${fmtMoney(x.amount)}</div>
+        <button class="del" data-id="${x.id}">✕</button>
+      </div>`;
+    }).join("");
+    listEl.querySelectorAll(".del").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (btn.dataset.confirming === "1") {
+          clearTimeout(btn._confirmTimer);
+          removeExpense(btn.getAttribute("data-id"));
+        } else {
+          btn.dataset.confirming = "1";
+          btn.textContent = "✓ sure?";
+          btn.classList.add("confirm");
+          btn._confirmTimer = setTimeout(() => {
+            btn.dataset.confirming = "0";
+            btn.textContent = "✕";
+            btn.classList.remove("confirm");
+          }, 3000);
+        }
+      });
+    });
+    listEl.querySelectorAll(".info, .amt").forEach(el => {
+      el.addEventListener("click", () => editEntry(el.getAttribute("data-id")));
+    });
+  }
+}
+
+legFilter.addEventListener("change", () => { filterLeg = legFilter.value; render(); });
+
+renderRateLine();
+refreshRates(false);
+refreshCheckin();
+setInterval(refreshCheckin, 5 * 60 * 1000);
+updateLocalTime();
+setInterval(updateLocalTime, 30 * 1000);
+renderPackingCard();
+render();
+</script>
+</body>
+</html>
