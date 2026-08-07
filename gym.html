@@ -28,6 +28,12 @@
   .status-dot.online{ background:var(--hold-moss); box-shadow:0 0 6px var(--hold-moss); }
   .status-dot.offline{ background:var(--hold-rust); box-shadow:0 0 6px var(--hold-rust); }
   h1{ font-family:'Archivo Black',sans-serif; font-size:23px; margin:0; letter-spacing:-0.5px; }
+  .hold-dots{ display:inline-flex; gap:4px; margin-left:8px; vertical-align:middle; }
+  .hold-dots span{ width:7px; height:7px; border-radius:50%; display:inline-block; }
+  .hold-dots span:nth-child(1){ background:var(--hold-blue); }
+  .hold-dots span:nth-child(2){ background:var(--hold-gold); }
+  .hold-dots span:nth-child(3){ background:var(--hold-moss); }
+  .hold-dots span:nth-child(4){ background:var(--hold-rust); }
   .header-btns{ display:flex; gap:8px; }
   .icon-btn{ background:none; border:1px solid var(--line); color:var(--chalk-dim); width:32px; height:32px; border-radius:8px; font-size:14px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
   .icon-btn:active{ transform:scale(0.94); }
@@ -44,8 +50,15 @@
   .progress-text{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--chalk-dim); flex-shrink:0; }
   .progress-wrap.complete .progress-text{ color:var(--hold-moss); }
   main{ padding:16px; max-width:520px; margin:0 auto; }
-  .exercise-card{ background:var(--charcoal-2); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:12px; animation:fadeUp 0.3s ease backwards; }
+  .exercise-card{ background:var(--charcoal-2); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:12px; animation:fadeUp 0.3s ease backwards; box-shadow:0 4px 16px rgba(0,0,0,0.28); }
   .exercise-card.logged-today{ border-color:var(--hold-moss); }
+  .exercise-card.pr-glow{ animation:prPulse 2.6s ease; }
+  @keyframes prPulse{
+    0%{ box-shadow:0 4px 16px rgba(0,0,0,0.28); border-color:var(--line); }
+    15%{ box-shadow:0 0 0 3px rgba(201,162,75,0.35), 0 4px 24px rgba(201,162,75,0.4); border-color:var(--hold-gold); }
+    60%{ box-shadow:0 0 0 3px rgba(201,162,75,0.25), 0 4px 24px rgba(201,162,75,0.3); border-color:var(--hold-gold); }
+    100%{ box-shadow:0 4px 16px rgba(0,0,0,0.28); border-color:var(--hold-moss); }
+  }
   @keyframes fadeUp{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
   @keyframes popIn{ 0%{ transform:scale(0.7); opacity:0; } 60%{ transform:scale(1.08); } 100%{ transform:scale(1); opacity:1; } }
   .exercise-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; }
@@ -57,15 +70,16 @@
   .info-toggle{ background:none; border:none; color:var(--chalk-faint); font-size:12px; cursor:pointer; padding:2px 4px; }
   .exercise-cue{ display:none; font-size:12px; color:var(--chalk-dim); line-height:1.5; background:var(--charcoal); border-radius:6px; padding:8px 10px; margin:8px 0; }
   .exercise-cue.show{ display:block; }
-  .stat-strip{ display:flex; gap:14px; margin:8px 0 10px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--chalk-dim); }
-  .stat-strip b{ color:var(--chalk); font-weight:700; }
+  .stat-strip{ display:flex; gap:8px; margin:8px 0 10px; }
+  .stat-strip span{ display:inline-flex; align-items:center; gap:4px; background:var(--charcoal); border:1px solid var(--line); border-radius:999px; padding:4px 10px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--chalk-dim); }
+  .stat-strip b{ color:var(--hold-gold); font-weight:700; }
   .set-row{ display:grid; grid-template-columns:20px 1fr 1fr 24px; gap:8px; align-items:center; margin-bottom:6px; }
   .set-num{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--chalk-faint); text-align:center; }
   input[type=number], input[type=text]{ width:100%; background:var(--charcoal); border:1px solid var(--line); border-radius:6px; color:var(--chalk); padding:9px 6px; font-family:'JetBrains Mono',monospace; font-size:14px; text-align:center; }
   input:focus{ outline:none; border-color:var(--hold-blue); }
   input.input-error{ border-color:var(--hold-rust); }
   .col-labels{ display:grid; grid-template-columns:20px 1fr 1fr 24px; gap:8px; margin-bottom:4px; }
-  .remove-set-btn{ background:none; border:none; color:var(--chalk-faint); font-size:12px; cursor:pointer; padding:4px; }
+  .remove-set-btn{ background:none; border:none; color:var(--chalk-faint); font-size:12px; cursor:pointer; padding:4px; display:inline-flex; align-items:center; justify-content:center; }
   .remove-set-btn:active{ color:var(--hold-rust); }
   .add-set-btn{ display:block; width:100%; background:none; border:1px dashed var(--line); color:var(--hold-blue); border-radius:6px; padding:8px 0; font-family:'JetBrains Mono',monospace; font-size:11px; cursor:pointer; margin:2px 0 8px; }
   .notes-label{ display:block; font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; color:var(--chalk-faint); margin:10px 0 6px; }
@@ -76,9 +90,9 @@
   .trend-label{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--chalk-dim); margin-bottom:5px; display:flex; justify-content:space-between; }
   .trend-track{ height:6px; background:var(--charcoal); border-radius:3px; overflow:hidden; position:relative; }
   .trend-fill{ height:100%; border-radius:3px; transition:width 0.5s ease; }
-  .trend-fill.up{ background:var(--hold-moss); }
-  .trend-fill.down{ background:var(--hold-rust); }
-  .trend-fill.flat{ background:var(--hold-gold); }
+  .trend-fill.up{ background:linear-gradient(90deg, #557a4c, var(--hold-moss)); }
+  .trend-fill.down{ background:linear-gradient(90deg, #a8543a, var(--hold-rust)); }
+  .trend-fill.flat{ background:linear-gradient(90deg, #a8863f, var(--hold-gold)); }
   .feel-row{ display:flex; gap:6px; margin-top:10px; }
   .feel-btn{ flex:1; padding:6px 0; background:var(--charcoal); border:1px solid var(--line); border-radius:6px; color:var(--chalk-dim); font-family:'JetBrains Mono',monospace; font-size:10.5px; cursor:pointer; }
   .feel-btn.selected{ background:var(--hold-blue); color:var(--chalk); border-color:var(--hold-blue); }
@@ -94,9 +108,9 @@
   .log-btn.confirm-armed{ background:var(--hold-rust); animation:pulse 0.9s infinite; }
   @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.7; } }
   .log-btn:disabled{ opacity:0.6; cursor:wait; }
-  .delete-entry{ background:none; border:none; color:var(--chalk-faint); font-size:13px; cursor:pointer; flex-shrink:0; padding:0 2px; }
+  .delete-entry{ background:none; border:none; color:var(--chalk-faint); font-size:13px; cursor:pointer; flex-shrink:0; padding:0 2px; display:inline-flex; align-items:center; justify-content:center; }
   .delete-entry:active{ color:var(--hold-rust); }
-  .bw-card{ background:var(--charcoal-2); border:1px solid var(--hold-gold); border-radius:10px; padding:12px 14px; margin-bottom:12px; display:flex; align-items:center; gap:10px; }
+  .bw-card{ background:var(--charcoal-2); border:1px solid var(--hold-gold); border-radius:10px; padding:12px 14px; margin-bottom:12px; display:flex; align-items:center; gap:10px; box-shadow:0 4px 16px rgba(0,0,0,0.28); }
   .bw-label{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--hold-gold); letter-spacing:0.5px; text-transform:uppercase; flex-shrink:0; }
   input.bw-input{ width:64px; flex-shrink:0; }
   .bw-trend{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--chalk-dim); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -144,12 +158,12 @@
 
 <div id="toast" class="toast"></div>
 
-<button class="log-bubble" id="logBubbleBtn" title="Activity log" aria-label="Activity log">&#128203;</button>
+<button class="log-bubble" id="logBubbleBtn" title="Activity log" aria-label="Activity log"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></button>
 <div class="log-drawer" id="logDrawer">
   <div class="log-drawer-panel">
     <div class="log-drawer-head">
       <h3>Activity Log</h3>
-      <button class="icon-btn" id="closeLogDrawer" aria-label="Close">&#10005;</button>
+      <button class="icon-btn" id="closeLogDrawer" aria-label="Close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>
     </div>
     <div id="logEntries"></div>
   </div>
@@ -214,10 +228,10 @@ service cloud.firestore {
         <span class="eyebrow" id="eyebrowText">Post-climb strength</span>
         <span id="pendingBadge"></span>
       </div>
-      <h1>Send Log</h1>
+      <h1>Send Log <span class="hold-dots" aria-hidden="true"><span></span><span></span><span></span><span></span></span></h1>
     </div>
     <div class="header-btns">
-      <button class="icon-btn" id="settingsBtn" title="Settings" aria-label="Settings">&#9881;</button>
+      <button class="icon-btn" id="settingsBtn" title="Settings" aria-label="Settings"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     </div>
   </div>
   <div class="user-tabs" id="userTabs"></div>
@@ -660,7 +674,7 @@ function buildCardHtml(ex, last, prev, stats, idx){
     <div class="exercise-card${loggedToday ? ' logged-today' : ''}" data-exercise="${safeName}" data-last-id="${safeLastId}" data-idx="${idx}" style="animation-delay:${idx * 30}ms">
       <div class="exercise-head">
         <div class="exercise-name-row">
-          <div class="check-badge">&#10003;</div>
+          <div class="check-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
           <div class="exercise-name">${safeName}</div>
           <button type="button" class="info-toggle" aria-label="Show form cue">&#9432;</button>
         </div>
@@ -677,7 +691,7 @@ function buildCardHtml(ex, last, prev, stats, idx){
             <div class="set-num">${setNum}</div>
             <input type="number" inputmode="decimal" class="weight-input" placeholder="0" min="0" max="2000" aria-label="${safeName} set ${setNum} weight in pounds">
             <input type="number" inputmode="numeric" class="reps-input" placeholder="0" min="0" max="200" aria-label="${safeName} set ${setNum} reps">
-            <button type="button" class="remove-set-btn" aria-label="Remove set ${setNum}">&#10005;</button>
+            <button type="button" class="remove-set-btn" aria-label="Remove set ${setNum}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>
           </div>`;
         }).join('')}
       </div>
@@ -697,7 +711,7 @@ function buildCardHtml(ex, last, prev, stats, idx){
         ${last ? '<button type="button" class="view-log-btn">View log</button>' : '<span></span>'}
         ${last ? '<button type="button" class="repeat-btn" title="Fill in last session\'s numbers">repeat last</button>' : ''}
         <button type="button" class="log-btn">Log this exercise</button>
-        ${last ? '<button type="button" class="delete-entry" title="Delete last entry" aria-label="Delete last entry">&#10005;</button>' : ''}
+        ${last ? '<button type="button" class="delete-entry" title="Delete last entry" aria-label="Delete last entry"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>' : ''}
       </div>
       ${lastLogDetailsHtml}
     </div>`;
@@ -733,7 +747,7 @@ async function renderMain(){
 // which refetched and rebuilt every exercise card on the page even though only one
 // changed. This refreshes just the single affected card instead, cutting both the
 // number of Firestore reads and the DOM work down to one card's worth.
-async function refreshSingleCard(exerciseName, idx){
+async function refreshSingleCard(exerciseName, idx, celebratePR){
   const day = ROUTINE[currentDay];
   const ex = day.exercises[idx];
   invalidateUserEntriesCache(currentUser);
@@ -748,6 +762,11 @@ async function refreshSingleCard(exerciseName, idx){
   const newCard = wrapper.firstChild;
   oldCard.replaceWith(newCard);
   wireSingleCard(newCard, data);
+
+  if (celebratePR){
+    newCard.classList.add('pr-glow');
+    setTimeout(() => newCard.classList.remove('pr-glow'), 2600);
+  }
 
   // update the progress bar from current DOM state, no extra query needed
   const total = day.exercises.length;
@@ -823,7 +842,7 @@ function wireSingleCard(card, data){
         <div class="set-num">${setNum}</div>
         <input type="number" inputmode="decimal" class="weight-input" placeholder="0" min="0" max="2000" aria-label="${safeName} set ${setNum} weight in pounds">
         <input type="number" inputmode="numeric" class="reps-input" placeholder="0" min="0" max="200" aria-label="${safeName} set ${setNum} reps">
-        <button type="button" class="remove-set-btn" aria-label="Remove set ${setNum}">&#10005;</button>`;
+        <button type="button" class="remove-set-btn" aria-label="Remove set ${setNum}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>`;
       container.appendChild(row);
       wireSetRow(row);
       row.querySelector('.weight-input').focus();
@@ -938,7 +957,7 @@ async function logSingleExercise(card, exerciseName, data, idx){
     } else {
       showToast(`${exerciseName} logged`, 'success');
     }
-    await refreshSingleCard(exerciseName, idx);
+    await refreshSingleCard(exerciseName, idx, isPR);
   } catch(e){
     queueOffline({ type: 'entry', user: currentUser, entry });
     logActivity(`${exerciseName} saved offline (will sync)`);
