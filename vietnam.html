@@ -61,6 +61,7 @@
   .masthead h1 { font-family: 'Fraunces', serif; font-weight: 700; font-size: 26px; letter-spacing: -0.01em; margin: 0; }
   .masthead .route { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
   .location-banner { display:flex; justify-content:space-between; align-items:center; background:#22201B; color:#F4EFE3; border-radius:3px; padding:12px 14px; margin-bottom:6px; cursor:pointer; }
+  #locationBanner { cursor: default; }
   .util-banner { background: var(--card); color: var(--ink); border: 1px solid var(--border); margin-top: 10px; }
   .util-banner .loc-sub { color: var(--muted2); }
   .util-banner .loc-caret { color: var(--muted); }
@@ -235,7 +236,6 @@
       <span class="loc-label" id="locLabel">Loading...</span>
       <span class="loc-sub" id="locSub"></span>
     </div>
-    <span class="loc-caret" id="itinCaret">›</span>
   </div>
 
   <div class="checkin-card" id="checkinCard">
@@ -277,7 +277,7 @@
     </form>
   </div>
 
-  <div class="ledger-card" id="itineraryCard" style="display:none;">
+  <div class="ledger-card" id="itineraryCard">
     <div class="itin-header-row">
       <div class="presets-title" style="margin-bottom:0;">Itinerary</div>
       <button type="button" class="temp-toggle" id="tempToggle">°F</button>
@@ -614,14 +614,31 @@ function setGhToken(t){
   } catch(e){}
 }
 
-async function fetchCheckinGist(){
+async function fetchCheckinGist(skipAuth){
   // cache-bust: mobile networks/browsers can silently serve a stale cached
   // GET response, which makes saves look successful but not actually show up
+  const token = !skipAuth && getGhToken();
+  const headers = { "Accept": "application/vnd.github+json" };
+  // Authenticated requests get 5,000/hour instead of 60/hour unauthenticated.
+  // Cellular networks often share one IP across many people (CGNAT), so the
+  // unauthenticated limit can get eaten up by strangers on the same carrier.
+  if (token) headers["Authorization"] = `token ${token}`;
   const res = await fetch(`https://api.github.com/gists/${CHECKIN_GIST_ID}?_=${Date.now()}`, {
     cache: "no-store",
-    headers: { "Accept": "application/vnd.github+json" },
+    headers,
   });
-  if (!res.ok) throw new Error("gist fetch failed");
+  if (!res.ok) {
+    // Stored token is invalid/expired: fall back to an unauthenticated read
+    // rather than hard-failing, so check-ins still load either way.
+    if (res.status === 401 && token) return fetchCheckinGist(true);
+    if (res.status === 403 && res.headers.get("x-ratelimit-remaining") === "0") {
+      const resetTs = parseInt(res.headers.get("x-ratelimit-reset") || "0", 10) * 1000;
+      const mins = resetTs ? Math.max(1, Math.ceil((resetTs - Date.now()) / 60000)) : 60;
+      throw new Error(`Rate limited by GitHub, try again in about ${mins}m`);
+    }
+    if (res.status === 404) throw new Error("Check-in gist not found (was it deleted?)");
+    throw new Error(`gist fetch failed (${res.status})`);
+  }
   const data = await res.json();
   const filename = Object.keys(data.files || {})[0] || "gistfile1.txt";
   const raw = (data.files[filename] && data.files[filename].content) || "";
@@ -654,13 +671,15 @@ async function saveCheckinList(list, filename){
 // Verifies a write actually landed by re-reading right after saving.
 // GitHub's write can succeed while a near-simultaneous save from another
 // tap/tab clobbers it (last-write-wins), so we confirm rather than assume.
+// Capped at 2 attempts (not 3) to limit API calls per save, since each retry
+// costs 2 more requests (a write + a verify read).
 async function writeCheckinAndVerify(mutateFn, attempt = 1){
   const { list, filename } = await fetchCheckinGist();
   const newList = mutateFn(list);
   await saveCheckinList(newList, filename);
   const check = await fetchCheckinGist();
   const matches = JSON.stringify(check.list) === JSON.stringify(newList);
-  if (!matches && attempt < 3) {
+  if (!matches && attempt < 2) {
     return writeCheckinAndVerify(mutateFn, attempt + 1);
   }
   if (!matches) throw new Error("Could not confirm the save landed, try again");
@@ -777,7 +796,7 @@ async function refreshCheckin(){
     renderCheckinHistory();
   } catch (e) {
     textEl.textContent = "Couldn't load check-in";
-    timeEl.textContent = "Check connection, tap to retry";
+    timeEl.textContent = e.message || "Check connection, tap to retry";
     metaEl.classList.add("stale");
   }
 }
@@ -839,6 +858,7 @@ document.getElementById("locateBtn").addEventListener("click", async () => {
       `;
       resultEl.style.display = "block";
       if (hasToken) {
+        const statusLine = resultEl.querySelector("div");
         document.getElementById("saveDirectBtn").addEventListener("click", async (e) => {
           e.target.disabled = true;
           e.target.textContent = "Saving...";
@@ -850,6 +870,7 @@ document.getElementById("locateBtn").addEventListener("click", async () => {
           } catch (err) {
             e.target.disabled = false;
             e.target.textContent = "Failed, tap to retry";
+            if (statusLine) statusLine.textContent = err.message || "Something went wrong";
           }
         });
       } else {
@@ -1420,14 +1441,6 @@ document.getElementById("tempToggle").addEventListener("click", (e) => {
   document.getElementById("tempToggle").textContent = tempUnit === "F" ? "°F" : "°C";
   renderItineraryPanel();
 });
-document.getElementById("locationBanner").addEventListener("click", () => {
-  const panel = document.getElementById("itineraryCard");
-  const caret = document.getElementById("itinCaret");
-  const isOpen = panel.style.display !== "none";
-  panel.style.display = isOpen ? "none" : "block";
-  caret.classList.toggle("open", !isOpen);
-  if (!isOpen) renderItineraryPanel();
-});
 function renderItineraryPanel(){
   const listEl = document.getElementById("itineraryList");
   const today = todayStr();
@@ -1666,6 +1679,7 @@ setInterval(refreshCheckin, 5 * 60 * 1000);
 updateLocalTime();
 setInterval(updateLocalTime, 30 * 1000);
 renderPackingCard();
+renderItineraryPanel();
 render();
 </script>
 </body>
