@@ -6,6 +6,8 @@
 <title>The Ledger - Vietnam & Cambodia</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="The Ledger">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2322201B'/%3E%3Ctext x='50' y='68' font-size='58' text-anchor='middle' font-family='Georgia,serif' fill='%23F4EFE3'%3E%E2%82%AB%3C/text%3E%3C/svg%3E">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
 
@@ -227,7 +229,58 @@
   .save-note { text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--faint); margin-top: 24px; }
   .trip-dates-panel { display:none; gap:10px; margin-top:10px; padding-top:10px; border-top:1px solid var(--border-faint); }
   .trip-dates-panel.open { display:grid; grid-template-columns: 1fr 1fr; }
-  @media (max-width: 380px) { form.entry { grid-template-columns: 1fr; } }
+
+  /* Visa countdown */
+  .visa-strip { display:flex; gap:10px; margin-bottom:14px; }
+  .visa-chip { flex:1; background:var(--card); border:1px solid var(--border); border-radius:3px; padding:9px 10px; font-family:'IBM Plex Mono', monospace; }
+  .visa-chip .vc-country { font-size:10px; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted); }
+  .visa-chip .vc-days { font-family:'Fraunces', serif; font-size:19px; font-weight:600; color:var(--ink); margin-top:2px; }
+  .visa-chip .vc-days.warn { color:var(--amber); }
+  .visa-chip .vc-days.danger { color:var(--red); }
+  .visa-chip input[type=date] { font-family:'IBM Plex Mono', monospace; font-size:10.5px; padding:3px 4px; border:1px solid var(--border); border-radius:3px; background:var(--bg); width:100%; margin-top:4px; }
+
+  /* Search box */
+  .search-row { margin-bottom: 10px; }
+  .search-row input { width:100%; font-family:'Inter', sans-serif; font-size:14px; padding:8px 10px; border:1px solid var(--border); border-radius:3px; background:var(--card); color:var(--ink); }
+
+  /* Cheat sheet */
+  .cheat-tabs { display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
+  .cheat-tab { font-family:'IBM Plex Mono', monospace; font-size:11px; padding:6px 10px; border:1px solid var(--border); border-radius:999px; background:var(--card); color:var(--muted); cursor:pointer; }
+  .cheat-tab.active { background:#22201B; color:#F4EFE3; border-color:#22201B; }
+  .cheat-section { display:none; }
+  .cheat-section.active { display:block; }
+  .phrase-row { display:flex; justify-content:space-between; gap:10px; padding:7px 0; border-bottom:1px solid var(--border-faint); font-size:13px; }
+  .phrase-row .en { color:var(--muted); }
+  .phrase-row .local { font-weight:500; text-align:right; }
+  .note-block { font-family:'IBM Plex Mono', monospace; font-size:12px; line-height:1.6; color:var(--ink); }
+  .note-block b { color:var(--amber); }
+
+  /* Split cost */
+  .split-toggle-row { display:flex; align-items:center; gap:8px; padding:2px 0 4px; }
+  .split-toggle-row label { font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--teal); display:flex; align-items:center; gap:6px; cursor:pointer; }
+  .split-toggle-row input[type=checkbox] { width:16px; height:16px; accent-color:var(--teal); }
+  .split-fields { display:none; grid-template-columns: 1fr 1fr; gap:10px; margin-top:4px; }
+  .split-fields.open { display:grid; }
+  .split-badge { font-family:'IBM Plex Mono', monospace; font-size:9.5px; color:var(--teal); border:1px solid var(--teal); border-radius:999px; padding:1px 6px; margin-left:6px; }
+  .owed-row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--border-faint); font-family:'IBM Plex Mono', monospace; font-size:13px; }
+  .owed-row b { color:var(--teal); }
+
+  /* Journal */
+  .journal-entry { padding:10px 0; border-bottom:1px solid var(--border-faint); }
+  .journal-entry .j-date { font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--muted2); display:flex; justify-content:space-between; }
+  .journal-entry .j-text { font-size:13.5px; margin-top:4px; white-space:pre-wrap; }
+  .journal-add textarea { width:100%; font-family:'Inter', sans-serif; font-size:14px; padding:8px 9px; border:1px solid var(--border); border-radius:3px; background:var(--card); color:var(--ink); resize:vertical; min-height:60px; }
+  .journal-del { background:none; border:none; color:var(--faint); font-size:13px; cursor:pointer; }
+  .journal-del.confirm { color:var(--red); font-weight:600; }
+
+  /* Wrapped summary */
+  .wrapped-grid { display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:6px; }
+  .wrapped-stat { background:var(--card); border:1px solid var(--border); border-radius:3px; padding:12px; }
+  .wrapped-stat .ws-label { font-family:'IBM Plex Mono', monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted); }
+  .wrapped-stat .ws-val { font-family:'Fraunces', serif; font-size:19px; font-weight:600; margin-top:2px; }
+  .wrapped-stat .ws-sub { font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--muted2); margin-top:2px; }
+
+  @media (max-width: 380px) { form.entry { grid-template-columns: 1fr; } .wrapped-grid, .split-fields { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -241,6 +294,7 @@
     <div class="loc-main">
       <span class="loc-label" id="locLabel">Loading...</span>
       <span class="loc-sub" id="locSub"></span>
+      <span class="loc-sub" id="locSun"></span>
     </div>
   </div>
 
@@ -267,6 +321,8 @@
   <div class="rate-line" id="rateLine"><span class="dot"></span>Loading rates...</div>
   <div class="offline-badge" id="offlineBadge" style="display:none;">⚠ Offline, expenses still save fine, prices/weather/check-in need a connection</div>
   <div id="backupBanner"></div>
+
+  <div class="visa-strip" id="visaStrip"></div>
 
   <div class="location-banner packing-banner" id="packingBanner">
     <div class="loc-main">
@@ -372,9 +428,29 @@
         <label>Note</label>
         <input type="text" placeholder="e.g. dorm bed, night bus, pho" id="fNote" />
       </div>
+      <div class="field full">
+        <div class="split-toggle-row">
+          <label><input type="checkbox" id="fSplitToggle" /> Split with someone?</label>
+        </div>
+        <div class="split-fields" id="splitFields">
+          <div class="field">
+            <label>Split with (name)</label>
+            <input type="text" placeholder="e.g. Alex" id="fSplitWith" />
+          </div>
+          <div class="field">
+            <label>Total bill (USD)</label>
+            <input type="number" inputmode="decimal" step="0.01" placeholder="0.00" id="fSplitTotal" />
+          </div>
+        </div>
+      </div>
       <div class="error-msg" id="formError"></div>
       <button class="add-btn" id="addBtn" type="submit">+ Add expense</button>
     </form>
+  </div>
+
+  <div class="ledger-card">
+    <div class="presets-title">Split expenses</div>
+    <div id="owedSummary"></div>
   </div>
 
   <div class="list-header">
@@ -384,6 +460,7 @@
       <select class="leg-filter" id="legFilter"><option value="All">All legs</option></select>
     </div>
   </div>
+  <div class="search-row"><input type="text" id="entrySearch" placeholder="🔍 Search notes..." /></div>
   <div id="entryList"></div>
 
   <div class="location-banner util-banner" id="pricesBanner">
@@ -407,6 +484,48 @@
   </div>
   <div class="ledger-card" id="borderCard" style="display:none;">
     <div id="borderList"></div>
+  </div>
+
+  <div class="location-banner util-banner" id="cheatBanner">
+    <div class="loc-main">
+      <span class="loc-label">Traveler cheat sheet</span>
+      <span class="loc-sub">Cash notes, tipping, key phrases</span>
+    </div>
+    <span class="loc-caret" id="cheatCaret">›</span>
+  </div>
+  <div class="ledger-card" id="cheatCard" style="display:none;">
+    <div class="cheat-tabs" id="cheatTabs"></div>
+    <div id="cheatContent"></div>
+  </div>
+
+  <div class="location-banner util-banner" id="journalBanner">
+    <div class="loc-main">
+      <span class="loc-label">Trip journal</span>
+      <span class="loc-sub" id="journalSub"></span>
+    </div>
+    <span class="loc-caret" id="journalCaret">›</span>
+  </div>
+  <div class="ledger-card" id="journalCard" style="display:none;">
+    <form id="journalAddForm" class="journal-add">
+      <div class="field" style="margin-bottom:8px;">
+        <label>Date</label>
+        <input type="date" id="jDate" />
+      </div>
+      <textarea id="jText" placeholder="What happened today..."></textarea>
+      <button class="add-btn" type="submit" style="margin-top:8px;">+ Add entry</button>
+    </form>
+    <div id="journalList" style="margin-top:14px;"></div>
+  </div>
+
+  <div class="location-banner util-banner" id="wrappedBanner">
+    <div class="loc-main">
+      <span class="loc-label">Trip wrapped</span>
+      <span class="loc-sub">Stats from what you've logged so far</span>
+    </div>
+    <span class="loc-caret" id="wrappedCaret">›</span>
+  </div>
+  <div class="ledger-card" id="wrappedCard" style="display:none;">
+    <div class="wrapped-grid" id="wrappedGrid"></div>
   </div>
 
   <div class="location-banner util-banner" id="emergencyBanner">
@@ -551,6 +670,7 @@ const PRESETS = [
   { label:"Local bus/Grab · $4", category:"Transport", note:"Local transport", amount:4 },
   { label:"SIM/data (30-day) · $12", category:"Misc", note:"SIM / data top-up", amount:12 },
   { label:"Laundry (per load) · $3", category:"Misc", note:"Laundry", amount:3 },
+  { label:"ATM fee · $5", category:"Misc", note:"ATM fee", amount:5 },
 ];
 
 const LS_EXPENSES = "vn-kh-expenses-v1";
@@ -605,6 +725,9 @@ const LS_RATES = "vn-kh-rates-v1";
 const LS_LAST_EXPORT = "vn-kh-last-export-v1";
 const LS_BANNER_DISMISS = "vn-kh-banner-dismiss-v1";
 const FALLBACK_RATES = { VND: 25500, KHR: 4100 };
+const LS_VISA = "vn-kh-visa-v1";
+const LS_JOURNAL = "vn-kh-journal-v1";
+const DEFAULT_VISA = { Vietnam: "", Cambodia: "" };
 
 function todayStr(){ return new Date().toISOString().slice(0,10); }
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
@@ -1026,6 +1149,31 @@ async function fetchWeatherForLegs(){
   return map;
 }
 
+// Sun times only need one call for wherever "today" actually is, so this
+// stays a single lightweight request rather than one per leg.
+let sunTimesCache = { leg: null, date: null, sunrise: null, sunset: null };
+async function updateSunTimes(leg){
+  const el = document.getElementById("locSun");
+  if (!el) return;
+  if (!leg || !LEG_COORDS[leg]) { el.textContent = ""; return; }
+  const today = todayStr();
+  if (sunTimesCache.leg === leg && sunTimesCache.date === today) {
+    if (sunTimesCache.sunrise) el.textContent = `☀️ ${sunTimesCache.sunrise} – 🌙 ${sunTimesCache.sunset}`;
+    return;
+  }
+  try {
+    const [lat, lon] = LEG_COORDS[leg];
+    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=sunrise,sunset&timezone=auto`);
+    const data = await res.json();
+    const sunrise = data.daily.sunrise[0].slice(11, 16);
+    const sunset = data.daily.sunset[0].slice(11, 16);
+    sunTimesCache = { leg, date: today, sunrise, sunset };
+    el.textContent = `☀️ ${sunrise} – 🌙 ${sunset}`;
+  } catch (e) {
+    el.textContent = "";
+  }
+}
+
 function loadPackingChecked(){
   try {
     const raw = localStorage.getItem(LS_PACKING);
@@ -1115,9 +1263,29 @@ let itinerary = loadItinerary();
 let packingChecked = loadPackingChecked();
 let packingCustom = loadPackingCustom();
 let tripEnd = loadTripEnd();
+let visa = loadVisa();
+let journal = loadJournal();
 let formType = "onground";
 let filterLeg = "All";
+let searchTerm = "";
 let legManuallySet = false;
+
+function loadVisa(){
+  try {
+    const raw = localStorage.getItem(LS_VISA);
+    if (raw) return Object.assign({}, DEFAULT_VISA, JSON.parse(raw));
+  } catch(e){}
+  return { ...DEFAULT_VISA };
+}
+function saveVisa(v){ try { localStorage.setItem(LS_VISA, JSON.stringify(v)); } catch(e){} }
+function loadJournal(){
+  try {
+    const raw = localStorage.getItem(LS_JOURNAL);
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  return [];
+}
+function saveJournal(list){ try { localStorage.setItem(LS_JOURNAL, JSON.stringify(list)); } catch(e){} }
 
 const fLeg = document.getElementById("fLeg");
 fLeg.addEventListener("change", () => { legManuallySet = true; });
@@ -1203,12 +1371,22 @@ document.getElementById("entryForm").addEventListener("keydown", (e) => {
   e.preventDefault();
   if (e.target && typeof e.target.blur === "function") e.target.blur();
 });
+document.getElementById("fSplitToggle").addEventListener("change", (e) => {
+  document.getElementById("splitFields").classList.toggle("open", e.target.checked);
+});
 document.getElementById("entryForm").addEventListener("submit", (e) => {
   e.preventDefault();
   const amt = parseFloat(document.getElementById("fAmount").value);
   const errEl = document.getElementById("formError");
   if (!amt || amt <= 0) { errEl.textContent = "Enter an amount greater than 0."; return; }
   errEl.textContent = "";
+  const isSplit = document.getElementById("fSplitToggle").checked;
+  const splitWith = isSplit ? document.getElementById("fSplitWith").value.trim() : "";
+  const splitTotalRaw = isSplit ? parseFloat(document.getElementById("fSplitTotal").value) : 0;
+  // "amount" always stays what YOU actually owe/spent, so budget totals
+  // aren't inflated by covering someone else's share. splitTotal (the full
+  // bill) minus your amount is what they owe you, shown in the Split
+  // expenses summary card.
   const entry = {
     id: uid(),
     date: document.getElementById("fDate").value || todayStr(),
@@ -1217,11 +1395,17 @@ document.getElementById("entryForm").addEventListener("submit", (e) => {
     category: document.getElementById("fCategory").value,
     note: document.getElementById("fNote").value.trim(),
     amount: Math.round(amt * 100) / 100,
+    splitWith: (isSplit && splitWith) ? splitWith : null,
+    splitTotal: (isSplit && splitWith && splitTotalRaw > amt) ? Math.round(splitTotalRaw * 100) / 100 : null,
   };
   expenses = [entry, ...expenses];
   saveExpenses(expenses);
   document.getElementById("fNote").value = "";
   document.getElementById("fAmount").value = "";
+  document.getElementById("fSplitToggle").checked = false;
+  document.getElementById("fSplitWith").value = "";
+  document.getElementById("fSplitTotal").value = "";
+  document.getElementById("splitFields").classList.remove("open");
   const btn = document.getElementById("addBtn");
   const original = btn.textContent;
   btn.textContent = "Added";
@@ -1504,6 +1688,214 @@ document.getElementById("borderBanner").addEventListener("click", () => {
 });
 renderBorderChecklist();
 
+// ---- Visa countdown ----
+function renderVisaStrip(){
+  const el = document.getElementById("visaStrip");
+  const countries = [
+    { key: "Vietnam", flag: "🇻🇳" },
+    { key: "Cambodia", flag: "🇰🇭" },
+  ];
+  el.innerHTML = countries.map(c => {
+    const dateVal = visa[c.key] || "";
+    let daysHtml = `<div class="vc-days">–</div>`;
+    if (dateVal) {
+      const days = daysBetween(todayStr(), dateVal);
+      const cls = days < 0 ? "danger" : days <= 5 ? "danger" : days <= 14 ? "warn" : "";
+      const label = days < 0 ? "Expired" : days === 0 ? "Expires today" : `${days}d left`;
+      daysHtml = `<div class="vc-days ${cls}">${label}</div>`;
+    }
+    return `<div class="visa-chip">
+      <div class="vc-country">${c.flag} ${c.key} visa</div>
+      ${daysHtml}
+      <input type="date" data-country="${c.key}" value="${dateVal}" />
+    </div>`;
+  }).join("");
+  el.querySelectorAll("input[type=date]").forEach(inp => {
+    inp.addEventListener("change", (e) => {
+      visa[e.target.getAttribute("data-country")] = e.target.value;
+      saveVisa(visa);
+      renderVisaStrip();
+    });
+  });
+}
+renderVisaStrip();
+
+// ---- Traveler cheat sheet: cash notes, tipping, phrases ----
+const CHEAT_SHEETS = {
+  "🇻🇳 Vietnam": {
+    cash: [
+      "Notes come in 1,000 / 2,000 / 5,000 / 10,000 / 20,000 / 50,000 / 100,000 / 200,000 / 500,000 VND",
+      "500,000 VND (~$20) is dark blue/purple, the largest and most common bill for ATM withdrawals",
+      "10,000 and 20,000 look similar (both blue) and are easy to mix up, check the printed number",
+      "Small torn/taped bills are usually still accepted, unlike some countries",
+    ],
+    tipping: "Not culturally expected. Rounding up or leaving small change (5-10%) for good service at restaurants is appreciated but never required. Tour guides/drivers on multi-day tours ($2-5/day) are the exception, it's become customary.",
+    phrases: [
+      { en: "Hello", local: "Xin chào" },
+      { en: "Thank you", local: "Cảm ơn" },
+      { en: "How much?", local: "Bao nhiêu tiền?" },
+      { en: "Too expensive", local: "Đắt quá" },
+      { en: "Delicious", local: "Ngon" },
+      { en: "Cheers!", local: "Một hai ba, dzô!" },
+      { en: "Where's the bathroom?", local: "Nhà vệ sinh ở đâu?" },
+      { en: "No sugar/ice please", local: "Không đường/đá" },
+    ],
+  },
+  "🇰🇭 Cambodia": {
+    cash: [
+      "Cambodia runs on USD for anything above ~$1, KHR (riel) is mostly used for small change",
+      "KHR notes: 100 / 500 / 1,000 / 2,000 / 5,000 / 10,000 / 20,000 / 50,000 / 100,000",
+      "ATMs usually dispense USD directly, no need to convert",
+      "Expect change back in a mix of USD + riel, 4,000 riel ≈ $1",
+    ],
+    tipping: "Similar to Vietnam, not required but appreciated. $1-2/day for tour guides and drivers is standard among backpackers. Restaurants in tourist areas sometimes add a service charge already, check the bill.",
+    phrases: [
+      { en: "Hello", local: "Suostei" },
+      { en: "Thank you", local: "Aw kohn" },
+      { en: "How much?", local: "T'lai punman?" },
+      { en: "Too expensive", local: "T'lai nah" },
+      { en: "Delicious", local: "Chnganh" },
+      { en: "Cheers!", local: "Chol muoy!" },
+      { en: "Where's the bathroom?", local: "Bantop teuk noev eyna?" },
+    ],
+  },
+  "🇱🇦 Laos (if extension happens)": {
+    cash: [
+      "LAK (kip) notes: 1,000 / 2,000 / 5,000 / 10,000 / 20,000 / 50,000 / 100,000",
+      "USD and Thai baht are widely accepted too, especially for bigger purchases",
+      "ATMs charge a flat fee (~50,000 kip) regardless of withdrawal size, so withdraw bigger amounts less often",
+    ],
+    tipping: "Not expected, but small tips for guides/drivers on tours are appreciated, similar to Vietnam and Cambodia.",
+    phrases: [
+      { en: "Hello", local: "Sabaidee" },
+      { en: "Thank you", local: "Khob chai" },
+      { en: "How much?", local: "Thao dai?" },
+      { en: "Too expensive", local: "Paeng lai" },
+      { en: "Delicious", local: "Saep" },
+      { en: "Cheers!", local: "Chok dee!" },
+    ],
+  },
+};
+let cheatActiveTab = Object.keys(CHEAT_SHEETS)[0];
+function renderCheatSheet(){
+  document.getElementById("cheatTabs").innerHTML = Object.keys(CHEAT_SHEETS).map(k =>
+    `<button type="button" class="cheat-tab ${k === cheatActiveTab ? "active" : ""}" data-k="${escapeHtml(k)}">${escapeHtml(k)}</button>`
+  ).join("");
+  document.querySelectorAll(".cheat-tab").forEach(btn => {
+    btn.addEventListener("click", () => { cheatActiveTab = btn.getAttribute("data-k"); renderCheatSheet(); });
+  });
+  const data = CHEAT_SHEETS[cheatActiveTab];
+  document.getElementById("cheatContent").innerHTML = `
+    <div class="ref-group-label">Cash notes</div>
+    <div class="note-block">${data.cash.map(l => `• ${escapeHtml(l)}`).join("<br>")}</div>
+    <div class="ref-group-label">Tipping</div>
+    <div class="note-block">${escapeHtml(data.tipping)}</div>
+    <div class="ref-group-label">Key phrases</div>
+    ${data.phrases.map(p => `<div class="phrase-row"><span class="en">${escapeHtml(p.en)}</span><span class="local">${escapeHtml(p.local)}</span></div>`).join("")}
+  `;
+}
+document.getElementById("cheatBanner").addEventListener("click", () => {
+  const panel = document.getElementById("cheatCard");
+  const caret = document.getElementById("cheatCaret");
+  const isOpen = panel.style.display !== "none";
+  panel.style.display = isOpen ? "none" : "block";
+  caret.classList.toggle("open", !isOpen);
+  if (!isOpen) renderCheatSheet();
+});
+
+// ---- Trip journal ----
+function renderJournal(){
+  document.getElementById("journalSub").textContent = journal.length ? `${journal.length} ${journal.length === 1 ? "entry" : "entries"}` : "No entries yet";
+  const listEl = document.getElementById("journalList");
+  if (journal.length === 0) {
+    listEl.innerHTML = `<div class="empty">No journal entries yet, jot down today's highlights above.</div>`;
+    return;
+  }
+  const sorted = [...journal].sort((a,b) => b.date.localeCompare(a.date));
+  listEl.innerHTML = sorted.map(j => `
+    <div class="journal-entry">
+      <div class="j-date"><span>${j.date}</span><button class="journal-del" data-id="${j.id}">✕</button></div>
+      <div class="j-text">${escapeHtml(j.text)}</div>
+    </div>
+  `).join("");
+  listEl.querySelectorAll(".journal-del").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.confirming === "1") {
+        journal = journal.filter(j => j.id !== btn.getAttribute("data-id"));
+        saveJournal(journal);
+        renderJournal();
+      } else {
+        btn.dataset.confirming = "1";
+        btn.textContent = "sure?";
+        btn.classList.add("confirm");
+        setTimeout(() => { btn.dataset.confirming = "0"; btn.textContent = "✕"; btn.classList.remove("confirm"); }, 3000);
+      }
+    });
+  });
+}
+document.getElementById("jDate").value = todayStr();
+document.getElementById("journalAddForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const text = document.getElementById("jText").value.trim();
+  if (!text) return;
+  journal.push({ id: uid(), date: document.getElementById("jDate").value || todayStr(), text });
+  saveJournal(journal);
+  document.getElementById("jText").value = "";
+  renderJournal();
+});
+document.getElementById("journalBanner").addEventListener("click", () => {
+  const panel = document.getElementById("journalCard");
+  const caret = document.getElementById("journalCaret");
+  const isOpen = panel.style.display !== "none";
+  panel.style.display = isOpen ? "none" : "block";
+  caret.classList.toggle("open", !isOpen);
+  if (!isOpen) renderJournal();
+});
+
+// ---- Trip wrapped summary ----
+function renderWrapped(){
+  const onGround = expenses.filter(x => x.type !== "pretrip");
+  const gridEl = document.getElementById("wrappedGrid");
+  if (onGround.length === 0) {
+    gridEl.innerHTML = `<div class="empty">Log a few expenses first, stats show up here once there's data.</div>`;
+    return;
+  }
+  const total = onGround.reduce((s,x)=>s+x.amount,0);
+  const daysWithSpend = new Set(onGround.map(x => x.date)).size;
+  const avgPerDay = total / Math.max(1, daysWithSpend);
+  const byCat = {};
+  onGround.forEach(x => byCat[x.category] = (byCat[x.category]||0) + x.amount);
+  const topCat = Object.entries(byCat).sort((a,b) => b[1]-a[1])[0];
+  const byDay = {};
+  onGround.forEach(x => byDay[x.date] = (byDay[x.date]||0) + x.amount);
+  const priciestDay = Object.entries(byDay).sort((a,b) => b[1]-a[1])[0];
+  const atmFees = onGround.filter(x => (x.note||"").toLowerCase().includes("atm fee")).reduce((s,x)=>s+x.amount,0);
+  const catLabel = topCat ? (CATEGORIES.find(c => c.key === topCat[0]) || {}).label || topCat[0] : "–";
+
+  const stats = [
+    { label: "Total spent", val: fmtMoney(total), sub: `${onGround.length} entries` },
+    { label: "Avg / day", val: fmtMoney(avgPerDay), sub: `across ${daysWithSpend} days` },
+    { label: "Top category", val: catLabel, sub: topCat ? fmtMoney(topCat[1]) : "" },
+    { label: "Priciest day", val: priciestDay ? fmtMoney(priciestDay[1]) : "–", sub: priciestDay ? priciestDay[0] : "" },
+  ];
+  if (atmFees > 0) stats.push({ label: "ATM fees paid", val: fmtMoney(atmFees), sub: "worth batching withdrawals" });
+  gridEl.innerHTML = stats.map(s => `
+    <div class="wrapped-stat">
+      <div class="ws-label">${escapeHtml(s.label)}</div>
+      <div class="ws-val">${s.val}</div>
+      <div class="ws-sub">${escapeHtml(s.sub)}</div>
+    </div>
+  `).join("");
+}
+document.getElementById("wrappedBanner").addEventListener("click", () => {
+  const panel = document.getElementById("wrappedCard");
+  const caret = document.getElementById("wrappedCaret");
+  const isOpen = panel.style.display !== "none";
+  panel.style.display = isOpen ? "none" : "block";
+  caret.classList.toggle("open", !isOpen);
+  if (!isOpen) renderWrapped();
+});
+
 document.getElementById("emergencyBanner").addEventListener("click", () => {
   const panel = document.getElementById("emergencyCard");
   const caret = document.getElementById("emergencyCaret");
@@ -1665,6 +2057,7 @@ function render(){
   if (!legManuallySet && currentLeg) {
     fLeg.value = currentLeg;
   }
+  updateSunTimes(currentLeg);
 
   // pretrip card
   const pretripCard = document.getElementById("pretripCard");
@@ -1767,18 +2160,23 @@ function render(){
   legFilter.value = filterLeg;
 
   // entries list
-  const filtered = filterLeg === "All" ? expenses : expenses.filter(x => x.leg === filterLeg);
+  let filtered = filterLeg === "All" ? expenses : expenses.filter(x => x.leg === filterLeg);
+  if (searchTerm) {
+    const q = searchTerm.toLowerCase();
+    filtered = filtered.filter(x => (x.note || "").toLowerCase().includes(q) || (x.splitWith || "").toLowerCase().includes(q));
+  }
   const listEl = document.getElementById("entryList");
   if (filtered.length === 0){
-    listEl.innerHTML = `<div class="empty">No expenses logged yet. Add your first one above.</div>`;
+    listEl.innerHTML = `<div class="empty">${expenses.length === 0 ? "No expenses logged yet. Add your first one above." : "No entries match."}</div>`;
   } else {
     listEl.innerHTML = filtered.map(x => {
       const cat = [...CATEGORIES, ...PRETRIP_CATEGORIES].find(c => c.key === x.category);
       const mark = cat ? cat.mark : "○";
       const label = escapeHtml(x.note || (cat ? cat.label : "Expense"));
+      const splitTag = x.splitWith ? `<span class="split-badge">split w/ ${escapeHtml(x.splitWith)}</span>` : "";
       return `<div class="entry-row">
         <div class="catmark" style="background:${CAT_COLOR[x.category]||'#8C8578'}">${mark}</div>
-        <div class="info" data-id="${x.id}"><div class="note">${label}</div><div class="meta">${x.date} · ${x.leg}</div></div>
+        <div class="info" data-id="${x.id}"><div class="note">${label}${splitTag}</div><div class="meta">${x.date} · ${x.leg}</div></div>
         <div class="amt" data-id="${x.id}">${fmtMoney(x.amount)}</div>
         <button class="del" data-id="${x.id}">✕</button>
       </div>`;
@@ -1805,9 +2203,25 @@ function render(){
       el.addEventListener("click", () => editEntry(el.getAttribute("data-id")));
     });
   }
+
+  // split-cost owed summary, grouped by person
+  const owedEl = document.getElementById("owedSummary");
+  const splitEntries = expenses.filter(x => x.splitWith && x.splitTotal);
+  if (splitEntries.length === 0) {
+    owedEl.innerHTML = `<div class="empty" style="padding:10px 0;">No split expenses yet, check "Split with someone?" when adding one.</div>`;
+  } else {
+    const byPerson = {};
+    splitEntries.forEach(x => {
+      byPerson[x.splitWith] = (byPerson[x.splitWith] || 0) + (x.splitTotal - x.amount);
+    });
+    owedEl.innerHTML = Object.entries(byPerson).map(([name, owed]) =>
+      `<div class="owed-row"><span>${escapeHtml(name)} owes you</span><b>${fmtMoney(owed)}</b></div>`
+    ).join("");
+  }
 }
 
 legFilter.addEventListener("change", () => { filterLeg = legFilter.value; render(); });
+document.getElementById("entrySearch").addEventListener("input", (e) => { searchTerm = e.target.value; render(); });
 
 renderRateLine();
 refreshRates(false);
