@@ -233,7 +233,7 @@
 
   <div class="masthead">
     <h1>The Ledger</h1>
-    <div class="route">Taipei → Siem Reap</div>
+    <div class="route">Orange County, CA → Siem Reap</div>
   </div>
   <div class="location-banner" id="locationBanner">
     <div class="loc-main">
@@ -285,6 +285,12 @@
     <div class="itin-header-row">
       <div class="presets-title" style="margin-bottom:0;">Itinerary</div>
       <button type="button" class="temp-toggle" id="tempToggle">°F</button>
+    </div>
+    <div class="itin-row" style="opacity:0.75;">
+      <span class="itin-dot"></span>
+      <span class="itin-name">Orange County, CA (home)</span>
+      <span class="itin-weather"></span>
+      <span style="font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--muted); text-align:right;">Departs</span>
     </div>
     <div id="itineraryList"></div>
     <div class="field" style="margin-top:10px;">
@@ -1175,6 +1181,17 @@ document.getElementById("useConverted").addEventListener("click", () => {
   document.getElementById("convertResult").textContent = "≈ $0.00";
 });
 
+document.getElementById("entryForm").addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+  // The mobile numeric keyboard's Done/Go key fires Enter on the focused
+  // input, which HTML forms treat as an implicit submit. That's almost
+  // never what someone wants when they're just dismissing the keyboard,
+  // so swallow it here and only let submission happen through an actual
+  // tap on the "+ Add expense" button.
+  if (e.target && e.target.tagName === "BUTTON" && e.target.type === "submit") return;
+  e.preventDefault();
+  if (e.target && typeof e.target.blur === "function") e.target.blur();
+});
 document.getElementById("entryForm").addEventListener("submit", (e) => {
   e.preventDefault();
   const amt = parseFloat(document.getElementById("fAmount").value);
@@ -1527,12 +1544,33 @@ function renderItineraryPanel(){
     });
   });
   listEl.querySelectorAll("input[type=date]").forEach(inp => {
-    inp.addEventListener("change", (e) => {
-      itinerary[e.target.getAttribute("data-leg")] = e.target.value;
+    // iOS's native calendar-style date picker fires an "input" event when
+    // its Reset button is tapped, but doesn't reliably follow up with a
+    // "change" event. Listening only for "change" meant Reset appeared to
+    // do nothing: the field visually cleared but the old date got redrawn
+    // right back in on the next render. Handling both, deduped by value,
+    // covers Reset as well as normal date selection.
+    let lastHandledValue = inp.value;
+    const handleDateInput = (e) => {
+      const val = e.target.value;
+      if (val === lastHandledValue) return;
+      lastHandledValue = val;
+      const leg = e.target.getAttribute("data-leg");
+      // Confirmed legs drive the trip-day/pace math, so an accidental clear
+      // to blank shouldn't wipe them out, only the tentative Laos legs are
+      // meant to sit blank ("TBD") until the trip actually happens.
+      if (!val && !LAOS_EXT_LEGS.includes(leg)) {
+        e.target.value = itinerary[leg];
+        lastHandledValue = itinerary[leg];
+        return;
+      }
+      itinerary[leg] = val;
       saveItinerary(itinerary);
       render();
       renderItineraryPanel();
-    });
+    };
+    inp.addEventListener("change", handleDateInput);
+    inp.addEventListener("input", handleDateInput);
   });
   document.getElementById("tripEnd").value = tripEnd;
 }
