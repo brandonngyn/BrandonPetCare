@@ -348,6 +348,7 @@ const LEG_FLAG = {
 
 function todayStr(){ return new Date().toISOString().slice(0,10); }
 function daysBetween(a,b){ return Math.round((new Date(b) - new Date(a)) / 86400000); }
+function addDays(dateStr, days){ const d = new Date(dateStr); d.setDate(d.getDate() + days); return d.toISOString().slice(0,10); }
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[ch]));
 }
@@ -502,17 +503,19 @@ function renderItinerary(){
 function renderLocationBanner(){
   const today = todayStr();
   const tripStart = itinerary[ITINERARY_LEGS[0]];
-  const totalDays = Math.max(1, daysBetween(tripStart, tripEnd));
+  const tripBudget = loadTripBudget();
+  const totalDays = Math.max(1, tripBudget);
+  const plannedEnd = addDays(tripStart, tripBudget);
   let elapsed = daysBetween(tripStart, today);
   elapsed = Math.max(0, Math.min(totalDays, elapsed));
-  const daysLeft = Math.max(0, totalDays - elapsed);
+  const daysLeft = Math.max(0, totalDays - elapsed - 1);
   const currentLeg = getCurrentLeg(today);
   const labelEl = document.getElementById("locLabel");
   const subEl = document.getElementById("locSub");
   if (today < tripStart) {
     labelEl.textContent = `${daysBetween(today, tripStart)}d until Hanoi`;
     subEl.textContent = "Trip hasn't started yet";
-  } else if (today > tripEnd) {
+  } else if (today > plannedEnd) {
     labelEl.textContent = "Trip complete";
     subEl.textContent = "";
   } else {
