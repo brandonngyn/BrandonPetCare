@@ -344,6 +344,7 @@
       <div class="presets-title" style="margin-bottom:0;">Itinerary</div>
       <button type="button" class="temp-toggle" id="tempToggle">°F</button>
     </div>
+    <div class="today-line" id="tripLengthLine" style="margin-bottom:10px;"></div>
     <div class="itin-row" style="opacity:0.75;">
       <span class="itin-dot"></span>
       <span class="itin-name">🇺🇸 Orange County, CA (home)</span>
@@ -355,6 +356,10 @@
     <div class="field" style="margin-top:10px;">
       <label>Trip ends (leaving Siem Reap)</label>
       <input type="date" id="tripEnd" />
+    </div>
+    <div class="field" style="margin-top:10px;">
+      <label>Target total trip length (days), if extending — <span id="tripBudgetEditHint">tap to edit</span></label>
+      <input type="number" id="tripLengthBudget" min="1" step="1" />
     </div>
   </div>
 
@@ -644,7 +649,7 @@ document.getElementById("currencyToggle").addEventListener("click", () => {
   renderPricesCard();
 });
 
-const LEGS = ["Taipei","Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Pakse","4000 Islands","Vang Vieng","Luang Prabang","Other"];
+const LEGS = ["Taipei","Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Pakse","4000 Islands","Vang Vieng","Luang Prabang","Cat Ba","Phong Nha","Hue","Dalat","Phu Quoc","Tokyo","Lake Kawaguchi","Sydney","Cairns","Other"];
 const CATEGORIES = [
   { key:"Stay", label:"Stay", mark:"⌂" },
   { key:"Food", label:"Food", mark:"✦" },
@@ -1066,6 +1071,10 @@ function loadBudget(){ try { const v = localStorage.getItem(LS_BUDGET); return v
 function saveBudget(v){ try { localStorage.setItem(LS_BUDGET, String(v)); } catch(e){} }
 const ITINERARY_LEGS = ["Taipei","Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap"];
 const LAOS_EXT_LEGS = ["Pakse","4000 Islands","Vang Vieng","Luang Prabang"];
+const MEG_EXT_LEGS = ["Cat Ba","Phong Nha","Hue","Dalat","Phu Quoc"];
+const JAPAN_EXT_LEGS = ["Tokyo","Lake Kawaguchi"];
+const AUS_EXT_LEGS = ["Sydney","Cairns"];
+const ALL_TENTATIVE_LEGS = LAOS_EXT_LEGS.concat(MEG_EXT_LEGS, JAPAN_EXT_LEGS, AUS_EXT_LEGS);
 const DEFAULT_ITINERARY = {
   "Taipei": "2026-08-08",
   "Hanoi": "2026-08-09",
@@ -1081,6 +1090,8 @@ const DEFAULT_ITINERARY = {
   "Siem Reap": "2026-09-13",
   // Tentative only — not confirmed, shown separately with "TBD" dates.
   "Pakse": "", "4000 Islands": "", "Vang Vieng": "", "Luang Prabang": "",
+  "Cat Ba": "", "Phong Nha": "", "Hue": "", "Dalat": "", "Phu Quoc": "",
+  "Tokyo": "", "Lake Kawaguchi": "", "Sydney": "", "Cairns": "",
 };
 const DEFAULT_TRIP_END = "2026-09-16";
 
@@ -1101,6 +1112,15 @@ const LEG_COORDS = {
   "4000 Islands": [13.9833, 105.9333],
   "Vang Vieng": [18.9247, 102.4460],
   "Luang Prabang": [19.8845, 102.1348],
+  "Cat Ba": [20.7284, 107.0483],
+  "Phong Nha": [17.5943, 106.2823],
+  "Hue": [16.4637, 107.5909],
+  "Dalat": [11.9404, 108.4583],
+  "Phu Quoc": [10.2202, 103.9573],
+  "Tokyo": [35.6762, 139.6503],
+  "Lake Kawaguchi": [35.5000, 138.7333],
+  "Sydney": [-33.8688, 151.2093],
+  "Cairns": [-16.9186, 145.7781],
 };
 // Flags are plain unicode text (no image requests), so this stays free.
 const LEG_FLAG = {
@@ -1109,6 +1129,9 @@ const LEG_FLAG = {
   "Ninh Binh": "🇻🇳", "Da Nang": "🇻🇳", "Hoi An": "🇻🇳", "Ho Chi Minh City": "🇻🇳",
   "Phnom Penh": "🇰🇭", "Koh Rong": "🇰🇭", "Siem Reap": "🇰🇭",
   "Pakse": "🇱🇦", "4000 Islands": "🇱🇦", "Vang Vieng": "🇱🇦", "Luang Prabang": "🇱🇦",
+  "Cat Ba": "🇻🇳", "Phong Nha": "🇻🇳", "Hue": "🇻🇳", "Dalat": "🇻🇳", "Phu Quoc": "🇻🇳",
+  "Tokyo": "🇯🇵", "Lake Kawaguchi": "🇯🇵",
+  "Sydney": "🇦🇺", "Cairns": "🇦🇺",
 };
 function weatherIcon(code){
   if (code === 0) return "☀️";
@@ -1209,6 +1232,13 @@ function loadTripEnd(){
   return DEFAULT_TRIP_END;
 }
 function saveTripEnd(v){ try { localStorage.setItem(LS_TRIP_END, v); } catch(e){} }
+const LS_TRIP_BUDGET = "vn-kh-trip-budget-v1";
+const DEFAULT_TRIP_BUDGET = 60;
+function loadTripBudget(){
+  try { const v = localStorage.getItem(LS_TRIP_BUDGET); if (v) return Number(v); } catch(e){}
+  return DEFAULT_TRIP_BUDGET;
+}
+function saveTripBudget(v){ try { localStorage.setItem(LS_TRIP_BUDGET, String(v)); } catch(e){} }
 
 function loadRates(){
   try {
@@ -1263,6 +1293,7 @@ let itinerary = loadItinerary();
 let packingChecked = loadPackingChecked();
 let packingCustom = loadPackingCustom();
 let tripEnd = loadTripEnd();
+let tripBudget = loadTripBudget();
 let visa = loadVisa();
 let journal = loadJournal();
 let formType = "onground";
@@ -1644,6 +1675,37 @@ const PRICE_GROUPS = [
     { label: "Kuang Si Falls entry + tuk-tuk", type: "range", low: 10, high: 15 },
     { label: "Pak Ou Caves boat trip", type: "range", low: 15, high: 20 },
   ]},
+  { group: "🇻🇳 Vietnam add-ons, Meg's recs (not confirmed)", rows: [
+    { label: "Cat Ba: Lan Ha Bay day boat/kayak trip", type: "range", low: 20, high: 30 },
+    { label: "Phong Nha: Paradise Cave entry", type: "approx", usd: 8.50 },
+    { label: "Phong Nha: Dark Cave zipline + mud bath tour", type: "range", low: 22, high: 25 },
+    { label: "Hue: Imperial Citadel entry", type: "approx", usd: 8 },
+    { label: "Hai Van Pass motorbike/car transfer (Hue→Da Nang)", type: "range", low: 25, high: 45 },
+    { label: "Dalat: Crazy House entry", type: "approx", usd: 2 },
+    { label: "Dalat: canyoning half-day tour", type: "range", low: 30, high: 40 },
+    { label: "Phu Quoc: Vinpearl cable car (longest sea cable car)", type: "approx", usd: 30 },
+    { label: "Phu Quoc: island-hopping snorkel boat trip", type: "range", low: 20, high: 35 },
+  ]},
+  { group: "🇯🇵 Japan extension, Tokyo + Fuji (not confirmed)", rows: [
+    { label: "Bangkok/Siem Reap → Tokyo flight", type: "range", low: 250, high: 450 },
+    { label: "Tokyo dorm bed, per night", type: "range", low: 30, high: 45 },
+    { label: "JR rail pass or IC card top-up", type: "range", low: 30, high: 60 },
+    { label: "teamLab Planets / Borderless", type: "range", low: 25, high: 35 },
+    { label: "Shibuya Sky observation deck", type: "approx", usd: 18 },
+    { label: "Day trip to Mt Fuji / Lake Kawaguchi (bus)", type: "range", low: 30, high: 50 },
+    { label: "Lake Kawaguchi guesthouse, per night", type: "range", low: 40, high: 70 },
+    { label: "Conveyor belt sushi meal", type: "range", low: 8, high: 15 },
+  ]},
+  { group: "🇦🇺 Australia extension, Sydney + Cairns (not confirmed)", rows: [
+    { label: "Siem Reap/Bangkok → Sydney flight", type: "range", low: 400, high: 700 },
+    { label: "Sydney hostel dorm, per night", type: "range", low: 35, high: 55 },
+    { label: "Blue Mountains day tour from Sydney", type: "range", low: 60, high: 100 },
+    { label: "Bondi to Coogee coastal walk", type: "text", text: "Free" },
+    { label: "Sydney → Cairns flight", type: "range", low: 100, high: 200 },
+    { label: "Great Barrier Reef day trip w/ snorkeling", type: "range", low: 130, high: 200 },
+    { label: "Cairns hostel dorm, per night", type: "range", low: 30, high: 45 },
+    { label: "Daintree Rainforest day tour", type: "range", low: 90, high: 140 },
+  ]},
 ];
 function fmtPrice(usd){
   if (displayCurrency === "VND") {
@@ -1930,7 +1992,7 @@ function renderItineraryPanel(){
       <button type="button" class="itin-clear-btn" data-leg="${l}" title="Clear date">✕</button>
     </div>
   `).join("");
-  const laosRows = LAOS_EXT_LEGS.map(l => `
+  const tentativeRow = (l) => `
     <div class="itin-row tentative">
       <span class="itin-dot"></span>
       <span class="itin-name">${LEG_FLAG[l] || ""} ${l}</span>
@@ -1938,10 +2000,22 @@ function renderItineraryPanel(){
       <input type="date" data-leg="${l}" value="${itinerary[l] || ""}" placeholder="TBD" />
       <button type="button" class="itin-clear-btn" data-leg="${l}" title="Clear date">✕</button>
     </div>
-  `).join("");
-  listEl.innerHTML = mainRows + `<div class="itin-section-label">Possible Laos extension · not confirmed</div>` + laosRows;
+  `;
+  // These four are alternatives, not add-ons: connecting home via Thailand
+  // is fixed, but only one of Laos/Vietnam add-ons/Japan/Australia will
+  // actually happen, so each gets its own labeled, clearly-separate group.
+  const extensionGroups = [
+    { label: "Possible Laos extension · not confirmed", legs: LAOS_EXT_LEGS },
+    { label: "Possible Vietnam add-ons (Meg's recs) · not confirmed", legs: MEG_EXT_LEGS },
+    { label: "Possible Japan extension · not confirmed", legs: JAPAN_EXT_LEGS },
+    { label: "Possible Australia extension · not confirmed", legs: AUS_EXT_LEGS },
+  ];
+  const extensionsHtml = extensionGroups.map(g =>
+    `<div class="itin-section-label">${g.label}</div>${g.legs.map(tentativeRow).join("")}`
+  ).join("");
+  listEl.innerHTML = mainRows + extensionsHtml;
   fetchWeatherForLegs().then(map => {
-    ITINERARY_LEGS.concat(LAOS_EXT_LEGS).forEach(l => {
+    ITINERARY_LEGS.concat(ALL_TENTATIVE_LEGS).forEach(l => {
       const el = document.getElementById(`wx-${l.replace(/[^a-zA-Z0-9]/g, "")}`);
       if (!el) return;
       const w = map[l];
@@ -1962,9 +2036,9 @@ function renderItineraryPanel(){
       lastHandledValue = val;
       const leg = e.target.getAttribute("data-leg");
       // Confirmed legs drive the trip-day/pace math, so an accidental clear
-      // to blank shouldn't wipe them out, only the tentative Laos legs are
-      // meant to sit blank ("TBD") until the trip actually happens.
-      if (!val && !LAOS_EXT_LEGS.includes(leg)) {
+      // to blank shouldn't wipe them out, only the tentative extension legs
+      // are meant to sit blank ("TBD") until a decision actually gets made.
+      if (!val && !ALL_TENTATIVE_LEGS.includes(leg)) {
         e.target.value = itinerary[leg];
         lastHandledValue = itinerary[leg];
         return;
@@ -1973,6 +2047,7 @@ function renderItineraryPanel(){
       saveItinerary(itinerary);
       render();
       renderItineraryPanel();
+      renderTripLength();
     };
     inp.addEventListener("change", handleDateInput);
     inp.addEventListener("input", handleDateInput);
@@ -2000,7 +2075,28 @@ function renderItineraryPanel(){
   });
   document.getElementById("tripEnd").value = tripEnd;
 }
-document.getElementById("tripEnd").addEventListener("change", (e) => { tripEnd = e.target.value; saveTripEnd(tripEnd); render(); });
+document.getElementById("tripEnd").addEventListener("change", (e) => { tripEnd = e.target.value; saveTripEnd(tripEnd); render(); renderTripLength(); });
+document.getElementById("tripLengthBudget").value = tripBudget;
+document.getElementById("tripLengthBudget").addEventListener("change", (e) => {
+  const v = parseInt(e.target.value);
+  if (v > 0) { tripBudget = v; saveTripBudget(tripBudget); renderTripLength(); }
+});
+function renderTripLength(){
+  const el = document.getElementById("tripLengthLine");
+  const confirmedDays = daysBetween(itinerary["Taipei"], tripEnd);
+  const runway = tripBudget - confirmedDays;
+  const extOptions = [
+    { name: "Laos", days: "10-14" },
+    { name: "Japan", days: "7-10" },
+    { name: "Australia", days: "~7" },
+  ];
+  const fitLine = extOptions.map(o => {
+    const fits = runway >= (o.name === "Australia" ? 7 : o.name === "Japan" ? 7 : 10);
+    return `${o.name} ${fits ? "✓" : "⚠"}`;
+  }).join(" · ");
+  el.innerHTML = `Confirmed trip: <b>${confirmedDays}d</b> (Taipei→Siem Reap) · Budget: <b>${tripBudget}d</b> · Runway if extending: <b>${runway}d</b><br><span style="color:var(--muted2);">${fitLine} — connecting home via Thailand either way, pick one</span>`;
+}
+renderTripLength();
 
 document.getElementById("exportBtn").addEventListener("click", () => {
   const csvSafe = (v) => {
