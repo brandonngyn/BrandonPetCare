@@ -737,6 +737,7 @@ const DEFAULT_VISA = { Vietnam: "", Cambodia: "" };
 function todayStr(){ return new Date().toISOString().slice(0,10); }
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 function daysBetween(a,b){ return Math.round((new Date(b) - new Date(a)) / 86400000); }
+function addDays(dateStr, days){ const d = new Date(dateStr); d.setDate(d.getDate() + days); return d.toISOString().slice(0,10); }
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g, ch => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -2128,13 +2129,26 @@ function render(){
   const total = onGround.reduce((s,x)=>s+x.amount,0);
   const pretripTotal = pretrip.reduce((s,x)=>s+x.amount,0);
 
-  // location banner, based on itinerary
+  // location banner: uses the trip budget (Taipei + tripBudget days) so it
+  // reflects the whole planned trip once Brandon picks an extension, not
+  // just the confirmed Taipei→Siem Reap leg — he knows he's extending, just
+  // not where yet, so the countdown should already assume the full length.
   const today = todayStr();
   const tripStart = itinerary[ITINERARY_LEGS[0]];
-  const totalDays = Math.max(1, daysBetween(tripStart, tripEnd));
+  const totalDays = Math.max(1, tripBudget);
+  const plannedEnd = addDays(tripStart, tripBudget);
   let elapsed = daysBetween(tripStart, today);
   elapsed = Math.max(0, Math.min(totalDays, elapsed));
-  const daysLeft = Math.max(0, totalDays - elapsed);
+  const daysLeft = Math.max(0, totalDays - elapsed - 1);
+
+  // The $ on-ground budget only covers the confirmed Vietnam/Cambodia leg,
+  // so pace math ("need $X/day") stays keyed to tripEnd, not tripBudget —
+  // otherwise adding 20 unplanned "extension" days would make the required
+  // daily spend look artificially generous.
+  const confirmedTotalDays = Math.max(1, daysBetween(tripStart, tripEnd));
+  let confirmedElapsed = daysBetween(tripStart, today);
+  confirmedElapsed = Math.max(0, Math.min(confirmedTotalDays, confirmedElapsed));
+  const confirmedDaysLeft = Math.max(0, confirmedTotalDays - confirmedElapsed - 1);
 
   let currentLeg = getCurrentLeg(today);
   const locLabelEl = document.getElementById("locLabel");
@@ -2142,7 +2156,7 @@ function render(){
   if (today < tripStart) {
     locLabelEl.textContent = `${daysBetween(today, tripStart)}d until Taipei`;
     locSubEl.textContent = "Trip hasn't started yet";
-  } else if (today > tripEnd) {
+  } else if (today > plannedEnd) {
     locLabelEl.textContent = "Trip complete";
     locSubEl.textContent = "Tap to review the itinerary";
   } else {
@@ -2223,15 +2237,15 @@ function render(){
 
   // pace line
   const paceEl = document.getElementById("paceLine");
-  const paceSoFar = total / Math.max(1, elapsed || 1);
+  const paceSoFar = total / Math.max(1, confirmedElapsed || 1);
   if (today >= tripStart && today <= tripEnd) {
-    const reqPace = daysLeft > 0 ? Math.max(0, remaining) / daysLeft : 0;
+    const reqPace = confirmedDaysLeft > 0 ? Math.max(0, remaining) / confirmedDaysLeft : 0;
     const tight = reqPace < paceSoFar && remaining > 0;
     paceEl.className = "pace-line" + (tight ? " tight" : "");
     if (remaining >= 0) {
       paceEl.innerHTML = `<b>${fmtMoney(paceSoFar)}</b>/day so far · need <b class="req">${fmtMoney(reqPace)}</b>/day to stay on budget`;
     } else {
-      paceEl.innerHTML = `<b>${fmtMoney(paceSoFar)}</b>/day so far · already over, ${daysLeft}d left`;
+      paceEl.innerHTML = `<b>${fmtMoney(paceSoFar)}</b>/day so far · already over, ${confirmedDaysLeft}d left`;
     }
   } else {
     paceEl.innerHTML = "";
