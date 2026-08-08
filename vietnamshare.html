@@ -52,6 +52,16 @@
   .theme-toggle { background: none; border: 1px solid var(--faint); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 4px 9px; border-radius: 999px; cursor: pointer; }
 
   .location-banner { display:flex; justify-content:space-between; align-items:center; background:#22201B; color:#F4EFE3; border-radius:3px; padding:12px 14px; margin-bottom:10px; }
+  .util-banner { background: var(--card); color: var(--ink); border: 1px solid var(--border); cursor: pointer; }
+  .util-banner .loc-sub { color: var(--muted2); }
+  .loc-caret { font-size:20px; color:var(--faint); transition: transform .2s; }
+  .loc-caret.open { transform: rotate(90deg); }
+  .ref-note { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--muted2); margin-bottom: 12px; line-height: 1.5; }
+  .ref-group-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--amber); margin: 12px 0 6px; }
+  .ref-group-label:first-child { margin-top: 0; }
+  .ref-row { display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: var(--ink); padding: 8px 0; border-bottom: 1px solid var(--border-faint); font-size: 13px; }
+  .ref-row span:first-child { font-weight: 500; }
+  .ref-row span:last-child { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--teal); }
   .loc-main { display:flex; flex-direction:column; gap:2px; }
   .loc-label { font-family:'Fraunces', serif; font-size:16px; font-weight:600; }
   .loc-sub { font-family:'IBM Plex Mono', monospace; font-size:11px; color:#B0A88F; }
@@ -141,6 +151,40 @@
     <select class="leg-filter" id="legFilter"><option value="All">All legs</option></select>
   </div>
   <div id="entryList"></div>
+
+  <div class="location-banner util-banner" id="thingsBanner">
+    <div class="loc-main">
+      <span class="loc-label">Things to do</span>
+      <span class="loc-sub">Places and links, no prices</span>
+    </div>
+    <span class="loc-caret" id="thingsCaret">&rsaquo;</span>
+  </div>
+  <div class="ledger-card" id="thingsCard" style="display:none;">
+    <div id="thingsList"></div>
+  </div>
+
+  <div class="location-banner util-banner" id="emergencyBanner">
+    <div class="loc-main">
+      <span class="loc-label">Emergency numbers</span>
+      <span class="loc-sub">US Embassy, local emergency lines</span>
+    </div>
+    <span class="loc-caret" id="emergencyCaret">&rsaquo;</span>
+  </div>
+  <div class="ledger-card" id="emergencyCard" style="display:none;">
+    <div class="ref-group-label">US Embassy / Consulate, 24/7 emergency line</div>
+    <a class="ref-row" href="tel:+842438505000"><span>Hanoi (covers north of Hue)</span><span>+84 24 3850 5000</span></a>
+    <a class="ref-row" href="tel:+842835204200"><span>Ho Chi Minh City (south of/incl. Hue)</span><span>+84 28 3520 4200</span></a>
+    <a class="ref-row" href="tel:+85523728000"><span>Phnom Penh, Cambodia</span><span>+855 23 728 000</span></a>
+    <a class="ref-row" href="tel:+18884074747"><span>State Dept Overseas Citizen Svcs (US toll-free)</span><span>1-888-407-4747</span></a>
+    <a class="ref-row" href="tel:+16102548771"><span>Travel insurance emergency (collect call)</span><span>+1 610-254-8771</span></a>
+    <div class="ref-group-label">Local emergency lines, Vietnam</div>
+    <a class="ref-row" href="tel:113"><span>Police</span><span>113</span></a>
+    <a class="ref-row" href="tel:114"><span>Fire</span><span>114</span></a>
+    <a class="ref-row" href="tel:115"><span>Ambulance</span><span>115</span></a>
+    <div class="ref-group-label">Local emergency lines, Cambodia</div>
+    <a class="ref-row" href="tel:117"><span>Police</span><span>117</span></a>
+    <a class="ref-row" href="tel:119"><span>Ambulance</span><span>119</span></a>
+  </div>
 
   <div class="save-note">Brandon Nguyen Vietnam trip expense 2026 &middot; view only, amounts and insurance hidden</div>
 
@@ -450,6 +494,70 @@ function renderEntries(){
   }).join("");
 }
 document.getElementById("legFilter").addEventListener("change", (e) => { filterLeg = e.target.value; renderEntries(); });
+
+// ---- things to do: place names and links only, no prices, matches main tracker's groupings ----
+const THINGS_GROUPS = [
+  { group: "Hanoi", places: ["Ho Chi Minh Mausoleum", "Temple of Literature", "Water Puppet Show", "Train Street"] },
+  { group: "Ha Giang Loop", places: [
+    { name: "Road Kings", url: "https://www.roadkingshagiang.com/products/p/4-day-tour" },
+    { name: "Bong Hostel", url: "https://bongbackpackerhostel.com/tours" },
+  ]},
+  { group: "Sapa", places: [
+    "Fansipan cable car", "Cat Cat Village",
+    { name: "Rong May Glass Bridge", url: "https://www.klook.com/en-US/activity/57672-rong-may-sapa-glass-bridge-ticket/" },
+  ]},
+  { group: "Ha Long / Lan Ha Bay", places: [
+    { name: "2-Day Ha Long & Lan Ha Cruise w/ Kayaking", url: "https://www.getyourguide.com/hanoi-l205/from-hanoi2-days-ha-long-lan-ha-bay-boat-tour-t540900/" },
+  ]},
+  { group: "Ninh Binh", places: ["Tam Coc rowing boat", "Trang An boat tour", "Hang Mua viewpoint"] },
+  { group: "Da Nang", places: ["Marble Mountains", "Ba Na Hills / Golden Bridge"] },
+  { group: "Hoi An", places: [
+    "Ancient Town", "Basket/lantern boat ride",
+    { name: "Tailor recommendation", url: "https://maps.app.goo.gl/7dKAxt1as77BXtKC7" },
+  ]},
+  { group: "Ho Chi Minh City", places: ["Cu Chi Tunnels", "War Remnants Museum"] },
+  { group: "Phnom Penh", places: [
+    "Killing Fields + Tuol Sleng",
+    { name: "🎂 Eclipse Sky Bar", url: "https://www.google.com/maps/search/?api=1&query=Eclipse+Sky+Bar,+Phnom+Penh&query_place_id=ChIJNRFIQDxRCTERTnoMg6FC1Es" },
+    "Sunset river cruise",
+  ]},
+  { group: "Koh Rong", places: [
+    { name: "Bus + ferry via Sihanoukville", url: "https://www.bookaway.com/routes/cambodia/phnom-penh-to-koh-rong" },
+    "Snorkeling / boat day trip",
+  ]},
+  { group: "Siem Reap / Angkor Wat", places: [
+    { name: "3-day Angkor pass (official)", url: "https://angkorenterprise.gov.kh" },
+  ]},
+];
+function renderThingsToDo(){
+  const listEl = document.getElementById("thingsList");
+  listEl.innerHTML = THINGS_GROUPS.map(g => {
+    const rows = g.places.map(p => {
+      const isObj = typeof p === "object";
+      const name = isObj ? p.name : p;
+      const url = isObj ? p.url : null;
+      const tag = url ? "a" : "div";
+      const attrs = url ? `href="${url}" target="_blank" rel="noopener"` : "";
+      return `<${tag} class="ref-row" ${attrs}><span>${escapeHtml(name)}</span>${url ? "<span>&rarr;</span>" : ""}</${tag}>`;
+    }).join("");
+    return `<div class="ref-group-label">${escapeHtml(g.group)}</div>${rows}`;
+  }).join("");
+}
+document.getElementById("thingsBanner").addEventListener("click", () => {
+  const panel = document.getElementById("thingsCard");
+  const caret = document.getElementById("thingsCaret");
+  const isOpen = panel.style.display !== "none";
+  panel.style.display = isOpen ? "none" : "block";
+  caret.classList.toggle("open", !isOpen);
+  if (!isOpen) renderThingsToDo();
+});
+document.getElementById("emergencyBanner").addEventListener("click", () => {
+  const panel = document.getElementById("emergencyCard");
+  const caret = document.getElementById("emergencyCaret");
+  const isOpen = panel.style.display !== "none";
+  panel.style.display = isOpen ? "none" : "block";
+  caret.classList.toggle("open", !isOpen);
+});
 
 // ---- refresh everything periodically since this mirrors localStorage the main app writes to ----
 function refreshAll(){
