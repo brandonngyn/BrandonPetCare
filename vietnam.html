@@ -123,6 +123,10 @@
   .itin-row.current .itin-dot { background:var(--red); }
   .itin-row .itin-name { font-size:13.5px; font-weight:500; }
   .itin-row input[type=date] { font-family:'IBM Plex Mono', monospace; font-size:11.5px; padding:5px 6px; border:1px solid var(--border); border-radius:3px; background:var(--card); }
+  .itin-row.tentative { opacity: 0.68; }
+  .itin-row.tentative .itin-dot { background: transparent; border: 1px dashed var(--faint); }
+  .itin-row.tentative .itin-name::after { content: " (tentative)"; font-family: 'IBM Plex Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--amber); font-weight: 400; }
+  .itin-section-label { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--amber); margin: 12px 0 4px; padding-top: 8px; border-top: 1px dashed var(--border); }
   .subline { display:flex; justify-content: space-between; align-items:center; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--muted); margin: 0 0 10px; flex-wrap: wrap; gap: 6px; }
   .subline .days { cursor: pointer; text-decoration: underline dotted; }
   .subline .site-link { color: var(--muted); text-decoration: none; border-bottom: 1px dotted var(--faint); }
@@ -229,7 +233,7 @@
 
   <div class="masthead">
     <h1>The Ledger</h1>
-    <div class="route">Hanoi → Siem Reap</div>
+    <div class="route">Taipei → Siem Reap</div>
   </div>
   <div class="location-banner" id="locationBanner">
     <div class="loc-main">
@@ -405,11 +409,15 @@
   </div>
   <div class="ledger-card" id="emergencyCard" style="display:none;">
     <div class="ref-group-label">US Embassy / Consulate, 24/7 emergency line</div>
+    <a class="ref-row" href="tel:+886223438000"><span>Taipei (AIT)</span><span>+886 2 2162 2000</span></a>
     <a class="ref-row" href="tel:+842438505000"><span>Hanoi (covers north of Hue)</span><span>+84 24 3850 5000</span></a>
     <a class="ref-row" href="tel:+842835204200"><span>Ho Chi Minh City (south of/incl. Hue)</span><span>+84 28 3520 4200</span></a>
     <a class="ref-row" href="tel:+85523728000"><span>Phnom Penh, Cambodia</span><span>+855 23 728 000</span></a>
     <a class="ref-row" href="tel:+18884074747"><span>State Dept Overseas Citizen Svcs (US toll-free)</span><span>1-888-407-4747</span></a>
     <a class="ref-row" href="tel:+16102548771"><span>Travel insurance emergency (collect call)</span><span>+1 610-254-8771</span></a>
+    <div class="ref-group-label">Local emergency lines, Taiwan</div>
+    <a class="ref-row" href="tel:110"><span>Police</span><span>110</span></a>
+    <a class="ref-row" href="tel:119"><span>Fire / Ambulance</span><span>119</span></a>
     <div class="ref-group-label">Local emergency lines, Vietnam</div>
     <a class="ref-row" href="tel:113"><span>Police</span><span>113</span></a>
     <a class="ref-row" href="tel:114"><span>Fire</span><span>114</span></a>
@@ -417,6 +425,9 @@
     <div class="ref-group-label">Local emergency lines, Cambodia</div>
     <a class="ref-row" href="tel:117"><span>Police</span><span>117</span></a>
     <a class="ref-row" href="tel:119"><span>Ambulance</span><span>119</span></a>
+    <div class="ref-group-label">Local emergency lines, Laos (if extension happens)</div>
+    <a class="ref-row" href="tel:191"><span>Police</span><span>191</span></a>
+    <a class="ref-row" href="tel:195"><span>Ambulance</span><span>195</span></a>
 
     <div class="ref-group-label">Travel insurance policy (SquareMouth)</div>
     <div class="insurance-card">
@@ -505,7 +516,7 @@ document.getElementById("currencyToggle").addEventListener("click", () => {
   renderPricesCard();
 });
 
-const LEGS = ["Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Other"];
+const LEGS = ["Taipei","Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Pakse","4000 Islands","Vang Vieng","Luang Prabang","Other"];
 const CATEGORIES = [
   { key:"Stay", label:"Stay", mark:"⌂" },
   { key:"Food", label:"Food", mark:"✦" },
@@ -908,7 +919,7 @@ function loadExpenses(){
     if (raw) return JSON.parse(raw);
   } catch(e) {}
   const seed = [
-    { leg:"Pre-trip", type:"pretrip", category:"Flight", note:"One-way ticket to Hanoi", amount:580 },
+    { leg:"Pre-trip", type:"pretrip", category:"Flight", note:"One-way ticket to Hanoi (via Taipei)", amount:580 },
     { leg:"Pre-trip", type:"pretrip", category:"Flight", note:"One-way ticket to Los Angeles", amount:600 },
     { leg:"Pre-trip", type:"pretrip", category:"Insurance", note:"Travel insurance, 2 months", amount:95 },
     { leg:"Hanoi", type:"onground", category:"Visa/Fees", note:"Vietnam visa", amount:75 },
@@ -921,8 +932,10 @@ function loadExpenses(){
 function saveExpenses(list){ try { localStorage.setItem(LS_EXPENSES, JSON.stringify(list)); } catch(e){} }
 function loadBudget(){ try { const v = localStorage.getItem(LS_BUDGET); return v ? Number(v) : 2200; } catch(e){ return 2200; } }
 function saveBudget(v){ try { localStorage.setItem(LS_BUDGET, String(v)); } catch(e){} }
-const ITINERARY_LEGS = ["Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap"];
+const ITINERARY_LEGS = ["Taipei","Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap"];
+const LAOS_EXT_LEGS = ["Pakse","4000 Islands","Vang Vieng","Luang Prabang"];
 const DEFAULT_ITINERARY = {
+  "Taipei": "2026-08-08",
   "Hanoi": "2026-08-09",
   "Ha Giang": "2026-08-11",
   "Sapa": "2026-08-15",
@@ -934,10 +947,13 @@ const DEFAULT_ITINERARY = {
   "Phnom Penh": "2026-09-07",
   "Koh Rong": "2026-09-11",
   "Siem Reap": "2026-09-13",
+  // Tentative only — not confirmed, shown separately with "TBD" dates.
+  "Pakse": "", "4000 Islands": "", "Vang Vieng": "", "Luang Prabang": "",
 };
 const DEFAULT_TRIP_END = "2026-09-16";
 
 const LEG_COORDS = {
+  "Taipei": [25.0330, 121.5654],
   "Hanoi": [21.0285, 105.8542],
   "Ha Giang": [22.8025, 104.9784],
   "Sapa": [22.3364, 103.8438],
@@ -949,6 +965,10 @@ const LEG_COORDS = {
   "Phnom Penh": [11.5564, 104.9282],
   "Koh Rong": [10.7215, 103.2394],
   "Siem Reap": [13.3633, 103.8564],
+  "Pakse": [15.1202, 105.7989],
+  "4000 Islands": [13.9833, 105.9333],
+  "Vang Vieng": [18.9247, 102.4460],
+  "Luang Prabang": [19.8845, 102.1348],
 };
 function weatherIcon(code){
   if (code === 0) return "☀️";
@@ -1009,7 +1029,7 @@ function savePackingCustom(list){ try { localStorage.setItem(LS_PACKING_CUSTOM, 
 function loadItinerary(){
   try {
     const raw = localStorage.getItem(LS_ITINERARY);
-    if (raw) return JSON.parse(raw);
+    if (raw) return Object.assign({}, DEFAULT_ITINERARY, JSON.parse(raw));
   } catch(e){}
   saveItinerary(DEFAULT_ITINERARY);
   return { ...DEFAULT_ITINERARY };
@@ -1334,6 +1354,11 @@ function renderBorderChecklist(){
   });
 }
 const PRICE_GROUPS = [
+  { group: "Taipei (layover)", rows: [
+    { label: "MRT single ride", type: "approx", usd: 0.65 },
+    { label: "Shilin Night Market snacks", type: "approx", usd: 8 },
+    { label: "Taipei 101 observatory (if long layover)", type: "approx", usd: 20 },
+  ]},
   { group: "Hanoi", rows: [
     { label: "Ho Chi Minh Mausoleum", type: "approx", usd: 1 },
     { label: "Temple of Literature", type: "approx", usd: 1.20 },
@@ -1392,6 +1417,20 @@ const PRICE_GROUPS = [
   ]},
   { group: "Siem Reap / Angkor Wat", rows: [
     { label: "3-day Angkor pass (official)", type: "exact", usd: 62, url: "https://angkorenterprise.gov.kh" },
+  ]},
+  { group: "🇱🇦 Laos extension (not confirmed)", rows: [
+    { label: "Siem Reap → Pakse bus/van", type: "range", low: 29, high: 60, url: "https://12go.asia/en/travel/siem-reap/vientiane" },
+    { label: "Bolaven Plateau waterfall loop, guided", type: "range", low: 25, high: 40 },
+    { label: "Motorbike rental for Bolaven self-drive, per day", type: "range", low: 10, high: 15 },
+    { label: "Pakse to 4000 Islands, bus + boat combo", type: "range", low: 6, high: 9 },
+    { label: "4000 Islands kayak tour", type: "range", low: 18, high: 25 },
+    { label: "Irrawaddy dolphin-watching boat", type: "approx", usd: 10 },
+    { label: "Pakse/4000 Islands to Vientiane (bus or flight)", type: "range", low: 25, high: 150 },
+    { label: "Vientiane to Vang Vieng bus", type: "range", low: 10, high: 15 },
+    { label: "Vang Vieng hot air balloon", type: "range", low: 80, high: 100 },
+    { label: "Vang Vieng to Luang Prabang bus/van", type: "range", low: 12, high: 20 },
+    { label: "Kuang Si Falls entry + tuk-tuk", type: "range", low: 10, high: 15 },
+    { label: "Pak Ou Caves boat trip", type: "range", low: 15, high: 20 },
   ]},
 ];
 function fmtPrice(usd){
@@ -1462,7 +1501,7 @@ function renderItineraryPanel(){
   ITINERARY_LEGS.forEach(l => {
     if (itinerary[l] <= BIRTHDAY && (!birthdayLeg || itinerary[l] > itinerary[birthdayLeg])) birthdayLeg = l;
   });
-  listEl.innerHTML = ITINERARY_LEGS.map(l => `
+  const mainRows = ITINERARY_LEGS.map(l => `
     <div class="itin-row ${l === currentLeg ? "current" : ""}">
       <span class="itin-dot"></span>
       <span class="itin-name">${l}${l === birthdayLeg ? ' 🎂' : ''}</span>
@@ -1470,8 +1509,17 @@ function renderItineraryPanel(){
       <input type="date" data-leg="${l}" value="${itinerary[l]}" />
     </div>
   `).join("");
+  const laosRows = LAOS_EXT_LEGS.map(l => `
+    <div class="itin-row tentative">
+      <span class="itin-dot"></span>
+      <span class="itin-name">${l}</span>
+      <span class="itin-weather" id="wx-${l.replace(/[^a-zA-Z0-9]/g, "")}">···</span>
+      <input type="date" data-leg="${l}" value="${itinerary[l] || ""}" placeholder="TBD" />
+    </div>
+  `).join("");
+  listEl.innerHTML = mainRows + `<div class="itin-section-label">Possible Laos extension · not confirmed</div>` + laosRows;
   fetchWeatherForLegs().then(map => {
-    ITINERARY_LEGS.forEach(l => {
+    ITINERARY_LEGS.concat(LAOS_EXT_LEGS).forEach(l => {
       const el = document.getElementById(`wx-${l.replace(/[^a-zA-Z0-9]/g, "")}`);
       if (!el) return;
       const w = map[l];
@@ -1532,7 +1580,7 @@ function render(){
   const locLabelEl = document.getElementById("locLabel");
   const locSubEl = document.getElementById("locSub");
   if (today < tripStart) {
-    locLabelEl.textContent = `${daysBetween(today, tripStart)}d until Hanoi`;
+    locLabelEl.textContent = `${daysBetween(today, tripStart)}d until Taipei`;
     locSubEl.textContent = "Trip hasn't started yet";
   } else if (today > tripEnd) {
     locLabelEl.textContent = "Trip complete";
