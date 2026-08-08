@@ -149,7 +149,7 @@
     </div>
     <div class="itin-row" style="opacity:0.75;">
       <span class="itin-dot"></span>
-      <span class="itin-name">Orange County, CA (home)</span>
+      <span class="itin-name">🇺🇸 Orange County, CA (home)</span>
       <span class="itin-weather"></span>
       <span class="itin-date">Departs</span>
     </div>
@@ -250,6 +250,14 @@ const LEG_COORDS = {
   "Koh Rong": [10.7215, 103.2394], "Siem Reap": [13.3633, 103.8564],
   "Pakse": [15.1202, 105.7989], "4000 Islands": [13.9833, 105.9333],
   "Vang Vieng": [18.9247, 102.4460], "Luang Prabang": [19.8845, 102.1348],
+};
+// Flags are plain unicode text (no image requests), so this stays free.
+const LEG_FLAG = {
+  "Taipei": "🇹🇼",
+  "Hanoi": "🇻🇳", "Ha Giang": "🇻🇳", "Sapa": "🇻🇳", "Ha Long / Lan Ha": "🇻🇳",
+  "Ninh Binh": "🇻🇳", "Da Nang": "🇻🇳", "Hoi An": "🇻🇳", "Ho Chi Minh City": "🇻🇳",
+  "Phnom Penh": "🇰🇭", "Koh Rong": "🇰🇭", "Siem Reap": "🇰🇭",
+  "Pakse": "🇱🇦", "4000 Islands": "🇱🇦", "Vang Vieng": "🇱🇦", "Luang Prabang": "🇱🇦",
 };
 
 function todayStr(){ return new Date().toISOString().slice(0,10); }
@@ -357,7 +365,7 @@ function renderItinerary(){
   const mainRows = ITINERARY_LEGS.map(l => `
     <div class="itin-row ${l === currentLeg ? "current" : ""}">
       <span class="itin-dot"></span>
-      <span class="itin-name">${escapeHtml(l)}</span>
+      <span class="itin-name">${LEG_FLAG[l] || ""} ${escapeHtml(l)}</span>
       <span class="itin-weather" id="wx-${l.replace(/[^a-zA-Z0-9]/g,"")}">&middot;&middot;&middot;</span>
       <span class="itin-date">${itinerary[l] || ""}</span>
     </div>
@@ -366,7 +374,7 @@ function renderItinerary(){
   const laosRows = LAOS_EXT_LEGS.map(l => `
     <div class="itin-row tentative">
       <span class="itin-dot"></span>
-      <span class="itin-name">${escapeHtml(l)}</span>
+      <span class="itin-name">${LEG_FLAG[l] || ""} ${escapeHtml(l)}</span>
       <span class="itin-weather" id="wx-${l.replace(/[^a-zA-Z0-9]/g,"")}">&middot;&middot;&middot;</span>
       <span class="itin-date">${itinerary[l] || "TBD"}</span>
     </div>
