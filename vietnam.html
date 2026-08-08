@@ -1382,6 +1382,8 @@ const PRICE_GROUPS = [
   ]},
   { group: "Phnom Penh", rows: [
     { label: "Killing Fields + Tuol Sleng, guided tour", type: "range", low: 19, high: 20 },
+    { label: "🎂 Eclipse Sky Bar (birthday dinner, 23rd floor)", type: "text", text: "$$", url: "https://www.google.com/maps/search/?api=1&query=Eclipse+Sky+Bar,+Phnom+Penh&query_place_id=ChIJNRFIQDxRCTERTnoMg6FC1Es" },
+    { label: "Sunset river cruise, Mekong/Tonle Sap", type: "range", low: 10, high: 15 },
   ]},
   { group: "Koh Rong (bus + ferry via Sihanoukville, round trip)", rows: [
     { label: "Phnom Penh ↔ Koh Rong, bus + ferry combo", type: "range", low: 28, high: 50, url: "https://www.bookaway.com/routes/cambodia/phnom-penh-to-koh-rong" },
@@ -1455,10 +1457,15 @@ function renderItineraryPanel(){
   const listEl = document.getElementById("itineraryList");
   const today = todayStr();
   let currentLeg = getCurrentLeg(today);
+  const BIRTHDAY = "2026-09-07";
+  let birthdayLeg = null;
+  ITINERARY_LEGS.forEach(l => {
+    if (itinerary[l] <= BIRTHDAY && (!birthdayLeg || itinerary[l] > itinerary[birthdayLeg])) birthdayLeg = l;
+  });
   listEl.innerHTML = ITINERARY_LEGS.map(l => `
     <div class="itin-row ${l === currentLeg ? "current" : ""}">
       <span class="itin-dot"></span>
-      <span class="itin-name">${l}</span>
+      <span class="itin-name">${l}${l === birthdayLeg ? ' 🎂' : ''}</span>
       <span class="itin-weather" id="wx-${l.replace(/[^a-zA-Z0-9]/g, "")}">···</span>
       <input type="date" data-leg="${l}" value="${itinerary[l]}" />
     </div>
