@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>The Ledger - Vietnam & Cambodia (Share)</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #F4EFE3;
+    --card: #FFFDF7;
+    --ink: #22201B;
+    --muted: #6B6555;
+    --muted2: #8C8578;
+    --faint: #B0A88F;
+    --border: #D8CFB8;
+    --border-faint: #EAE3D2;
+    --teal: #1F4E45;
+    --red: #A63D2F;
+    --amber: #A6702F;
+    --current-bg: #F0EAD8;
+  }
+  .dark {
+    --bg: #17140F;
+    --card: #211D17;
+    --ink: #EDE6D5;
+    --muted: #A79E8A;
+    --muted2: #8C8271;
+    --faint: #5C5646;
+    --border: #3A3527;
+    --border-faint: #2C2820;
+    --teal: #3D8672;
+    --red: #D4685A;
+    --amber: #D19654;
+    --current-bg: #2E2A20;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; }
+  .wrap { background: var(--bg); min-height: 100vh; font-family: 'Inter', sans-serif; color: var(--ink); padding: 24px 16px 60px; transition: background .2s, color .2s; }
+  .wrap.large-text { zoom: 1.18; }
+  .container { max-width: 640px; margin: 0 auto; }
+
+  .masthead { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid var(--ink); padding-bottom: 10px; margin-bottom: 4px; }
+  .masthead h1 { font-family: 'Fraunces', serif; font-weight: 700; font-size: 26px; letter-spacing: -0.01em; margin: 0; }
+  .masthead .route { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .subline { display:flex; justify-content: space-between; align-items:center; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--muted); margin: 8px 0 14px; flex-wrap: wrap; gap: 6px; }
+  .subline .site-link { color: var(--muted); text-decoration: none; border-bottom: 1px dotted var(--faint); }
+  .read-badge { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted2); background: var(--border-faint); padding: 3px 8px; border-radius: 999px; }
+  .theme-toggle { background: none; border: 1px solid var(--faint); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 4px 9px; border-radius: 999px; cursor: pointer; }
+
+  .location-banner { display:flex; justify-content:space-between; align-items:center; background:#22201B; color:#F4EFE3; border-radius:3px; padding:12px 14px; margin-bottom:10px; }
+  .loc-main { display:flex; flex-direction:column; gap:2px; }
+  .loc-label { font-family:'Fraunces', serif; font-size:16px; font-weight:600; }
+  .loc-sub { font-family:'IBM Plex Mono', monospace; font-size:11px; color:#B0A88F; }
+
+  .ledger-card { background: var(--card); border: 1px solid var(--border); border-radius: 3px; padding: 18px 18px 16px; margin-bottom: 16px; }
+
+  .checkin-card { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--red); border-radius: 3px; padding: 12px 14px; margin-bottom: 16px; }
+  .checkin-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 4px; }
+  .checkin-text { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; color: var(--ink); }
+  .local-time-line { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--teal); margin-top: 4px; }
+  .viewer-time-line { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+  .checkin-meta { display:flex; justify-content: space-between; align-items:center; margin-top: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--muted2); }
+  .checkin-meta.stale .checkin-time-val { color: var(--amber); }
+  .history-toggle-link { color: var(--teal); text-decoration: none; border-bottom: 1px dotted var(--teal); background: none; border: none; font-family: 'IBM Plex Mono', monospace; font-size: inherit; cursor: pointer; padding: 0; }
+  .checkin-history { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-faint); }
+  .checkin-hist-row { display:flex; align-items:center; padding: 6px 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; border-bottom: 1px solid var(--border-faint); gap: 8px; }
+  .checkin-hist-row .hp { color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1 1 auto; min-width: 0; }
+  .checkin-hist-row .ht { color: var(--muted2); flex: 0 0 auto; font-size: 10.5px; }
+  .checkin-hist-empty { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--muted2); padding: 6px 0; }
+
+  .presets-title { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 8px; }
+  .itin-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .temp-toggle { background: none; border: 1px dashed var(--border); color: var(--teal); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 3px 9px; border-radius: 999px; cursor: pointer; }
+  .itin-row { display:grid; grid-template-columns: 22px 1fr 68px 90px; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--border-faint); }
+  .itin-row.current { background:var(--current-bg); margin:0 -8px; padding:6px 8px; border-radius:3px; }
+  .itin-row .itin-dot { width:8px; height:8px; border-radius:50%; background:var(--border); }
+  .itin-row.current .itin-dot { background:var(--red); }
+  .itin-row .itin-name { font-size:13.5px; font-weight:500; }
+  .itin-row .itin-weather { font-size: 12px; font-family: 'IBM Plex Mono', monospace; color: var(--muted); text-align: center; white-space: nowrap; }
+  .itin-row .itin-date { font-family:'IBM Plex Mono', monospace; font-size:11.5px; color: var(--muted); text-align: right; }
+
+  .list-header { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 10px; gap: 8px; flex-wrap: wrap; }
+  .list-header h2 { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; margin: 0; }
+  .leg-filter { font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 3px; background: var(--card); color: var(--ink); }
+  .entry-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-faint); }
+  .entry-row .catmark { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--card); flex-shrink: 0; }
+  .entry-row .info { min-width: 0; }
+  .entry-row .info .note { font-size: 13.5px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .entry-row .info .meta { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--muted2); margin-top: 1px; }
+  .entry-row .amt-hidden { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--faint); white-space: nowrap; }
+
+  .empty { text-align: center; padding: 30px 10px; color: var(--muted2); font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; }
+  .save-note { text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--faint); margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrapEl"><div class="container">
+
+  <div class="masthead">
+    <h1>The Ledger</h1>
+    <div class="route">Hanoi &rarr; Siem Reap</div>
+  </div>
+  <div class="subline">
+    <span class="read-badge">Read-only</span>
+    <button class="theme-toggle" id="themeToggle">Dark mode</button>
+  </div>
+
+  <div class="location-banner" id="locationBanner">
+    <div class="loc-main">
+      <span class="loc-label" id="locLabel">Loading...</span>
+      <span class="loc-sub" id="locSub"></span>
+    </div>
+  </div>
+
+  <div class="checkin-card" id="checkinCard">
+    <div class="checkin-label">Brandon's last check-in</div>
+    <div class="checkin-text" id="checkinText">Loading...</div>
+    <div class="local-time-line" id="localTimeLine"></div>
+    <div class="viewer-time-line" id="viewerTimeLine"></div>
+    <div class="checkin-meta">
+      <span id="checkinTime"></span>
+      <button type="button" class="history-toggle-link" id="historyToggleLink">History</button>
+    </div>
+    <div class="checkin-history" id="checkinHistory" style="display:none;"></div>
+  </div>
+
+  <div class="ledger-card">
+    <div class="itin-header-row">
+      <div class="presets-title" style="margin-bottom:0;">Itinerary</div>
+      <button type="button" class="temp-toggle" id="tempToggle">&deg;F</button>
+    </div>
+    <div id="itineraryList"></div>
+  </div>
+
+  <div class="list-header">
+    <h2>Ledger entries</h2>
+    <select class="leg-filter" id="legFilter"><option value="All">All legs</option></select>
+  </div>
+  <div id="entryList"></div>
+
+  <div class="save-note">Brandon Nguyen Vietnam trip expense 2026 &middot; view only, amounts and insurance hidden</div>
+
+</div></div>
+
+<script>
+// ---- shared keys, must match the main tracker exactly so this reads the same data ----
+const LS_EXPENSES = "vn-kh-expenses-v1";
+const LS_ITINERARY = "vn-kh-itinerary-v1";
+const LS_TRIP_END = "vn-kh-trip-end-v1";
+const LS_THEME = "vn-kh-theme-v1";
+const LS_TEXTSIZE = "vn-kh-textsize-v1";
+const LS_TEMPUNIT = "vn-kh-tempunit-v1";
+const CHECKIN_GIST_ID = "67e1390e31c93e97aaec5cb9fde54019";
+
+const CATEGORIES = [
+  { key:"Stay", label:"Stay", mark:"\u2318" },
+  { key:"Food", label:"Food", mark:"\u2726" },
+  { key:"Transport", label:"Transport", mark:"\u2192" },
+  { key:"Tours", label:"Tours", mark:"\u25C8" },
+  { key:"Visa/Fees", label:"Visa / Fees", mark:"\u00A7" },
+  { key:"Misc", label:"Misc", mark:"\u25CB" },
+];
+const CAT_COLOR = { Stay:"#8A6D3B", Food:"#A63D2F", Transport:"#1F4E45", Tours:"#5B7C8D", "Visa/Fees":"#6B4A82", Misc:"#8C8578" };
+
+const ITINERARY_LEGS = ["Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap"];
+const DEFAULT_ITINERARY = {
+  "Hanoi": "2026-08-09", "Ha Giang": "2026-08-11", "Sapa": "2026-08-15",
+  "Ha Long / Lan Ha": "2026-08-18", "Ninh Binh": "2026-08-20", "Da Nang": "2026-08-23",
+  "Hoi An": "2026-08-25", "Ho Chi Minh City": "2026-08-30", "Phnom Penh": "2026-09-07",
+  "Koh Rong": "2026-09-11", "Siem Reap": "2026-09-13",
+};
+const DEFAULT_TRIP_END = "2026-09-16";
+const LEG_COORDS = {
+  "Hanoi": [21.0285, 105.8542], "Ha Giang": [22.8025, 104.9784], "Sapa": [22.3364, 103.8438],
+  "Ha Long / Lan Ha": [20.9101, 107.1839], "Ninh Binh": [20.2506, 105.9744], "Da Nang": [16.0544, 108.2022],
+  "Hoi An": [15.8801, 108.3380], "Ho Chi Minh City": [10.8231, 106.6297], "Phnom Penh": [11.5564, 104.9282],
+  "Koh Rong": [10.7215, 103.2394], "Siem Reap": [13.3633, 103.8564],
+};
+
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function daysBetween(a,b){ return Math.round((new Date(b) - new Date(a)) / 86400000); }
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[ch]));
+}
+
+// ---- theme + text size (own preference, separate from main tracker's) ----
+const LS_SHARE_THEME = "vn-kh-share-theme-v1";
+function loadTheme(){
+  try { const v = localStorage.getItem(LS_SHARE_THEME); if (v) return v; } catch(e){}
+  return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+}
+function applyTheme(t){
+  document.getElementById("wrapEl").classList.toggle("dark", t === "dark");
+  document.getElementById("themeToggle").textContent = t === "dark" ? "Light mode" : "Dark mode";
+}
+let theme = loadTheme();
+applyTheme(theme);
+document.getElementById("themeToggle").addEventListener("click", () => {
+  theme = theme === "dark" ? "light" : "dark";
+  try { localStorage.setItem(LS_SHARE_THEME, theme); } catch(e){}
+  applyTheme(theme);
+});
+
+// ---- read-only data loaders, same keys as main tracker but never write except our own display prefs ----
+function loadExpenses(){
+  try { const raw = localStorage.getItem(LS_EXPENSES); if (raw) return JSON.parse(raw); } catch(e){}
+  return [];
+}
+function loadItinerary(){
+  try { const raw = localStorage.getItem(LS_ITINERARY); if (raw) return JSON.parse(raw); } catch(e){}
+  return { ...DEFAULT_ITINERARY };
+}
+function loadTripEnd(){
+  try { const v = localStorage.getItem(LS_TRIP_END); if (v) return v; } catch(e){}
+  return DEFAULT_TRIP_END;
+}
+
+let itinerary = loadItinerary();
+let tripEnd = loadTripEnd();
+let filterLeg = "All";
+
+function getCurrentLeg(today){
+  let best = null;
+  ITINERARY_LEGS.forEach(l => {
+    if (itinerary[l] <= today && (!best || itinerary[l] > itinerary[best])) best = l;
+  });
+  return best;
+}
+
+// ---- temperature unit ----
+let tempUnit = "F";
+try { tempUnit = localStorage.getItem(LS_TEMPUNIT) || "F"; } catch(e){}
+function fmtTemp(celsius){
+  if (tempUnit === "F") return `${Math.round(celsius * 9/5 + 32)}\u00B0F`;
+  return `${Math.round(celsius)}\u00B0C`;
+}
+function weatherIcon(code){
+  if (code === 0) return "\u2600\uFE0F";
+  if (code <= 3) return "\u26C5";
+  if (code === 45 || code === 48) return "\uD83C\uDF2B\uFE0F";
+  if (code >= 51 && code <= 67) return "\uD83C\uDF27\uFE0F";
+  if (code >= 71 && code <= 77) return "\uD83C\uDF28\uFE0F";
+  if (code >= 80 && code <= 82) return "\uD83C\uDF26\uFE0F";
+  if (code >= 95) return "\u26C8\uFE0F";
+  return "\uD83C\uDF24\uFE0F";
+}
+let weatherCache = {};
+let weatherCacheTime = 0;
+async function fetchWeatherForLegs(){
+  const now = Date.now();
+  if (now - weatherCacheTime < 30 * 60 * 1000 && Object.keys(weatherCache).length) return weatherCache;
+  const entries = Object.entries(LEG_COORDS);
+  const results = await Promise.all(entries.map(async ([leg, [lat, lon]]) => {
+    try {
+      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+      const data = await res.json();
+      return [leg, data.current_weather];
+    } catch(e) { return [leg, null]; }
+  }));
+  const map = {};
+  results.forEach(([leg, w]) => { map[leg] = w; });
+  weatherCache = map;
+  weatherCacheTime = now;
+  return map;
+}
+document.getElementById("tempToggle").textContent = tempUnit === "F" ? "\u00B0F" : "\u00B0C";
+document.getElementById("tempToggle").addEventListener("click", () => {
+  tempUnit = tempUnit === "F" ? "C" : "F";
+  try { localStorage.setItem(LS_TEMPUNIT, tempUnit); } catch(e){}
+  document.getElementById("tempToggle").textContent = tempUnit === "F" ? "\u00B0F" : "\u00B0C";
+  renderItinerary();
+});
+
+function renderItinerary(){
+  const listEl = document.getElementById("itineraryList");
+  const today = todayStr();
+  const currentLeg = getCurrentLeg(today);
+  listEl.innerHTML = ITINERARY_LEGS.map(l => `
+    <div class="itin-row ${l === currentLeg ? "current" : ""}">
+      <span class="itin-dot"></span>
+      <span class="itin-name">${escapeHtml(l)}</span>
+      <span class="itin-weather" id="wx-${l.replace(/[^a-zA-Z0-9]/g,"")}">&middot;&middot;&middot;</span>
+      <span class="itin-date">${itinerary[l] || ""}</span>
+    </div>
+  `).join("");
+  fetchWeatherForLegs().then(map => {
+    ITINERARY_LEGS.forEach(l => {
+      const el = document.getElementById(`wx-${l.replace(/[^a-zA-Z0-9]/g,"")}`);
+      if (!el) return;
+      const w = map[l];
+      el.textContent = w ? `${weatherIcon(w.weathercode)} ${fmtTemp(w.temperature)}` : "\u2013";
+    });
+  });
+}
+
+// ---- location banner ----
+function renderLocationBanner(){
+  const today = todayStr();
+  const tripStart = itinerary[ITINERARY_LEGS[0]];
+  const totalDays = Math.max(1, daysBetween(tripStart, tripEnd));
+  let elapsed = daysBetween(tripStart, today);
+  elapsed = Math.max(0, Math.min(totalDays, elapsed));
+  const daysLeft = Math.max(0, totalDays - elapsed);
+  const currentLeg = getCurrentLeg(today);
+  const labelEl = document.getElementById("locLabel");
+  const subEl = document.getElementById("locSub");
+  if (today < tripStart) {
+    labelEl.textContent = `${daysBetween(today, tripStart)}d until Hanoi`;
+    subEl.textContent = "Trip hasn't started yet";
+  } else if (today > tripEnd) {
+    labelEl.textContent = "Trip complete";
+    subEl.textContent = "";
+  } else {
+    labelEl.textContent = `Brandon is in ${currentLeg || ITINERARY_LEGS[0]}`;
+    subEl.textContent = `Day ${elapsed + 1} of ${totalDays}, ${daysLeft}d left`;
+  }
+}
+
+// ---- check-in (live, same gist the main tracker reads/writes) ----
+function timeAgo(ts){
+  const diffMs = Date.now() - ts;
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
+let checkinHistoryOpen = false;
+let lastCheckinList = [];
+function renderCheckinHistory(){
+  const wrap = document.getElementById("checkinHistory");
+  if (!checkinHistoryOpen) { wrap.style.display = "none"; return; }
+  wrap.style.display = "block";
+  if (lastCheckinList.length === 0) {
+    wrap.innerHTML = `<div class="checkin-hist-empty">No check-ins yet.</div>`;
+    return;
+  }
+  const reversed = [...lastCheckinList].reverse();
+  wrap.innerHTML = reversed.map(e => `
+    <div class="checkin-hist-row">
+      <span class="hp">${escapeHtml(e.place)}</span>
+      <span class="ht">${timeAgo(e.ts)}</span>
+    </div>
+  `).join("");
+}
+document.getElementById("historyToggleLink").addEventListener("click", () => {
+  checkinHistoryOpen = !checkinHistoryOpen;
+  document.getElementById("historyToggleLink").textContent = checkinHistoryOpen ? "Hide history" : "History";
+  renderCheckinHistory();
+});
+async function refreshCheckin(){
+  const textEl = document.getElementById("checkinText");
+  const timeEl = document.getElementById("checkinTime");
+  const metaEl = document.querySelector(".checkin-meta");
+  try {
+    const res = await fetch(`https://api.github.com/gists/${CHECKIN_GIST_ID}?_=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) throw new Error("fetch failed");
+    const data = await res.json();
+    const filename = Object.keys(data.files || {})[0];
+    const raw = filename ? (data.files[filename].content || "") : "";
+    let list;
+    try {
+      list = JSON.parse(raw);
+      if (!Array.isArray(list)) throw new Error("not array");
+    } catch(e) {
+      list = raw.trim() ? [{ place: raw.trim(), ts: new Date(data.updated_at).getTime() }] : [];
+    }
+    lastCheckinList = list;
+    const latest = list[list.length - 1];
+    if (latest) {
+      textEl.textContent = latest.place.slice(0, 120);
+      const hrsAgo = (Date.now() - latest.ts) / 3600000;
+      timeEl.innerHTML = `<span class="checkin-time-val">Updated ${timeAgo(latest.ts)}</span>`;
+      metaEl.classList.toggle("stale", hrsAgo > 30);
+    } else {
+      textEl.textContent = "No check-in yet";
+      timeEl.textContent = "";
+    }
+    renderCheckinHistory();
+  } catch(e) {
+    textEl.textContent = "Couldn't load check-in";
+    timeEl.textContent = "Check connection";
+    metaEl.classList.add("stale");
+  }
+}
+document.getElementById("checkinCard").addEventListener("click", (e) => {
+  if (e.target.closest("button, .checkin-history")) return;
+  refreshCheckin();
+});
+
+// ---- time lines ----
+function updateLocalTime(){
+  const el = document.getElementById("localTimeLine");
+  if (!el) return;
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString("en-US", { timeZone: "Asia/Ho_Chi_Minh", hour: "numeric", minute: "2-digit" });
+  const dateStr = now.toLocaleDateString("en-US", { timeZone: "Asia/Ho_Chi_Minh", weekday: "short", month: "short", day: "numeric" });
+  el.textContent = `Vietnam/Cambodia time: ${dateStr}, ${timeStr} (ICT, UTC+7)`;
+  updateViewerTime(now);
+}
+function updateViewerTime(now){
+  const el = document.getElementById("viewerTimeLine");
+  if (!el) return;
+  try {
+    const viewerTimeStr = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
+    const ictOffsetMinutes = 7 * 60;
+    const viewerOffsetMinutes = -now.getTimezoneOffset();
+    const diffMinutes = ictOffsetMinutes - viewerOffsetMinutes;
+    const diffHoursAbs = Math.abs(diffMinutes) / 60;
+    const diffLabel = diffHoursAbs % 1 === 0 ? `${diffHoursAbs}h` : `${diffHoursAbs.toFixed(1)}h`;
+    let relation;
+    if (diffMinutes === 0) relation = "same time as Brandon";
+    else if (diffMinutes > 0) relation = `Brandon is ${diffLabel} ahead of you`;
+    else relation = `Brandon is ${diffLabel} behind you`;
+    el.textContent = `Your time: ${viewerTimeStr}, ${relation}`;
+  } catch(e) { el.textContent = ""; }
+}
+
+// ---- ledger entries, amounts intentionally never rendered ----
+function renderEntries(){
+  const expenses = loadExpenses().filter(x => x.type !== "pretrip");
+  const legsWithEntries = ITINERARY_LEGS.filter(l => expenses.some(x => x.leg === l));
+  const legFilter = document.getElementById("legFilter");
+  const prevVal = legFilter.value || "All";
+  legFilter.innerHTML = '<option value="All">All legs</option>' + legsWithEntries.map(l => `<option value="${escapeHtml(l)}">${escapeHtml(l)}</option>`).join("");
+  legFilter.value = legsWithEntries.includes(prevVal) ? prevVal : "All";
+  filterLeg = legFilter.value;
+
+  const filtered = filterLeg === "All" ? expenses : expenses.filter(x => x.leg === filterLeg);
+  const listEl = document.getElementById("entryList");
+  if (filtered.length === 0) {
+    listEl.innerHTML = `<div class="empty">No entries logged yet.</div>`;
+    return;
+  }
+  const sorted = [...filtered].sort((a,b) => b.date.localeCompare(a.date));
+  listEl.innerHTML = sorted.map(x => {
+    const cat = CATEGORIES.find(c => c.key === x.category);
+    const mark = cat ? cat.mark : "\u25CB";
+    const label = escapeHtml(x.note || (cat ? cat.label : "Expense"));
+    return `<div class="entry-row">
+      <div class="catmark" style="background:${CAT_COLOR[x.category] || '#8C8578'}">${mark}</div>
+      <div class="info"><div class="note">${label}</div><div class="meta">${x.date} &middot; ${escapeHtml(x.leg)}</div></div>
+      <div class="amt-hidden">&bull;&bull;&bull;</div>
+    </div>`;
+  }).join("");
+}
+document.getElementById("legFilter").addEventListener("change", (e) => { filterLeg = e.target.value; renderEntries(); });
+
+// ---- refresh everything periodically since this mirrors localStorage the main app writes to ----
+function refreshAll(){
+  itinerary = loadItinerary();
+  tripEnd = loadTripEnd();
+  renderLocationBanner();
+  renderItinerary();
+  renderEntries();
+}
+window.addEventListener("storage", refreshAll);
+window.addEventListener("focus", refreshAll);
+setInterval(refreshAll, 15000);
+
+refreshAll();
+refreshCheckin();
+setInterval(refreshCheckin, 5 * 60 * 1000);
+updateLocalTime();
+setInterval(updateLocalTime, 30 * 1000);
+</script>
+</body>
+</html>
