@@ -155,11 +155,12 @@
   <div class="location-banner util-banner" id="thingsBanner">
     <div class="loc-main">
       <span class="loc-label">Things to do</span>
-      <span class="loc-sub">Places and links, no prices</span>
+      <span class="loc-sub">Tours, activities, and reference prices</span>
     </div>
     <span class="loc-caret" id="thingsCaret">&rsaquo;</span>
   </div>
   <div class="ledger-card" id="thingsCard" style="display:none;">
+    <div class="ref-note">Not live data, researched ballpark prices. Tap through to each operator's own page for the real current number.</div>
     <div id="thingsList"></div>
   </div>
 
@@ -497,48 +498,82 @@ document.getElementById("legFilter").addEventListener("change", (e) => { filterL
 
 // ---- things to do: place names and links only, no prices, matches main tracker's groupings ----
 const THINGS_GROUPS = [
-  { group: "Hanoi", places: ["Ho Chi Minh Mausoleum", "Temple of Literature", "Water Puppet Show", "Train Street"] },
-  { group: "Ha Giang Loop", places: [
-    { name: "Road Kings", url: "https://www.roadkingshagiang.com/products/p/4-day-tour" },
-    { name: "Bong Hostel", url: "https://bongbackpackerhostel.com/tours" },
+  { group: "Hanoi", rows: [
+    { label: "Ho Chi Minh Mausoleum", type: "approx", usd: 1 },
+    { label: "Temple of Literature", type: "approx", usd: 1.20 },
+    { label: "Water Puppet Show", type: "approx", usd: 7 },
+    { label: "Train Street cafe (min. drink order)", type: "approx", usd: 3 },
   ]},
-  { group: "Sapa", places: [
-    "Fansipan cable car", "Cat Cat Village",
-    { name: "Rong May Glass Bridge", url: "https://www.klook.com/en-US/activity/57672-rong-may-sapa-glass-bridge-ticket/" },
+  { group: "Ha Giang Loop (3-4 day, easy rider)", rows: [
+    { label: "Road Kings, 4-day private room", type: "range", low: 305, high: 335, url: "https://www.roadkingshagiang.com/products/p/4-day-tour" },
+    { label: "Road Kings, 4-day dorm style (est.)", type: "range", low: 230, high: 260, url: "https://www.roadkingshagiang.com/products/p/4-day-tour-492jg" },
+    { label: "Bong Hostel, 4-day private room", type: "range", low: 245, high: 270, url: "https://bongbackpackerhostel.com/tours" },
+    { label: "Bong Hostel, 4-day dorm/group (est.)", type: "range", low: 170, high: 200, url: "https://bongbackpackerhostel.com/tours/motorbike-group-tour/ha-giang-group-4d3n" },
   ]},
-  { group: "Ha Long / Lan Ha Bay", places: [
-    { name: "2-Day Ha Long & Lan Ha Cruise w/ Kayaking", url: "https://www.getyourguide.com/hanoi-l205/from-hanoi2-days-ha-long-lan-ha-bay-boat-tour-t540900/" },
+  { group: "Sapa", rows: [
+    { label: "Fansipan cable car, round trip", type: "approx", usd: 33 },
+    { label: "Cat Cat Village entrance", type: "approx", usd: 2 },
+    { label: "Rong May Glass Bridge (glass skywalk)", type: "range", low: 19, high: 20, url: "https://www.klook.com/en-US/activity/57672-rong-may-sapa-glass-bridge-ticket/" },
   ]},
-  { group: "Ninh Binh", places: ["Tam Coc rowing boat", "Trang An boat tour", "Hang Mua viewpoint"] },
-  { group: "Da Nang", places: ["Marble Mountains", "Ba Na Hills / Golden Bridge"] },
-  { group: "Hoi An", places: [
-    "Ancient Town", "Basket/lantern boat ride",
-    { name: "Tailor recommendation", url: "https://maps.app.goo.gl/7dKAxt1as77BXtKC7" },
+  { group: "Ha Long / Lan Ha Bay (2-day, 1-night cruise)", rows: [
+    { label: "Hanoi: 2-Day Ha Long & Lan Ha Cruise w/ Kayaking (4.6\u2605, 386 reviews)", type: "exact", usd: 112, url: "https://www.getyourguide.com/hanoi-l205/from-hanoi2-days-ha-long-lan-ha-bay-boat-tour-t540900/" },
   ]},
-  { group: "Ho Chi Minh City", places: ["Cu Chi Tunnels", "War Remnants Museum"] },
-  { group: "Phnom Penh", places: [
-    "Killing Fields + Tuol Sleng",
-    { name: "🎂 Eclipse Sky Bar", url: "https://www.google.com/maps/search/?api=1&query=Eclipse+Sky+Bar,+Phnom+Penh&query_place_id=ChIJNRFIQDxRCTERTnoMg6FC1Es" },
-    "Sunset river cruise",
+  { group: "Ninh Binh (Tam Coc / Trang An boats)", rows: [
+    { label: "Tam Coc rowing boat", type: "range", low: 8, high: 10, url: "https://ninhbinhtourist.com.vn" },
+    { label: "Trang An boat tour", type: "range", low: 8, high: 10, url: "https://ninhbinhtourist.com.vn" },
+    { label: "Hang Mua viewpoint (500-step climb)", type: "approx", usd: 4 },
   ]},
-  { group: "Koh Rong", places: [
-    { name: "Bus + ferry via Sihanoukville", url: "https://www.bookaway.com/routes/cambodia/phnom-penh-to-koh-rong" },
-    "Snorkeling / boat day trip",
+  { group: "Da Nang", rows: [
+    { label: "Marble Mountains + elevator", type: "approx", usd: 2.50 },
+    { label: "Ba Na Hills / Golden Bridge (cable car + entry)", type: "approx", usd: 39 },
   ]},
-  { group: "Siem Reap / Angkor Wat", places: [
-    { name: "3-day Angkor pass (official)", url: "https://angkorenterprise.gov.kh" },
+  { group: "Hoi An", rows: [
+    { label: "Ancient Town ticket (5 sites)", type: "approx", usd: 5 },
+    { label: "Basket/lantern boat ride, per boat (2p)", type: "approx", usd: 5 },
+    { label: "Tailor to check out", type: "text", text: "Map \u2197", url: "https://maps.app.goo.gl/7dKAxt1as77BXtKC7" },
+  ]},
+  { group: "Ho Chi Minh City", rows: [
+    { label: "Cu Chi Tunnels entrance", type: "approx", usd: 1.40 },
+    { label: "Cu Chi Tunnels, guided half-day tour", type: "from", usd: 15 },
+    { label: "War Remnants Museum", type: "approx", usd: 1.50 },
+  ]},
+  { group: "Cambodia border bus", rows: [
+    { label: "HCMC to Phnom Penh", type: "exact", usd: 37, url: "https://www.giantibis.com" },
+    { label: "Phnom Penh to Siem Reap", type: "exact", usd: 27, url: "https://www.giantibis.com" },
+  ]},
+  { group: "Cambodia SIM (Smart Axiata, buy at official airport counter or shop)", rows: [
+    { label: "Smart Axiata tourist SIM (~30GB)", type: "approx", usd: 5 },
+  ]},
+  { group: "Phnom Penh", rows: [
+    { label: "Killing Fields + Tuol Sleng, guided tour", type: "range", low: 19, high: 20 },
+    { label: "\uD83C\uDF82 Eclipse Sky Bar (birthday dinner, 23rd floor)", type: "text", text: "$$", url: "https://www.google.com/maps/search/?api=1&query=Eclipse+Sky+Bar,+Phnom+Penh&query_place_id=ChIJNRFIQDxRCTERTnoMg6FC1Es" },
+    { label: "Sunset river cruise, Mekong/Tonle Sap", type: "range", low: 10, high: 15 },
+  ]},
+  { group: "Koh Rong (bus + ferry via Sihanoukville, round trip)", rows: [
+    { label: "Phnom Penh \u2194 Koh Rong, bus + ferry combo", type: "range", low: 28, high: 50, url: "https://www.bookaway.com/routes/cambodia/phnom-penh-to-koh-rong" },
+    { label: "Dorm bed on the island", type: "range", low: 8, high: 15 },
+    { label: "Snorkeling / boat day trip", type: "range", low: 10, high: 20 },
+  ]},
+  { group: "Siem Reap / Angkor Wat", rows: [
+    { label: "3-day Angkor pass (official)", type: "exact", usd: 62, url: "https://angkorenterprise.gov.kh" },
   ]},
 ];
+function fmtPrice(usd){
+  return usd % 1 === 0 ? `$${usd}` : `$${usd.toFixed(2)}`;
+}
 function renderThingsToDo(){
   const listEl = document.getElementById("thingsList");
   listEl.innerHTML = THINGS_GROUPS.map(g => {
-    const rows = g.places.map(p => {
-      const isObj = typeof p === "object";
-      const name = isObj ? p.name : p;
-      const url = isObj ? p.url : null;
-      const tag = url ? "a" : "div";
-      const attrs = url ? `href="${url}" target="_blank" rel="noopener"` : "";
-      return `<${tag} class="ref-row" ${attrs}><span>${escapeHtml(name)}</span>${url ? "<span>&rarr;</span>" : ""}</${tag}>`;
+    const rows = g.rows.map(r => {
+      let priceText;
+      if (r.type === "text") priceText = r.text;
+      else if (r.type === "approx") priceText = `~${fmtPrice(r.usd)}`;
+      else if (r.type === "exact") priceText = fmtPrice(r.usd);
+      else if (r.type === "from") priceText = `from ${fmtPrice(r.usd)}`;
+      else if (r.type === "range") priceText = `~$${r.low}-${r.high}`;
+      const tag = r.url ? "a" : "div";
+      const attrs = r.url ? `href="${r.url}" target="_blank" rel="noopener"` : "";
+      return `<${tag} class="ref-row" ${attrs}><span>${escapeHtml(r.label)}</span><span>${priceText}</span></${tag}>`;
     }).join("");
     return `<div class="ref-group-label">${escapeHtml(g.group)}</div>${rows}`;
   }).join("");
