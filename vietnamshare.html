@@ -1021,7 +1021,7 @@ function renderTripLength(){
     const fits = runway >= (o.name === "Australia" ? 7 : o.name === "Japan" ? 7 : 10);
     return `${o.name} ${fits ? "✓" : "⚠"}`;
   }).join(" · ");
-  el.innerHTML = `Confirmed trip: <b>${confirmedDays}d</b> (Taipei→Siem Reap) · Budget: <b>${tripBudget}d</b> · Runway if extending: <b>${runway}d</b><br><span style="color:var(--muted2);">${fitLine} — connecting home via Thailand either way, pick one</span>`;
+  el.innerHTML = `Target trip length: <b>${tripBudget}d</b> · Runway if extending: <b>${runway}d</b><br><span style="color:var(--muted2);">${fitLine} — connecting home via Thailand either way, pick one</span>`;
 }
 
 // ---- refresh everything periodically since this mirrors localStorage the main app writes to ----
