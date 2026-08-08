@@ -290,7 +290,7 @@
     </div>
     <div class="itin-row" style="opacity:0.75;">
       <span class="itin-dot"></span>
-      <span class="itin-name">Orange County, CA (home)</span>
+      <span class="itin-name">🇺🇸 Orange County, CA (home)</span>
       <span class="itin-weather"></span>
       <span style="font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--muted); text-align:right;">Departs</span>
       <span></span>
@@ -979,6 +979,14 @@ const LEG_COORDS = {
   "Vang Vieng": [18.9247, 102.4460],
   "Luang Prabang": [19.8845, 102.1348],
 };
+// Flags are plain unicode text (no image requests), so this stays free.
+const LEG_FLAG = {
+  "Taipei": "🇹🇼",
+  "Hanoi": "🇻🇳", "Ha Giang": "🇻🇳", "Sapa": "🇻🇳", "Ha Long / Lan Ha": "🇻🇳",
+  "Ninh Binh": "🇻🇳", "Da Nang": "🇻🇳", "Hoi An": "🇻🇳", "Ho Chi Minh City": "🇻🇳",
+  "Phnom Penh": "🇰🇭", "Koh Rong": "🇰🇭", "Siem Reap": "🇰🇭",
+  "Pakse": "🇱🇦", "4000 Islands": "🇱🇦", "Vang Vieng": "🇱🇦", "Luang Prabang": "🇱🇦",
+};
 function weatherIcon(code){
   if (code === 0) return "☀️";
   if (code <= 3) return "⛅";
@@ -1524,7 +1532,7 @@ function renderItineraryPanel(){
   const mainRows = ITINERARY_LEGS.map(l => `
     <div class="itin-row ${l === currentLeg ? "current" : ""}">
       <span class="itin-dot"></span>
-      <span class="itin-name">${l}${l === birthdayLeg ? ' 🎂' : ''}</span>
+      <span class="itin-name">${LEG_FLAG[l] || ""} ${l}${l === birthdayLeg ? ' 🎂' : ''}</span>
       <span class="itin-weather" id="wx-${l.replace(/[^a-zA-Z0-9]/g, "")}">···</span>
       <input type="date" data-leg="${l}" value="${itinerary[l]}" />
       <button type="button" class="itin-clear-btn" data-leg="${l}" title="Clear date">✕</button>
@@ -1533,7 +1541,7 @@ function renderItineraryPanel(){
   const laosRows = LAOS_EXT_LEGS.map(l => `
     <div class="itin-row tentative">
       <span class="itin-dot"></span>
-      <span class="itin-name">${l}</span>
+      <span class="itin-name">${LEG_FLAG[l] || ""} ${l}</span>
       <span class="itin-weather" id="wx-${l.replace(/[^a-zA-Z0-9]/g, "")}">···</span>
       <input type="date" data-leg="${l}" value="${itinerary[l] || ""}" placeholder="TBD" />
       <button type="button" class="itin-clear-btn" data-leg="${l}" title="Clear date">✕</button>
