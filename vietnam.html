@@ -116,7 +116,9 @@
   .loc-sub { font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--faint); }
   .loc-caret { font-size:20px; color:var(--faint); transition: transform .2s; }
   .loc-caret.open { transform: rotate(90deg); }
-  .itin-row { display:grid; grid-template-columns: 22px 1fr 68px 130px; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--border-faint); }
+  .itin-row { display:grid; grid-template-columns: 22px 1fr 68px 118px 22px; align-items:center; gap:6px; padding:6px 0; border-bottom:1px solid var(--border-faint); }
+  .itin-clear-btn { background:none; border:none; color:var(--faint); font-size:14px; cursor:pointer; padding:6px; margin:-6px; line-height:1; }
+  .itin-clear-btn.confirm { color:var(--red); font-size:9px; font-family:'IBM Plex Mono', monospace; font-weight:600; background:var(--border-faint); border-radius:3px; padding:6px 3px; margin:-6px -3px; }
   .itin-weather { font-size: 12px; font-family: 'IBM Plex Mono', monospace; color: var(--muted); text-align: center; white-space: nowrap; }
   .itin-row.current { background:var(--current-bg); margin:0 -8px; padding:6px 8px; border-radius:3px; }
   .itin-row .itin-dot { width:8px; height:8px; border-radius:50%; background:var(--border); }
@@ -291,6 +293,7 @@
       <span class="itin-name">Orange County, CA (home)</span>
       <span class="itin-weather"></span>
       <span style="font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--muted); text-align:right;">Departs</span>
+      <span></span>
     </div>
     <div id="itineraryList"></div>
     <div class="field" style="margin-top:10px;">
@@ -1524,6 +1527,7 @@ function renderItineraryPanel(){
       <span class="itin-name">${l}${l === birthdayLeg ? ' 🎂' : ''}</span>
       <span class="itin-weather" id="wx-${l.replace(/[^a-zA-Z0-9]/g, "")}">···</span>
       <input type="date" data-leg="${l}" value="${itinerary[l]}" />
+      <button type="button" class="itin-clear-btn" data-leg="${l}" title="Clear date">✕</button>
     </div>
   `).join("");
   const laosRows = LAOS_EXT_LEGS.map(l => `
@@ -1532,6 +1536,7 @@ function renderItineraryPanel(){
       <span class="itin-name">${l}</span>
       <span class="itin-weather" id="wx-${l.replace(/[^a-zA-Z0-9]/g, "")}">···</span>
       <input type="date" data-leg="${l}" value="${itinerary[l] || ""}" placeholder="TBD" />
+      <button type="button" class="itin-clear-btn" data-leg="${l}" title="Clear date">✕</button>
     </div>
   `).join("");
   listEl.innerHTML = mainRows + `<div class="itin-section-label">Possible Laos extension · not confirmed</div>` + laosRows;
@@ -1571,6 +1576,27 @@ function renderItineraryPanel(){
     };
     inp.addEventListener("change", handleDateInput);
     inp.addEventListener("input", handleDateInput);
+  });
+  listEl.querySelectorAll(".itin-clear-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.confirming === "1") {
+        clearTimeout(btn._t);
+        const leg = btn.getAttribute("data-leg");
+        itinerary[leg] = "";
+        saveItinerary(itinerary);
+        render();
+        renderItineraryPanel();
+      } else {
+        btn.dataset.confirming = "1";
+        btn.textContent = "sure?";
+        btn.classList.add("confirm");
+        btn._t = setTimeout(() => {
+          btn.dataset.confirming = "0";
+          btn.textContent = "✕";
+          btn.classList.remove("confirm");
+        }, 3000);
+      }
+    });
   });
   document.getElementById("tripEnd").value = tripEnd;
 }
