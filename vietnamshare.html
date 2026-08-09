@@ -108,6 +108,11 @@
   .entry-row .info .note { font-size: 13.5px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .entry-row .info .meta { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--muted2); margin-top: 1px; }
   .entry-row .amt-hidden { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--faint); white-space: nowrap; }
+  .unlock-row { display:flex; gap:8px; margin-bottom:10px; }
+  .unlock-row input { flex:1; font-family:'Inter', sans-serif; font-size:14px; padding:8px 10px; border:1px solid var(--border); border-radius:3px; background:var(--card); color:var(--ink); }
+  .unlock-row button { font-family:'IBM Plex Mono', monospace; font-size:12px; padding:8px 12px; border:1px solid var(--teal); border-radius:3px; background:var(--card); color:var(--teal); cursor:pointer; white-space:nowrap; }
+  .unlock-note { font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--teal); margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
+  .unlock-note button { background:none; border:none; color:var(--muted2); text-decoration:underline; font-family:'IBM Plex Mono', monospace; font-size:11px; cursor:pointer; padding:0; }
 
   .empty { text-align: center; padding: 30px 10px; color: var(--muted2); font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; }
   .save-note { text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--faint); margin-top: 24px; }
@@ -198,6 +203,11 @@
     <h2>Ledger entries</h2>
     <select class="leg-filter" id="legFilter"><option value="All">All legs</option></select>
   </div>
+  <div class="unlock-row" id="unlockRow">
+    <input type="text" id="unlockCode" placeholder="🔒 Have the code? See amounts" autocapitalize="off" autocorrect="off" />
+    <button type="button" id="unlockBtn">Unlock</button>
+  </div>
+  <div class="unlock-note" id="unlockNote" style="display:none;">🔓 Amounts unlocked <button type="button" id="lockBtn">Hide again</button></div>
   <div class="search-row"><input type="text" id="entrySearch" placeholder="🔍 Search notes..." /></div>
   <div id="entryList"></div>
 
@@ -626,6 +636,11 @@ function updateViewerTime(now){
 }
 
 // ---- ledger entries, amounts intentionally never rendered ----
+const LS_PRICE_UNLOCK = "vn-kh-price-unlock-v1";
+let pricesUnlocked = false;
+try { pricesUnlocked = localStorage.getItem(LS_PRICE_UNLOCK) === "1"; } catch(e){}
+function fmtMoney(usd){ return `$${usd.toFixed(2)}`; }
+
 function renderEntries(){
   const expenses = loadExpenses().filter(x => x.type !== "pretrip");
   const legsWithEntries = ALL_LEGS.filter(l => expenses.some(x => x.leg === l));
@@ -651,15 +666,46 @@ function renderEntries(){
     const mark = cat ? cat.mark : "\u25CB";
     const label = escapeHtml(x.note || (cat ? cat.label : "Expense"));
     const splitTag = x.splitWith ? `<span class="split-badge">split w/ ${escapeHtml(x.splitWith)}</span>` : "";
+    const amtHtml = pricesUnlocked
+      ? `<div class="amt-hidden" style="color:var(--teal);">${fmtMoney(x.amount)}</div>`
+      : `<div class="amt-hidden">&bull;&bull;&bull;</div>`;
     return `<div class="entry-row">
       <div class="catmark" style="background:${CAT_COLOR[x.category] || '#8C8578'}">${mark}</div>
       <div class="info"><div class="note">${label}${splitTag}</div><div class="meta">${x.date} &middot; ${escapeHtml(x.leg)}</div></div>
-      <div class="amt-hidden">&bull;&bull;&bull;</div>
+      ${amtHtml}
     </div>`;
   }).join("");
 }
 document.getElementById("legFilter").addEventListener("change", (e) => { filterLeg = e.target.value; renderEntries(); });
 document.getElementById("entrySearch").addEventListener("input", (e) => { searchTerm = e.target.value; renderEntries(); });
+
+function updateUnlockUI(){
+  document.getElementById("unlockRow").style.display = pricesUnlocked ? "none" : "flex";
+  document.getElementById("unlockNote").style.display = pricesUnlocked ? "flex" : "none";
+}
+updateUnlockUI();
+document.getElementById("unlockBtn").addEventListener("click", () => {
+  const codeInput = document.getElementById("unlockCode");
+  if (codeInput.value.trim().toLowerCase() === "goose") {
+    pricesUnlocked = true;
+    try { localStorage.setItem(LS_PRICE_UNLOCK, "1"); } catch(e){}
+    codeInput.value = "";
+    updateUnlockUI();
+    renderEntries();
+  } else {
+    codeInput.value = "";
+    codeInput.placeholder = "Nope, try again";
+  }
+});
+document.getElementById("unlockCode").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") { e.preventDefault(); document.getElementById("unlockBtn").click(); }
+});
+document.getElementById("lockBtn").addEventListener("click", () => {
+  pricesUnlocked = false;
+  try { localStorage.removeItem(LS_PRICE_UNLOCK); } catch(e){}
+  updateUnlockUI();
+  renderEntries();
+});
 
 // ---- things to do: place names, links, and researched ballpark prices ----
 const THINGS_GROUPS = [
