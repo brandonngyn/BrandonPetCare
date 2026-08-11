@@ -962,6 +962,72 @@ a:focus-visible, .btn:focus-visible{
   .cards{ grid-template-columns:1fr; }
 }
 
+.vacation-notice{
+  position:fixed;
+  inset:0;
+  z-index:300;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:0 16px 24px;
+  background:rgba(11,22,38,0.45);
+}
+.vacation-notice-card{
+  position:relative;
+  max-width:380px;
+  width:100%;
+  background:var(--navy-deep);
+  border:1px solid var(--gold-light);
+  border-radius:12px;
+  padding:22px 22px 20px;
+  text-align:center;
+  box-shadow:0 12px 32px rgba(0,0,0,0.35);
+  animation:vacationSlideUp 0.35s ease;
+}
+@keyframes vacationSlideUp{
+  from{ opacity:0; transform:translateY(16px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+.vacation-notice-close{
+  position:absolute;
+  top:10px;
+  right:12px;
+  background:none;
+  border:none;
+  color:#B9C2D4;
+  font-size:20px;
+  line-height:1;
+  cursor:pointer;
+  padding:4px;
+}
+.vacation-notice-eyebrow{
+  display:block;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--gold-light);
+  margin-bottom:10px;
+}
+.vacation-notice-card p{
+  color:#E4E8F0;
+  font-size:14.5px;
+  line-height:1.6;
+  margin:0 0 18px;
+}
+.vacation-notice-btn{
+  display:inline-block;
+  padding:11px 24px;
+  border:1px solid var(--gold-light);
+  border-radius:2px;
+  color:#fff;
+  text-decoration:none;
+  font-size:12.5px;
+  font-weight:700;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+}
+
 </style>
 <script type="application/ld+json">
 {
@@ -989,6 +1055,15 @@ a:focus-visible, .btn:focus-visible{
 </head>
 
 <body>
+
+<div id="vacationNotice" class="vacation-notice" style="display:none;">
+  <div class="vacation-notice-card">
+    <button type="button" class="vacation-notice-close" id="vacationNoticeClose" aria-label="Close">&times;</button>
+    <span class="vacation-notice-eyebrow">Availability Update</span>
+    <p>Brandon is currently traveling. He remains available for bookings at a rush rate through October, when normal availability resumes.</p>
+    <a href="#contact" class="vacation-notice-btn" id="vacationNoticeCta">Check My Dates</a>
+  </div>
+</div>
 
 <header>
   <div class="top-links">
@@ -1701,6 +1776,30 @@ a:focus-visible, .btn:focus-visible{
       formatted = digits.slice(0,3) + '-' + digits.slice(3);
     }
     phone.value = formatted;
+  });
+})();
+
+(function(){
+  var notice = document.getElementById('vacationNotice');
+  var closeBtn = document.getElementById('vacationNoticeClose');
+  var cta = document.getElementById('vacationNoticeCta');
+  if (!notice) return;
+
+  if (sessionStorage.getItem('vacationNoticeSeen')) return;
+
+  setTimeout(function(){
+    notice.style.display = 'flex';
+  }, 900);
+
+  function dismiss(){
+    notice.style.display = 'none';
+    try { sessionStorage.setItem('vacationNoticeSeen', '1'); } catch(e){}
+  }
+
+  closeBtn.addEventListener('click', dismiss);
+  cta.addEventListener('click', dismiss);
+  notice.addEventListener('click', function(e){
+    if (e.target === notice) dismiss();
   });
 })();
 </script>
