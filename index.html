@@ -1036,7 +1036,7 @@ a:focus-visible, .btn:focus-visible{
   font-weight:700;
   flex-shrink:0;
 }
-.vacation-notice-prices div:last-child span:last-child{
+.vacation-notice-prices div.highlight span:last-child{
   color:var(--gold-light);
 }
 .vacation-notice-btn{
@@ -1084,10 +1084,11 @@ a:focus-visible, .btn:focus-visible{
   <div class="vacation-notice-card">
     <button type="button" class="vacation-notice-close" id="vacationNoticeClose" aria-label="Close">&times;</button>
     <span class="vacation-notice-eyebrow">Availability Update</span>
-    <p>Brandon is currently traveling. He remains available for bookings at a rush rate through October, when normal availability resumes.</p>
+    <p>Brandon is currently traveling internationally, over 22 hours from home, and is available on an emergency basis only through October. Bookings during this time require a 7-day minimum stay.</p>
     <div class="vacation-notice-prices">
       <div><span>Standard rate</span><span>$300/night</span></div>
-      <div><span>Rush rate (through October)</span><span>$500/night, first dog</span></div>
+      <div class="highlight"><span>Rush rate (through October)</span><span>$500/night, first dog</span></div>
+      <div class="highlight"><span>Minimum stay</span><span>7 nights</span></div>
     </div>
     <a href="#contact" class="vacation-notice-btn" id="vacationNoticeCta">Check My Dates</a>
   </div>
