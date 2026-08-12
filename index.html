@@ -1062,6 +1062,23 @@ a:focus-visible, .btn:focus-visible{
 .vacation-notice-prices div.highlight span:last-child{
   color:var(--gold-light);
 }
+.vacation-notice-group-label{
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--gold-light);
+  opacity:0.85;
+  padding-top:8px;
+}
+.vacation-notice-prices div.sub{
+  padding-left:12px;
+  padding-top:3px;
+  padding-bottom:3px;
+}
+.vacation-notice-prices div.sub span:first-child{
+  font-size:12px;
+}
 .vacation-notice-btn{
   display:inline-block;
   padding:11px 24px;
@@ -1111,8 +1128,10 @@ a:focus-visible, .btn:focus-visible{
     <p>Brandon is currently traveling internationally, over 22 hours from home, and is available on an emergency basis only through October. Bookings during this time require a 14-day minimum stay.</p>
     <div class="vacation-notice-prices">
       <div><span>Standard rate</span><span>$300/night</span></div>
-      <div class="highlight"><span>Rush rate (through October)</span><span>$500/night, first dog</span></div>
-      <div class="highlight"><span>Minimum stay</span><span>14 nights</span></div>
+      <div class="vacation-notice-group-label">Rush Rate (through October)</div>
+      <div class="highlight sub"><span>First dog</span><span>$500/night</span></div>
+      <div class="highlight sub"><span>Each additional / concurrent dog</span><span>$250/night</span></div>
+      <div><span>Minimum stay</span><span>14 nights</span></div>
     </div>
     <p class="vacation-notice-signoff">Reach out and I'll do everything I can to work with your dates.</p>
     <a href="#contact" class="vacation-notice-btn" id="vacationNoticeCta">Check My Dates</a>
