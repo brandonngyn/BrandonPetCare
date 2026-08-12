@@ -288,7 +288,7 @@
 
   <div class="masthead">
     <h1>The Ledger</h1>
-    <div class="route">Orange County, CA → Siem Reap</div>
+    <div class="route">Orange County, CA → Tokyo</div>
   </div>
   <div class="location-banner" id="locationBanner">
     <div class="loc-main">
@@ -1070,12 +1070,11 @@ function loadExpenses(){
 function saveExpenses(list){ try { localStorage.setItem(LS_EXPENSES, JSON.stringify(list)); } catch(e){} }
 function loadBudget(){ try { const v = localStorage.getItem(LS_BUDGET); return v ? Number(v) : 2200; } catch(e){ return 2200; } }
 function saveBudget(v){ try { localStorage.setItem(LS_BUDGET, String(v)); } catch(e){} }
-const ITINERARY_LEGS = ["Taipei","Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap"];
+const ITINERARY_LEGS = ["Taipei","Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)"];
 const LAOS_EXT_LEGS = ["Pakse","4000 Islands","Vang Vieng","Luang Prabang"];
 const MEG_EXT_LEGS = ["Cat Ba","Phong Nha","Hue","Dalat","Phu Quoc"];
-const JAPAN_EXT_LEGS = ["Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)"];
 const AUS_EXT_LEGS = ["Sydney","Cairns"];
-const ALL_TENTATIVE_LEGS = LAOS_EXT_LEGS.concat(MEG_EXT_LEGS, JAPAN_EXT_LEGS, AUS_EXT_LEGS);
+const ALL_TENTATIVE_LEGS = LAOS_EXT_LEGS.concat(MEG_EXT_LEGS, AUS_EXT_LEGS);
 const DEFAULT_ITINERARY = {
   "Taipei": "2026-08-08",
   "Hanoi": "2026-08-09",
@@ -1089,10 +1088,13 @@ const DEFAULT_ITINERARY = {
   "Phnom Penh": "2026-09-07",
   "Koh Rong": "2026-09-11",
   "Siem Reap": "2026-09-13",
+  // Japan is now a confirmed part of the itinerary, not tentative.
+  "Tokyo": "2026-09-17", "Hakone": "2026-09-21", "Kyoto": "2026-09-23",
+  "Osaka": "2026-09-27", "Hiroshima": "2026-09-30", "Tokyo (return, fly out)": "2026-10-02",
   // Tentative only — not confirmed, shown separately with "TBD" dates.
   "Pakse": "", "4000 Islands": "", "Vang Vieng": "", "Luang Prabang": "",
   "Cat Ba": "", "Phong Nha": "", "Hue": "", "Dalat": "", "Phu Quoc": "",
-  "Tokyo": "", "Hakone": "", "Kyoto": "", "Osaka": "", "Hiroshima": "", "Tokyo (return, fly out)": "", "Sydney": "", "Cairns": "",
+  "Sydney": "", "Cairns": "",
 };
 const DEFAULT_TRIP_END = "2026-09-16";
 
@@ -1666,7 +1668,7 @@ const PRICE_GROUPS = [
   { group: "Siem Reap / Angkor Wat", rows: [
     { label: "3-day Angkor pass (official)", type: "exact", usd: 62, url: "https://angkorenterprise.gov.kh" },
   ]},
-  { group: "🇯🇵 Japan extension, ~19 days (not confirmed)", rows: [
+  { group: "🇯🇵 Japan, ~19 days", rows: [
     { label: "Siem Reap/Bangkok → Tokyo flight", type: "range", low: 250, high: 450 },
     { label: "Suica/Pasmo IC card, initial + top-ups", type: "range", low: 30, high: 50 },
     { label: "21-day JR Pass (often NOT worth it post price-hike)", type: "approx", usd: 540 },
@@ -2033,7 +2035,6 @@ function renderItineraryPanel(){
   // is fixed, but only one of Laos/Vietnam add-ons/Japan/Australia will
   // actually happen, so each gets its own labeled, clearly-separate group.
   const extensionGroups = [
-    { label: "Possible Japan extension · not confirmed", legs: JAPAN_EXT_LEGS },
     { label: "Possible Laos extension · not confirmed", legs: LAOS_EXT_LEGS },
     { label: "Possible Vietnam add-ons · not confirmed", legs: MEG_EXT_LEGS },
     { label: "Possible Australia extension · not confirmed", legs: AUS_EXT_LEGS },
@@ -2111,18 +2112,15 @@ document.getElementById("tripLengthBudget").addEventListener("change", (e) => {
 });
 function renderTripLength(){
   const el = document.getElementById("tripLengthLine");
-  const confirmedDays = daysBetween(itinerary["Taipei"], tripEnd);
+  const lastConfirmedDate = itinerary["Tokyo (return, fly out)"] || tripEnd;
+  const confirmedDays = daysBetween(itinerary["Taipei"], lastConfirmedDate);
   const runway = tripBudget - confirmedDays;
   const extOptions = [
-    { name: "Laos", days: "10-14" },
-    { name: "Japan", days: "7-10" },
-    { name: "Australia", days: "~7" },
+    { name: "Laos", days: "10-14", need: 10 },
+    { name: "Australia", days: "~7", need: 7 },
   ];
-  const fitLine = extOptions.map(o => {
-    const fits = runway >= (o.name === "Australia" ? 7 : o.name === "Japan" ? 7 : 10);
-    return `${o.name} ${fits ? "✓" : "⚠"}`;
-  }).join(" · ");
-  el.innerHTML = `Target trip length: <b>${tripBudget}d</b> · Runway if extending: <b>${runway}d</b><br><span style="color:var(--muted2);">${fitLine} — connecting home via Thailand either way, pick one</span>`;
+  const fitLine = extOptions.map(o => `${o.name} ${runway >= o.need ? "✓" : "⚠"}`).join(" · ");
+  el.innerHTML = `Confirmed trip: <b>${confirmedDays}d</b> (Taipei→Tokyo) · Budget: <b>${tripBudget}d</b> · Buffer left: <b>${runway}d</b><br><span style="color:var(--muted2);">Japan is locked in · ${fitLine} would still need to fit on top</span>`;
 }
 renderTripLength();
 
