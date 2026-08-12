@@ -288,7 +288,7 @@
 
   <div class="masthead">
     <h1>The Ledger</h1>
-    <div class="route">Orange County, CA → Tokyo</div>
+    <div class="route">Orange County, CA → Los Angeles</div>
   </div>
   <div class="location-banner" id="locationBanner">
     <div class="loc-main">
@@ -649,7 +649,7 @@ document.getElementById("currencyToggle").addEventListener("click", () => {
   renderPricesCard();
 });
 
-const LEGS = ["Taipei","Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Pakse","4000 Islands","Vang Vieng","Luang Prabang","Cat Ba","Phong Nha","Hue","Dalat","Phu Quoc","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)","Sydney","Cairns","Other"];
+const LEGS = ["Taipei","Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Pakse","4000 Islands","Vang Vieng","Luang Prabang","Cat Ba","Phong Nha","Hue","Dalat","Phu Quoc","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)","Los Angeles","Sydney","Cairns","Other"];
 const CATEGORIES = [
   { key:"Stay", label:"Stay", mark:"⌂" },
   { key:"Food", label:"Food", mark:"✦" },
@@ -1070,7 +1070,7 @@ function loadExpenses(){
 function saveExpenses(list){ try { localStorage.setItem(LS_EXPENSES, JSON.stringify(list)); } catch(e){} }
 function loadBudget(){ try { const v = localStorage.getItem(LS_BUDGET); return v ? Number(v) : 2200; } catch(e){ return 2200; } }
 function saveBudget(v){ try { localStorage.setItem(LS_BUDGET, String(v)); } catch(e){} }
-const ITINERARY_LEGS = ["Taipei","Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)"];
+const ITINERARY_LEGS = ["Taipei","Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)","Los Angeles"];
 const LAOS_EXT_LEGS = ["Pakse","4000 Islands","Vang Vieng","Luang Prabang"];
 const MEG_EXT_LEGS = ["Cat Ba","Phong Nha","Hue","Dalat","Phu Quoc"];
 const AUS_EXT_LEGS = ["Sydney","Cairns"];
@@ -1091,6 +1091,7 @@ const DEFAULT_ITINERARY = {
   // Japan is now a confirmed part of the itinerary, not tentative.
   "Tokyo": "2026-09-17", "Hakone": "2026-09-21", "Kyoto": "2026-09-23",
   "Osaka": "2026-09-27", "Hiroshima": "2026-09-30", "Tokyo (return, fly out)": "2026-10-02",
+  "Los Angeles": "2026-10-02",
   // Tentative only — not confirmed, shown separately with "TBD" dates.
   "Pakse": "", "4000 Islands": "", "Vang Vieng": "", "Luang Prabang": "",
   "Cat Ba": "", "Phong Nha": "", "Hue": "", "Dalat": "", "Phu Quoc": "",
@@ -1126,6 +1127,7 @@ const LEG_COORDS = {
   "Osaka": [34.6937, 135.5023],
   "Hiroshima": [34.3853, 132.4553],
   "Tokyo (return, fly out)": [35.6762, 139.6503],
+  "Los Angeles": [34.0522, -118.2437],
   "Sydney": [-33.8688, 151.2093],
   "Cairns": [-16.9186, 145.7781],
 };
@@ -1138,6 +1140,7 @@ const LEG_FLAG = {
   "Pakse": "🇱🇦", "4000 Islands": "🇱🇦", "Vang Vieng": "🇱🇦", "Luang Prabang": "🇱🇦",
   "Cat Ba": "🇻🇳", "Phong Nha": "🇻🇳", "Hue": "🇻🇳", "Dalat": "🇻🇳", "Phu Quoc": "🇻🇳",
   "Tokyo": "🇯🇵", "Hakone": "🇯🇵", "Kyoto": "🇯🇵", "Osaka": "🇯🇵", "Hiroshima": "🇯🇵", "Tokyo (return, fly out)": "🇯🇵",
+  "Los Angeles": "🇺🇸",
   "Sydney": "🇦🇺", "Cairns": "🇦🇺",
 };
 function weatherIcon(code){
@@ -2112,7 +2115,7 @@ document.getElementById("tripLengthBudget").addEventListener("change", (e) => {
 });
 function renderTripLength(){
   const el = document.getElementById("tripLengthLine");
-  const lastConfirmedDate = itinerary["Tokyo (return, fly out)"] || tripEnd;
+  const lastConfirmedDate = itinerary["Los Angeles"] || itinerary["Tokyo (return, fly out)"] || tripEnd;
   const confirmedDays = daysBetween(itinerary["Taipei"], lastConfirmedDate);
   const runway = tripBudget - confirmedDays;
   const extOptions = [
@@ -2120,7 +2123,7 @@ function renderTripLength(){
     { name: "Australia", days: "~7", need: 7 },
   ];
   const fitLine = extOptions.map(o => `${o.name} ${runway >= o.need ? "✓" : "⚠"}`).join(" · ");
-  el.innerHTML = `Confirmed trip: <b>${confirmedDays}d</b> (Taipei→Tokyo) · Budget: <b>${tripBudget}d</b> · Buffer left: <b>${runway}d</b><br><span style="color:var(--muted2);">Japan is locked in · ${fitLine} would still need to fit on top</span>`;
+  el.innerHTML = `Confirmed trip: <b>${confirmedDays}d</b> (Taipei→LA) · Budget: <b>${tripBudget}d</b> · Buffer left: <b>${runway}d</b><br><span style="color:var(--muted2);">Japan is locked in · ${fitLine} would still need to fit on top</span>`;
 }
 renderTripLength();
 
