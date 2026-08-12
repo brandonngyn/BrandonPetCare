@@ -314,7 +314,7 @@ const CAT_COLOR = { Stay:"#8A6D3B", Food:"#A63D2F", Transport:"#1F4E45", Tours:"
 const ITINERARY_LEGS = ["Taipei","Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap"];
 const LAOS_EXT_LEGS = ["Pakse","4000 Islands","Vang Vieng","Luang Prabang"];
 const MEG_EXT_LEGS = ["Cat Ba","Phong Nha","Hue","Dalat","Phu Quoc"];
-const JAPAN_EXT_LEGS = ["Tokyo","Lake Kawaguchi"];
+const JAPAN_EXT_LEGS = ["Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)"];
 const AUS_EXT_LEGS = ["Sydney","Cairns"];
 const ALL_TENTATIVE_LEGS = LAOS_EXT_LEGS.concat(MEG_EXT_LEGS, JAPAN_EXT_LEGS, AUS_EXT_LEGS);
 const ALL_LEGS = ITINERARY_LEGS.concat(ALL_TENTATIVE_LEGS);
@@ -328,7 +328,7 @@ const DEFAULT_ITINERARY = {
   // Tentative only — not confirmed, shown as "TBD" in the UI.
   "Pakse": "", "4000 Islands": "", "Vang Vieng": "", "Luang Prabang": "",
   "Cat Ba": "", "Phong Nha": "", "Hue": "", "Dalat": "", "Phu Quoc": "",
-  "Tokyo": "", "Lake Kawaguchi": "", "Sydney": "", "Cairns": "",
+  "Tokyo": "", "Hakone": "", "Kyoto": "", "Osaka": "", "Hiroshima": "", "Tokyo (return, fly out)": "", "Sydney": "", "Cairns": "",
 };
 const DEFAULT_TRIP_END = "2026-09-16";
 const LEG_COORDS = {
@@ -341,7 +341,8 @@ const LEG_COORDS = {
   "Vang Vieng": [18.9247, 102.4460], "Luang Prabang": [19.8845, 102.1348],
   "Cat Ba": [20.7284, 107.0483], "Phong Nha": [17.5943, 106.2823], "Hue": [16.4637, 107.5909],
   "Dalat": [11.9404, 108.4583], "Phu Quoc": [10.2202, 103.9573],
-  "Tokyo": [35.6762, 139.6503], "Lake Kawaguchi": [35.5000, 138.7333],
+  "Tokyo": [35.6762, 139.6503], "Hakone": [35.2323, 139.1069], "Kyoto": [35.0116, 135.7681],
+  "Osaka": [34.6937, 135.5023], "Hiroshima": [34.3853, 132.4553], "Tokyo (return, fly out)": [35.6762, 139.6503],
   "Sydney": [-33.8688, 151.2093], "Cairns": [-16.9186, 145.7781],
 };
 // Flags are plain unicode text (no image requests), so this stays free.
@@ -352,7 +353,7 @@ const LEG_FLAG = {
   "Phnom Penh": "🇰🇭", "Koh Rong": "🇰🇭", "Siem Reap": "🇰🇭",
   "Pakse": "🇱🇦", "4000 Islands": "🇱🇦", "Vang Vieng": "🇱🇦", "Luang Prabang": "🇱🇦",
   "Cat Ba": "🇻🇳", "Phong Nha": "🇻🇳", "Hue": "🇻🇳", "Dalat": "🇻🇳", "Phu Quoc": "🇻🇳",
-  "Tokyo": "🇯🇵", "Lake Kawaguchi": "🇯🇵",
+  "Tokyo": "🇯🇵", "Hakone": "🇯🇵", "Kyoto": "🇯🇵", "Osaka": "🇯🇵", "Hiroshima": "🇯🇵", "Tokyo (return, fly out)": "🇯🇵",
   "Sydney": "🇦🇺", "Cairns": "🇦🇺",
 };
 
@@ -488,9 +489,9 @@ function renderItinerary(){
     </div>
   `;
   const extensionGroups = [
+    { label: "Possible Japan extension &middot; not confirmed", legs: JAPAN_EXT_LEGS },
     { label: "Possible Laos extension &middot; not confirmed", legs: LAOS_EXT_LEGS },
     { label: "Possible Vietnam add-ons &middot; not confirmed", legs: MEG_EXT_LEGS },
-    { label: "Possible Japan extension &middot; not confirmed", legs: JAPAN_EXT_LEGS },
     { label: "Possible Australia extension &middot; not confirmed", legs: AUS_EXT_LEGS },
   ];
   const extensionsHtml = extensionGroups.map(g =>
@@ -773,6 +774,57 @@ const THINGS_GROUPS = [
   { group: "Siem Reap / Angkor Wat", rows: [
     { label: "3-day Angkor pass (official)", type: "exact", usd: 62, url: "https://angkorenterprise.gov.kh" },
   ]},
+  { group: "🇯🇵 Japan extension overview, ~19 days (not confirmed)", rows: [
+    { label: "Siem Reap/Bangkok → Tokyo flight", type: "range", low: 250, high: 450 },
+    { label: "Suica/Pasmo IC card, initial + top-ups", type: "range", low: 30, high: 50 },
+    { label: "21-day JR Pass (often NOT worth it post price-hike)", type: "approx", usd: 540 },
+    { label: "Point-to-point Shinkansen instead (Tokyo↔Hakone↔Kyoto↔Osaka↔Hiroshima↔Tokyo)", type: "range", low: 300, high: 350 },
+    { label: "Capsule hotel average, per night across cities", type: "range", low: 20, high: 35 },
+    { label: "Konbini/cheap meal budget, per day", type: "range", low: 20, high: 30 },
+  ]},
+  { group: "🇯🇵 Tokyo, 5 days (not confirmed)", rows: [
+    { label: "Capsule hotel, per night", type: "range", low: 25, high: 40 },
+    { label: "Hostel dorm, per night (alt)", type: "range", low: 20, high: 30 },
+    { label: "teamLab Planets / Borderless", type: "range", low: 25, high: 35 },
+    { label: "Shibuya Sky observation deck", type: "approx", usd: 18 },
+    { label: "Senso-ji Temple, Asakusa", type: "text", text: "Free" },
+    { label: "Meiji Shrine", type: "text", text: "Free" },
+    { label: "Tsukiji Outer Market food crawl", type: "range", low: 15, high: 20 },
+    { label: "Tokyo Metro day pass", type: "approx", usd: 6 },
+  ]},
+  { group: "🇯🇵 Hakone / Mt Fuji, 2 days (not confirmed)", rows: [
+    { label: "Hakone Free Pass, 2-day (transport + attractions)", type: "approx", usd: 50 },
+    { label: "Ryokan with onsen, per night (worth the splurge)", type: "range", low: 60, high: 100 },
+    { label: "Guesthouse/hostel, per night (budget alt)", type: "range", low: 35, high: 50 },
+    { label: "Hakone Ropeway + Owakudani Valley", type: "text", text: "In pass" },
+    { label: "Lake Ashi pirate ship cruise", type: "text", text: "In pass" },
+  ]},
+  { group: "🇯🇵 Kyoto, 4 days (not confirmed)", rows: [
+    { label: "Capsule hotel / guesthouse, per night", type: "range", low: 20, high: 30 },
+    { label: "Fushimi Inari Shrine (thousand torii gates)", type: "text", text: "Free" },
+    { label: "Arashiyama Bamboo Grove", type: "text", text: "Free" },
+    { label: "Kinkaku-ji (Golden Pavilion) entry", type: "approx", usd: 4 },
+    { label: "Nara day trip (train + deer park)", type: "range", low: 15, high: 20 },
+    { label: "Gion district evening walk", type: "text", text: "Free" },
+  ]},
+  { group: "🇯🇵 Osaka, 3 days (not confirmed)", rows: [
+    { label: "Capsule hotel, per night", type: "range", low: 17, high: 27 },
+    { label: "Osaka Castle entry", type: "approx", usd: 4 },
+    { label: "Dotonbori street food budget, per day", type: "range", low: 15, high: 25 },
+    { label: "Universal Studios Japan (optional splurge day)", type: "range", low: 70, high: 90 },
+    { label: "Kuromon Ichiba Market snacking", type: "range", low: 10, high: 15 },
+  ]},
+  { group: "🇯🇵 Hiroshima + Miyajima, 2 days (not confirmed)", rows: [
+    { label: "Hostel dorm, per night", type: "range", low: 17, high: 25 },
+    { label: "Peace Memorial Park & Museum", type: "approx", usd: 2 },
+    { label: "Miyajima ferry + Itsukushima Shrine", type: "range", low: 5, high: 8 },
+    { label: "Okonomiyaki dinner", type: "range", low: 8, high: 12 },
+  ]},
+  { group: "🇯🇵 Return to Tokyo, fly out (not confirmed)", rows: [
+    { label: "Hiroshima → Tokyo Shinkansen", type: "range", low: 120, high: 140 },
+    { label: "Capsule hotel near Narita/Haneda, last night", type: "range", low: 25, high: 40 },
+    { label: "Tokyo → LAX flight, direct, more frequent than Osaka", type: "range", low: 500, high: 900 },
+  ]},
   { group: "\uD83C\uDDF1\uD83C\uDDE6 Laos extension (not confirmed)", rows: [
     { label: "Siem Reap \u2192 Pakse bus/van", type: "range", low: 29, high: 60, url: "https://12go.asia/en/travel/siem-reap/vientiane" },
     { label: "Bolaven Plateau waterfall loop, guided", type: "range", low: 25, high: 40 },
@@ -797,16 +849,6 @@ const THINGS_GROUPS = [
     { label: "Dalat: canyoning half-day tour", type: "range", low: 30, high: 40 },
     { label: "Phu Quoc: Vinpearl cable car (longest sea cable car)", type: "approx", usd: 30 },
     { label: "Phu Quoc: island-hopping snorkel boat trip", type: "range", low: 20, high: 35 },
-  ]},
-  { group: "🇯🇵 Japan extension, Tokyo + Fuji (not confirmed)", rows: [
-    { label: "Bangkok/Siem Reap → Tokyo flight", type: "range", low: 250, high: 450 },
-    { label: "Tokyo dorm bed, per night", type: "range", low: 30, high: 45 },
-    { label: "JR rail pass or IC card top-up", type: "range", low: 30, high: 60 },
-    { label: "teamLab Planets / Borderless", type: "range", low: 25, high: 35 },
-    { label: "Shibuya Sky observation deck", type: "approx", usd: 18 },
-    { label: "Day trip to Mt Fuji / Lake Kawaguchi (bus)", type: "range", low: 30, high: 50 },
-    { label: "Lake Kawaguchi guesthouse, per night", type: "range", low: 40, high: 70 },
-    { label: "Conveyor belt sushi meal", type: "range", low: 8, high: 15 },
   ]},
   { group: "🇦🇺 Australia extension, Sydney + Cairns (not confirmed)", rows: [
     { label: "Siem Reap/Bangkok → Sydney flight", type: "range", low: 400, high: 700 },
