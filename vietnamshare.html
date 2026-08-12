@@ -155,7 +155,7 @@
 
   <div class="masthead">
     <h1>The Ledger</h1>
-    <div class="route">Orange County, CA &rarr; Tokyo</div>
+    <div class="route">Orange County, CA &rarr; Los Angeles</div>
   </div>
   <div class="subline">
     <span class="read-badge">Read-only</span>
@@ -311,7 +311,7 @@ const CATEGORIES = [
 ];
 const CAT_COLOR = { Stay:"#8A6D3B", Food:"#A63D2F", Transport:"#1F4E45", Tours:"#5B7C8D", "Visa/Fees":"#6B4A82", Misc:"#8C8578" };
 
-const ITINERARY_LEGS = ["Taipei","Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)"];
+const ITINERARY_LEGS = ["Taipei","Hanoi","Ha Giang","Sapa","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)","Los Angeles"];
 const LAOS_EXT_LEGS = ["Pakse","4000 Islands","Vang Vieng","Luang Prabang"];
 const MEG_EXT_LEGS = ["Cat Ba","Phong Nha","Hue","Dalat","Phu Quoc"];
 const AUS_EXT_LEGS = ["Sydney","Cairns"];
@@ -327,6 +327,7 @@ const DEFAULT_ITINERARY = {
   // Japan is now a confirmed part of the itinerary, not tentative.
   "Tokyo": "2026-09-17", "Hakone": "2026-09-21", "Kyoto": "2026-09-23",
   "Osaka": "2026-09-27", "Hiroshima": "2026-09-30", "Tokyo (return, fly out)": "2026-10-02",
+  "Los Angeles": "2026-10-02",
   // Tentative only — not confirmed, shown as "TBD" in the UI.
   "Pakse": "", "4000 Islands": "", "Vang Vieng": "", "Luang Prabang": "",
   "Cat Ba": "", "Phong Nha": "", "Hue": "", "Dalat": "", "Phu Quoc": "",
@@ -345,6 +346,7 @@ const LEG_COORDS = {
   "Dalat": [11.9404, 108.4583], "Phu Quoc": [10.2202, 103.9573],
   "Tokyo": [35.6762, 139.6503], "Hakone": [35.2323, 139.1069], "Kyoto": [35.0116, 135.7681],
   "Osaka": [34.6937, 135.5023], "Hiroshima": [34.3853, 132.4553], "Tokyo (return, fly out)": [35.6762, 139.6503],
+  "Los Angeles": [34.0522, -118.2437],
   "Sydney": [-33.8688, 151.2093], "Cairns": [-16.9186, 145.7781],
 };
 // Flags are plain unicode text (no image requests), so this stays free.
@@ -356,6 +358,7 @@ const LEG_FLAG = {
   "Pakse": "🇱🇦", "4000 Islands": "🇱🇦", "Vang Vieng": "🇱🇦", "Luang Prabang": "🇱🇦",
   "Cat Ba": "🇻🇳", "Phong Nha": "🇻🇳", "Hue": "🇻🇳", "Dalat": "🇻🇳", "Phu Quoc": "🇻🇳",
   "Tokyo": "🇯🇵", "Hakone": "🇯🇵", "Kyoto": "🇯🇵", "Osaka": "🇯🇵", "Hiroshima": "🇯🇵", "Tokyo (return, fly out)": "🇯🇵",
+  "Los Angeles": "🇺🇸",
   "Sydney": "🇦🇺", "Cairns": "🇦🇺",
 };
 
@@ -1084,7 +1087,7 @@ function renderTripLength(){
   const el = document.getElementById("tripLengthLine");
   if (!el) return;
   const tripBudget = loadTripBudget();
-  const lastConfirmedDate = itinerary["Tokyo (return, fly out)"] || tripEnd;
+  const lastConfirmedDate = itinerary["Los Angeles"] || itinerary["Tokyo (return, fly out)"] || tripEnd;
   const confirmedDays = daysBetween(itinerary["Taipei"], lastConfirmedDate);
   const runway = tripBudget - confirmedDays;
   const extOptions = [
@@ -1092,7 +1095,7 @@ function renderTripLength(){
     { name: "Australia", days: "~7", need: 7 },
   ];
   const fitLine = extOptions.map(o => `${o.name} ${runway >= o.need ? "✓" : "⚠"}`).join(" · ");
-  el.innerHTML = `Confirmed trip: <b>${confirmedDays}d</b> (Taipei→Tokyo) · Budget: <b>${tripBudget}d</b> · Buffer left: <b>${runway}d</b><br><span style="color:var(--muted2);">Japan is locked in · ${fitLine} would still need to fit on top</span>`;
+  el.innerHTML = `Confirmed trip: <b>${confirmedDays}d</b> (Taipei→LA) · Budget: <b>${tripBudget}d</b> · Buffer left: <b>${runway}d</b><br><span style="color:var(--muted2);">Japan is locked in · ${fitLine} would still need to fit on top</span>`;
 }
 
 // ---- refresh everything periodically since this mirrors localStorage the main app writes to ----
