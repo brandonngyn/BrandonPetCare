@@ -649,7 +649,7 @@ document.getElementById("currencyToggle").addEventListener("click", () => {
   renderPricesCard();
 });
 
-const LEGS = ["Taipei","Hanoi","Ha Giang","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)","Los Angeles","Other"];
+const LEGS = ["Taipei","Hanoi","Ha Giang","Ninh Binh","Phong Nha","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)","Los Angeles","Other"];
 const CATEGORIES = [
   { key:"Stay", label:"Stay", mark:"⌂" },
   { key:"Food", label:"Food", mark:"✦" },
@@ -1070,16 +1070,16 @@ function loadExpenses(){
 function saveExpenses(list){ try { localStorage.setItem(LS_EXPENSES, JSON.stringify(list)); } catch(e){} }
 function loadBudget(){ try { const v = localStorage.getItem(LS_BUDGET); return v ? Number(v) : 2200; } catch(e){ return 2200; } }
 function saveBudget(v){ try { localStorage.setItem(LS_BUDGET, String(v)); } catch(e){} }
-const ITINERARY_LEGS = ["Taipei","Hanoi","Ha Giang","Ha Long / Lan Ha","Ninh Binh","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)","Los Angeles"];
+const ITINERARY_LEGS = ["Taipei","Hanoi","Ha Giang","Ninh Binh","Phong Nha","Da Nang","Hoi An","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)","Los Angeles"];
 const DEFAULT_ITINERARY = {
   "Taipei": "2026-08-08",
   "Hanoi": "2026-08-09",
   "Ha Giang": "2026-08-11",
-  "Ha Long / Lan Ha": "2026-08-18",
-  "Ninh Binh": "2026-08-20",
-  "Da Nang": "2026-08-23",
-  "Hoi An": "2026-08-25",
-  "Ho Chi Minh City": "2026-08-30",
+  "Ninh Binh": "2026-08-15",
+  "Phong Nha": "2026-08-18",
+  "Da Nang": "2026-08-21",
+  "Hoi An": "2026-08-23",
+  "Ho Chi Minh City": "2026-08-28",
   "Phnom Penh": "2026-09-07",
   "Koh Rong": "2026-09-11",
   "Siem Reap": "2026-09-13",
@@ -1093,8 +1093,8 @@ const LEG_COORDS = {
   "Taipei": [25.0330, 121.5654],
   "Hanoi": [21.0285, 105.8542],
   "Ha Giang": [22.8025, 104.9784],
-  "Ha Long / Lan Ha": [20.9101, 107.1839],
   "Ninh Binh": [20.2506, 105.9744],
+  "Phong Nha": [17.5943, 106.2823],
   "Da Nang": [16.0544, 108.2022],
   "Hoi An": [15.8801, 108.3380],
   "Ho Chi Minh City": [10.8231, 106.6297],
@@ -1112,8 +1112,8 @@ const LEG_COORDS = {
 // Flags are plain unicode text (no image requests), so this stays free.
 const LEG_FLAG = {
   "Taipei": "🇹🇼",
-  "Hanoi": "🇻🇳", "Ha Giang": "🇻🇳", "Ha Long / Lan Ha": "🇻🇳",
-  "Ninh Binh": "🇻🇳", "Da Nang": "🇻🇳", "Hoi An": "🇻🇳", "Ho Chi Minh City": "🇻🇳",
+  "Hanoi": "🇻🇳", "Ha Giang": "🇻🇳",
+  "Ninh Binh": "🇻🇳", "Phong Nha": "🇻🇳", "Da Nang": "🇻🇳", "Hoi An": "🇻🇳", "Ho Chi Minh City": "🇻🇳",
   "Phnom Penh": "🇰🇭", "Koh Rong": "🇰🇭", "Siem Reap": "🇰🇭",
   "Tokyo": "🇯🇵", "Hakone": "🇯🇵", "Kyoto": "🇯🇵", "Osaka": "🇯🇵", "Hiroshima": "🇯🇵", "Tokyo (return, fly out)": "🇯🇵",
   "Los Angeles": "🇺🇸",
@@ -1599,13 +1599,15 @@ const PRICE_GROUPS = [
     { label: "Bong Hostel, 4-day private room", type: "range", low: 245, high: 270, url: "https://bongbackpackerhostel.com/tours" },
     { label: "Bong Hostel, 4-day dorm/group (est.)", type: "range", low: 170, high: 200, url: "https://bongbackpackerhostel.com/tours/motorbike-group-tour/ha-giang-group-4d3n" },
   ]},
-  { group: "Ha Long / Lan Ha Bay (2-day, 1-night cruise)", rows: [
-    { label: "Hanoi: 2-Day Ha Long & Lan Ha Cruise w/ Kayaking (4.6★, 386 reviews)", type: "exact", usd: 112, url: "https://www.getyourguide.com/hanoi-l205/from-hanoi2-days-ha-long-lan-ha-bay-boat-tour-t540900/" },
-  ]},
   { group: "Ninh Binh (Tam Coc / Trang An boats)", rows: [
     { label: "Tam Coc rowing boat", type: "range", low: 8, high: 10, url: "https://ninhbinhtourist.com.vn" },
     { label: "Trang An boat tour", type: "range", low: 8, high: 10, url: "https://ninhbinhtourist.com.vn" },
     { label: "Hang Mua viewpoint (500-step climb)", type: "approx", usd: 4 },
+  ]},
+  { group: "Phong Nha", rows: [
+    { label: "Paradise Cave entry", type: "approx", usd: 8.50 },
+    { label: "Dark Cave zipline + mud bath tour", type: "range", low: 22, high: 25 },
+    { label: "Phong Nha-Ke Bang boat tour", type: "range", low: 6, high: 10 },
   ]},
   { group: "Da Nang", rows: [
     { label: "Marble Mountains + elevator", type: "approx", usd: 2.50 },
@@ -1641,38 +1643,87 @@ const PRICE_GROUPS = [
   { group: "Siem Reap / Angkor Wat", rows: [
     { label: "3-day Angkor pass (official)", type: "exact", usd: 62, url: "https://angkorenterprise.gov.kh" },
   ]},
-  { group: "🇯🇵 Japan, ~19 days", rows: [
+  { group: "🇯🇵 Japan — Costs & Logistics", rows: [
     { label: "Siem Reap/Bangkok → Tokyo flight", type: "range", low: 250, high: 450 },
-    { label: "Suica/Pasmo IC card, initial + top-ups", type: "range", low: 30, high: 50 },
+    { label: "Suica IC card — add to Apple Wallet, top up easily, used for all buses/subways", type: "text", text: "App" },
     { label: "21-day JR Pass (often NOT worth it post price-hike)", type: "approx", usd: 540 },
     { label: "Point-to-point Shinkansen instead (Tokyo↔Hakone↔Kyoto↔Osaka↔Hiroshima↔Tokyo)", type: "range", low: 300, high: 350 },
+    { label: "Klook — book longer trains, but compare vs JR/regional pass first", type: "text", text: "App" },
     { label: "Konbini/cheap meal budget, per day", type: "range", low: 20, high: 30 },
-    { label: "Tokyo (5d): capsule hotel, per night", type: "range", low: 25, high: 40 },
-    { label: "Tokyo: hostel dorm, per night (alt)", type: "range", low: 20, high: 30 },
-    { label: "Tokyo: teamLab Planets / Borderless", type: "range", low: 25, high: 35 },
-    { label: "Tokyo: Shibuya Sky observation deck", type: "approx", usd: 18 },
-    { label: "Tokyo: Senso-ji Temple, Asakusa", type: "text", text: "Free" },
-    { label: "Tokyo: Meiji Shrine", type: "text", text: "Free" },
-    { label: "Tokyo: Tsukiji Outer Market food crawl", type: "range", low: 15, high: 20 },
-    { label: "Tokyo: Metro day pass", type: "approx", usd: 6 },
-    { label: "Hakone (2d): Free Pass (transport + attractions)", type: "approx", usd: 50 },
-    { label: "Hakone: ryokan with onsen, per night (worth the splurge)", type: "range", low: 60, high: 100 },
-    { label: "Hakone: guesthouse/hostel, per night (budget alt)", type: "range", low: 35, high: 50 },
-    { label: "Kyoto (4d): capsule hotel / guesthouse, per night", type: "range", low: 20, high: 30 },
-    { label: "Kyoto: Fushimi Inari Shrine (thousand torii gates)", type: "text", text: "Free" },
-    { label: "Kyoto: Arashiyama Bamboo Grove", type: "text", text: "Free" },
-    { label: "Kyoto: Kinkaku-ji (Golden Pavilion) entry", type: "approx", usd: 4 },
-    { label: "Kyoto: Nara day trip (train + deer park)", type: "range", low: 15, high: 20 },
-    { label: "Osaka (3d): capsule hotel, per night", type: "range", low: 17, high: 27 },
-    { label: "Osaka: Castle entry", type: "approx", usd: 4 },
-    { label: "Osaka: Dotonbori street food budget, per day", type: "range", low: 15, high: 25 },
-    { label: "Osaka: Universal Studios Japan (optional splurge day)", type: "range", low: 70, high: 90 },
-    { label: "Hiroshima (2d): hostel dorm, per night", type: "range", low: 17, high: 25 },
-    { label: "Hiroshima: Peace Memorial Park & Museum", type: "approx", usd: 2 },
-    { label: "Hiroshima: Miyajima ferry + Itsukushima Shrine", type: "range", low: 5, high: 8 },
-    { label: "Return: Hiroshima → Tokyo Shinkansen", type: "range", low: 120, high: 140 },
-    { label: "Return: capsule hotel near Narita/Haneda, last night", type: "range", low: 25, high: 40 },
-    { label: "Return: Tokyo → LAX flight, direct, more frequent than Osaka", type: "range", low: 500, high: 900 },
+  ]},
+  { group: "🇯🇵 Japan — General Tips", rows: [
+    { label: "Book a ryokan at some point — Kyoto has beautiful, often-affordable ones", type: "text", text: "Do" },
+    { label: "Bring an umbrella + thin waterproof layers for rainy season", type: "text", text: "Pack" },
+    { label: "Dress modestly, avoid showing too much skin/cleavage — you'll get stared at otherwise", type: "text", text: "Etiquette" },
+    { label: "Train stations are confusing — give extra time to grab tickets and find your platform", type: "text", text: "Trains" },
+    { label: "Don't talk loudly on public transport", type: "text", text: "Etiquette" },
+  ]},
+  { group: "🇯🇵 Japan — Must Do", rows: [
+    { label: "Omakase sushi tasting, book ahead (Osaka rec: Hozenji Sushi Sakata 法善寺 鮨 さかた)", type: "range", low: 65, high: 100 },
+    { label: "2nd Street — thrift/charity shop chain in most cities, great cheap finds", type: "text", text: "Thrift" },
+  ]},
+  { group: "🇯🇵 Tokyo — Food", rows: [
+    { label: "Chocolate fish — Taiyaki Sawada", type: "text", text: "Try" },
+    { label: "Chocolate strawberry mochi — Fish Market", type: "text", text: "Try" },
+    { label: "Wagyu skewer — Fish Market", type: "text", text: "Try" },
+    { label: "Fatty tuna nigiri — Fish Market", type: "text", text: "Try" },
+    { label: "Ichiran ramen", type: "text", text: "Try" },
+    { label: "Matcha latte — Hatoya", type: "text", text: "Try" },
+  ]},
+  { group: "🇯🇵 Tokyo — Landmarks", rows: [
+    { label: "Asakusa — Senso-ji Temple + nearby markets, Nezu Shrine (favorite area)", type: "text", text: "Free" },
+    { label: "Shibuya Crossing — go early morning to beat the crowds", type: "text", text: "Free" },
+    { label: "Meiji Shrine — serene garden, great escape on a hot day", type: "text", text: "Free" },
+    { label: "Gotokuji Cat Temple (lucky cats) → Shimokitazawa thrifting on the way back", type: "text", text: "Fun" },
+    { label: "Harajuku — shopping", type: "text", text: "Shop" },
+    { label: "Golden Gai — tiny alley bars, great to walk at night", type: "text", text: "Nightlife" },
+    { label: "Gonpachi Nishi-Azabu — Kill Bill filming location, food/drinks", type: "text", text: "Film" },
+    { label: "Tokyo Metro day pass", type: "approx", usd: 6 },
+  ]},
+  { group: "🇯🇵 Hakone / Mt Fuji", rows: [
+    { label: "Hakone Free Pass (transport + attractions)", type: "approx", usd: 50 },
+    { label: "Ryokan with onsen, per night (worth the splurge)", type: "range", low: 60, high: 100 },
+    { label: "Guesthouse/hostel, per night (budget alt)", type: "range", low: 35, high: 50 },
+  ]},
+  { group: "🇯🇵 Kyoto — Food", rows: [
+    { label: "Dandan noodles — Kinshirou (favorite meal of the whole trip)", type: "text", text: "Must" },
+    { label: "Hikiniku to Come", type: "text", text: "Try" },
+    { label: "Mochi mochi chocolate mochi", type: "text", text: "Try" },
+    { label: "Matcha soft serve", type: "text", text: "Try" },
+    { label: "Hojicha", type: "text", text: "Try" },
+  ]},
+  { group: "🇯🇵 Kyoto — Landmarks", rows: [
+    { label: "Gion + Pontocho alley", type: "text", text: "Explore" },
+    { label: "Kinkaku-ji 金閣寺 — gold temple on a lake, unbelievable", type: "approx", usd: 4 },
+    { label: "Ninenzaka area — best photo spots in Kyoto (stop by Mochi Mochi here)", type: "text", text: "Photo" },
+    { label: "Komyo-in Temple 光明院 — favorite of the whole trip, do NOT skip, gorgeous in the rain", type: "text", text: "Don't skip" },
+    { label: "Fushimi Inari Taisha 伏見稲荷大社 — orange torii gates + market stalls, go early", type: "text", text: "Go early" },
+    { label: "Kimono dressing + tea ceremony experience", type: "range", low: 30, high: 60 },
+    { label: "Check out Kyoto's bars", type: "text", text: "Nightlife" },
+    { label: "Capsule hotel / guesthouse, per night", type: "range", low: 20, high: 30 },
+  ]},
+  { group: "🇯🇵 Osaka — Food", rows: [
+    { label: "Tanghulu (candied fruit skewers)", type: "text", text: "Try" },
+    { label: "Soufflé pancakes", type: "text", text: "Try" },
+    { label: "Takoyaki octopus balls", type: "text", text: "Try" },
+  ]},
+  { group: "🇯🇵 Osaka — Landmarks & Day Trips", rows: [
+    { label: "Nara day trip — deer park", type: "range", low: 15, high: 20 },
+    { label: "Osaka shopping — really good", type: "text", text: "Shop" },
+    { label: "Osaka Castle entry", type: "approx", usd: 4 },
+    { label: "Universal Studios Japan (optional splurge day)", type: "range", low: 70, high: 90 },
+    { label: "Capsule hotel, per night", type: "range", low: 17, high: 27 },
+  ]},
+  { group: "🇯🇵 Hiroshima", rows: [
+    { label: "Okonomiyaki", type: "range", low: 8, high: 12 },
+    { label: "Peace Memorial Park & Museum", type: "approx", usd: 2 },
+    { label: "Miyajima ferry + Itsukushima Shrine", type: "range", low: 5, high: 8 },
+    { label: "Hostel dorm, per night", type: "range", low: 17, high: 25 },
+  ]},
+  { group: "🇯🇵 Return to Tokyo, fly out", rows: [
+    { label: "Hiroshima → Tokyo Shinkansen", type: "range", low: 120, high: 140 },
+    { label: "Capsule hotel near Narita/Haneda, last night", type: "range", low: 25, high: 40 },
+    { label: "Tokyo → LAX flight, direct, more frequent than Osaka", type: "range", low: 500, high: 900 },
   ]},
 ];
 function fmtPrice(usd){
