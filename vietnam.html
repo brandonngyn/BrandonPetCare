@@ -354,10 +354,6 @@
     </div>
     <div id="itineraryList"></div>
     <div class="field" style="margin-top:10px;">
-      <label>Trip ends (leaving Siem Reap)</label>
-      <input type="date" id="tripEnd" />
-    </div>
-    <div class="field" style="margin-top:10px;">
       <label>Target total trip length (days), if extending — <span id="tripBudgetEditHint">tap to edit</span></label>
       <input type="number" id="tripLengthBudget" min="1" step="1" />
     </div>
@@ -1208,15 +1204,6 @@ function loadItinerary(){
   return { ...DEFAULT_ITINERARY };
 }
 function saveItinerary(it){ try { localStorage.setItem(LS_ITINERARY, JSON.stringify(it)); } catch(e){} }
-function loadTripEnd(){
-  try {
-    const v = localStorage.getItem(LS_TRIP_END);
-    if (v) return v;
-  } catch(e){}
-  saveTripEnd(DEFAULT_TRIP_END);
-  return DEFAULT_TRIP_END;
-}
-function saveTripEnd(v){ try { localStorage.setItem(LS_TRIP_END, v); } catch(e){} }
 const LS_TRIP_BUDGET = "vn-kh-trip-budget-v1";
 const DEFAULT_TRIP_BUDGET = 60;
 function loadTripBudget(){
@@ -1277,7 +1264,6 @@ let budget = loadBudget();
 let itinerary = loadItinerary();
 let packingChecked = loadPackingChecked();
 let packingCustom = loadPackingCustom();
-let tripEnd = loadTripEnd();
 let tripBudget = loadTripBudget();
 let visa = loadVisa();
 let journal = loadJournal();
@@ -2070,9 +2056,7 @@ function renderItineraryPanel(){
       }
     });
   });
-  document.getElementById("tripEnd").value = tripEnd;
 }
-document.getElementById("tripEnd").addEventListener("change", (e) => { tripEnd = e.target.value; saveTripEnd(tripEnd); render(); renderTripLength(); });
 document.getElementById("tripLengthBudget").value = tripBudget;
 document.getElementById("tripLengthBudget").addEventListener("change", (e) => {
   const v = parseInt(e.target.value);
@@ -2080,7 +2064,7 @@ document.getElementById("tripLengthBudget").addEventListener("change", (e) => {
 });
 function renderTripLength(){
   const el = document.getElementById("tripLengthLine");
-  const lastConfirmedDate = itinerary["Los Angeles"] || itinerary["Tokyo (return, fly out)"] || tripEnd;
+  const lastConfirmedDate = itinerary["Los Angeles"] || itinerary["Tokyo (return, fly out)"] || itinerary["Siem Reap"];
   const confirmedDays = daysBetween(itinerary["Taipei"], lastConfirmedDate);
   const buffer = tripBudget - confirmedDays;
   const bufferLabel = buffer >= 0 ? `${buffer}d under budget` : `${Math.abs(buffer)}d over budget`;
@@ -2131,10 +2115,10 @@ function render(){
   const daysLeft = Math.max(0, totalDays - elapsed - 1);
 
   // The $ on-ground budget only covers the confirmed Vietnam/Cambodia leg,
-  // so pace math ("need $X/day") stays keyed to tripEnd, not tripBudget —
-  // otherwise adding 20 unplanned "extension" days would make the required
-  // daily spend look artificially generous.
-  const confirmedTotalDays = Math.max(1, daysBetween(tripStart, tripEnd));
+  // so pace math ("need $X/day") stays keyed to the Siem Reap date, not the
+  // full trip budget — otherwise adding 20 days of Japan would make the
+  // required daily spend look artificially generous.
+  const confirmedTotalDays = Math.max(1, daysBetween(tripStart, itinerary["Siem Reap"]));
   let confirmedElapsed = daysBetween(tripStart, today);
   confirmedElapsed = Math.max(0, Math.min(confirmedTotalDays, confirmedElapsed));
   const confirmedDaysLeft = Math.max(0, confirmedTotalDays - confirmedElapsed - 1);
@@ -2227,7 +2211,7 @@ function render(){
   // pace line
   const paceEl = document.getElementById("paceLine");
   const paceSoFar = total / Math.max(1, confirmedElapsed || 1);
-  if (today >= tripStart && today <= tripEnd) {
+  if (today >= tripStart && today <= itinerary["Siem Reap"]) {
     const reqPace = confirmedDaysLeft > 0 ? Math.max(0, remaining) / confirmedDaysLeft : 0;
     const tight = reqPace < paceSoFar && remaining > 0;
     paceEl.className = "pace-line" + (tight ? " tight" : "");
