@@ -1064,7 +1064,7 @@ function renderTripLength(){
   const el = document.getElementById("tripLengthLine");
   if (!el) return;
   const tripBudget = loadTripBudget();
-  const lastConfirmedDate = itinerary["Los Angeles"] || itinerary["Tokyo (return, fly out)"] || tripEnd;
+  const lastConfirmedDate = itinerary["Los Angeles"] || itinerary["Tokyo (return, fly out)"] || itinerary["Siem Reap"];
   const confirmedDays = daysBetween(itinerary["Taipei"], lastConfirmedDate);
   const buffer = tripBudget - confirmedDays;
   const bufferLabel = buffer >= 0 ? `${buffer}d under budget` : `${Math.abs(buffer)}d over budget`;
