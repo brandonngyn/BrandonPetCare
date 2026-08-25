@@ -12,18 +12,21 @@
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
 
   :root {
-    --bg: #F4EFE3;
-    --card: #FFFDF7;
-    --ink: #22201B;
+    --bg: #F5EEDD;
+    --bg-wash: #EFE6D0;
+    --card: #FFFCF5;
+    --ink: #1B1810;
     --muted: #6B6555;
     --muted2: #8C8578;
     --faint: #B0A88F;
     --border: #D8CFB8;
     --border-faint: #EAE3D2;
-    --teal: #1F4E45;
-    --teal-dark: #17372F;
-    --red: #A63D2F;
-    --amber: #A6702F;
+    --teal: #123C33;
+    --teal-dark: #0C2B24;
+    --teal-tint: #E4EBE7;
+    --red: #96311F;
+    --amber: #A8701C;
+    --gold: #B7902E;
     --pretrip-bg: #EFE9D8;
     --pretrip-border: #DDD4BF;
     --backup-bg: #EFE1D8;
@@ -31,40 +34,58 @@
     --backup-text: #6B4530;
     --current-bg: #F0EAD8;
     --banner2: #3A4A3F;
+    --shadow-sm: 0 1px 3px rgba(27,24,16,0.07);
+    --shadow-md: 0 3px 14px rgba(27,24,16,0.09);
+    --shadow-lift: 0 6px 22px rgba(27,24,16,0.14);
+    --stamp-ring: rgba(183,144,46,0.35);
   }
   .dark {
-    --bg: #17140F;
-    --card: #211D17;
-    --ink: #EDE6D5;
+    --bg: #15130E;
+    --bg-wash: #1B1811;
+    --card: #201C15;
+    --ink: #EFE8D8;
     --muted: #A79E8A;
     --muted2: #8C8271;
     --faint: #5C5646;
     --border: #3A3527;
-    --border-faint: #2C2820;
-    --teal: #3D8672;
+    --border-faint: #2A2619;
+    --teal: #3F8A75;
     --teal-dark: #2E6B5A;
-    --red: #D4685A;
-    --amber: #D19654;
-    --pretrip-bg: #2A2620;
+    --teal-tint: #1E2C27;
+    --red: #D97561;
+    --amber: #D6A85C;
+    --gold: #D6B45E;
+    --pretrip-bg: #292319;
     --pretrip-border: #3A3527;
-    --backup-bg: #332B23;
+    --backup-bg: #302921;
     --backup-border: #4A3C2E;
     --backup-text: #E0B896;
-    --current-bg: #2E2A20;
-    --banner2: #2E3A31;
+    --current-bg: #2C2718;
+    --banner2: #2A362E;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.35);
+    --shadow-md: 0 3px 16px rgba(0,0,0,0.4);
+    --shadow-lift: 0 8px 26px rgba(0,0,0,0.5);
+    --stamp-ring: rgba(214,168,92,0.3);
   }
   .wrap { transition: background .2s, color .2s; }
   .wrap.large-text { zoom: 1.18; }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body { margin: 0; }
-  .wrap { background: var(--bg); min-height: 100vh; font-family: 'Inter', sans-serif; color: var(--ink); padding: 24px 16px 60px; }
-  .container { max-width: 640px; margin: 0 auto; }
-  .masthead { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid var(--ink); padding-bottom: 10px; margin-bottom: 4px; }
-  .masthead h1 { font-family: 'Fraunces', serif; font-weight: 700; font-size: 26px; letter-spacing: -0.01em; margin: 0; }
-  .masthead .route { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
-  .location-banner { display:flex; justify-content:space-between; align-items:center; background:#22201B; color:#F4EFE3; border-radius:3px; padding:12px 14px; margin-bottom:6px; cursor:pointer; }
+  .wrap { background: var(--bg); min-height: 100vh; font-family: 'Inter', sans-serif; color: var(--ink); padding: 0 0 60px; }
+  .container { max-width: 640px; margin: 0 auto; padding: 0 16px; }
+  .masthead-band { background: linear-gradient(180deg, var(--bg-wash) 0%, var(--bg) 100%); padding: 28px 16px 0; margin-bottom: 0; }
+  .masthead { display: flex; justify-content: space-between; align-items: flex-end; max-width: 640px; margin: 0 auto; padding-bottom: 18px; }
+  .masthead .kicker { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 4px; display: block; }
+  .masthead h1 { font-family: 'Fraunces', serif; font-weight: 700; font-size: 32px; letter-spacing: -0.02em; margin: 0; line-height: 1; }
+  .masthead .route-wrap { text-align: right; }
+  .masthead .route { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.5; }
+  .stub-tear { position: relative; max-width: 640px; margin: 0 auto; height: 14px; overflow: hidden; }
+  .stub-tear::before { content: ""; position: absolute; left: -16px; right: -16px; top: 0; height: 14px; background-image: radial-gradient(circle at 10px 0, transparent 7px, var(--bg) 7.5px); background-size: 20px 14px; background-repeat: repeat-x; }
+  .stub-tear::after { content: ""; position: absolute; left: 16px; right: 16px; top: 6px; border-top: 1.5px dashed var(--border); }
+  .masthead-band + .container { padding-top: 22px; }
+  .location-banner { display:flex; justify-content:space-between; align-items:center; background:#1B1810; color:#F5EEDD; border-radius:8px; padding:14px 16px; margin-bottom:6px; cursor:pointer; box-shadow: var(--shadow-md); }
   #locationBanner { cursor: default; }
-  .util-banner { background: var(--card); color: var(--ink); border: 1px solid var(--border); margin-top: 10px; }
+  .util-banner { background: var(--card); color: var(--ink); border: 1px solid var(--border); margin-top: 10px; box-shadow: var(--shadow-sm); }
   .util-banner .loc-sub { color: var(--muted2); }
   .util-banner .loc-caret { color: var(--muted); }
   .insurance-card { background: var(--border-faint); border-radius: 3px; padding: 12px 14px; margin-top: 4px; }
@@ -76,7 +97,7 @@
   .insurance-qr { text-align: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
   .insurance-qr img { border-radius: 4px; background: #fff; padding: 6px; }
   .insurance-qr a { display: block; margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--teal); text-decoration: none; }
-  .checkin-card { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--red); border-radius: 3px; padding: 12px 14px; margin-bottom: 10px; }
+  .checkin-card { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--red); border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; box-shadow: var(--shadow-sm); }
   .checkin-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 4px; }
   .checkin-text { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; color: var(--ink); }
   .local-time-line { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--teal); margin-top: 4px; }
@@ -122,7 +143,7 @@
   .itin-clear-btn { background:none; border:none; color:var(--faint); font-size:14px; cursor:pointer; padding:6px; margin:-6px; line-height:1; }
   .itin-clear-btn.confirm { color:var(--red); font-size:9px; font-family:'IBM Plex Mono', monospace; font-weight:600; background:var(--border-faint); border-radius:3px; padding:6px 3px; margin:-6px -3px; }
   .itin-weather { font-size: 12px; font-family: 'IBM Plex Mono', monospace; color: var(--muted); text-align: center; white-space: nowrap; }
-  .itin-row.current { background:var(--current-bg); margin:0 -8px; padding:6px 8px; border-radius:3px; }
+  .itin-row.current { background:var(--current-bg); margin:0 -8px; padding:6px 8px; border-radius:6px; box-shadow: inset 2px 0 0 var(--gold); }
   .itin-row .itin-dot { width:8px; height:8px; border-radius:50%; background:var(--border); }
   .itin-row.current .itin-dot { background:var(--red); }
   .itin-row .itin-name { font-size:13.5px; font-weight:500; }
@@ -134,7 +155,8 @@
   .subline { display:flex; justify-content: space-between; align-items:center; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--muted); margin: 0 0 10px; flex-wrap: wrap; gap: 6px; }
   .subline .days { cursor: pointer; text-decoration: underline dotted; }
   .subline .site-link { color: var(--muted); text-decoration: none; border-bottom: 1px dotted var(--faint); }
-  .theme-toggle { background: none; border: 1px solid var(--faint); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 4px 9px; border-radius: 999px; cursor: pointer; }
+  .theme-toggle { background: none; border: 1px solid var(--faint); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 4px 9px; border-radius: 999px; cursor: pointer; transition: background .15s, border-color .15s; }
+  .theme-toggle:active { background: var(--border-faint); }
   .currency-toggle { background: none; border: 1px dashed var(--border); color: var(--teal); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 4px 9px; border-radius: 999px; cursor: pointer; margin-bottom: 6px; }
   .itin-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .temp-toggle { background: none; border: 1px dashed var(--border); color: var(--teal); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 3px 9px; border-radius: 999px; cursor: pointer; }
@@ -153,14 +175,14 @@
   .convert-panel.open { display:grid; }
   .convert-result { grid-column: 1/-1; font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink); display:flex; justify-content:space-between; align-items:center; }
   .convert-result button { background:var(--teal); color:var(--bg); border:none; border-radius:3px; padding:6px 10px; font-family:'IBM Plex Mono', monospace; font-size:11px; cursor:pointer; }
-  .ledger-card { background: var(--card); border: 1px solid var(--border); border-radius: 3px; padding: 18px 18px 16px; margin-bottom: 16px; }
+  .ledger-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 18px 16px; margin-bottom: 16px; box-shadow: var(--shadow-sm); transition: box-shadow .2s; }
   .pretrip-card { background: var(--pretrip-bg); }
   .pretrip-head { display: flex; justify-content: space-between; align-items: baseline; font-family: 'IBM Plex Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
   .pretrip-total { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; color: var(--ink); text-transform: none; letter-spacing: normal; }
   .pretrip-note { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted2); margin: 4px 0 10px; }
   .pretrip-row { display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; padding: 4px 0; border-top: 1px solid var(--pretrip-border); }
   .totals-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
-  .totals-row .spent { font-family: 'Fraunces', serif; font-size: 34px; font-weight: 600; line-height: 1; color: var(--teal); transition: color .3s; }
+  .totals-row .spent { font-family: 'Fraunces', serif; font-size: 38px; font-weight: 600; line-height: 1; color: var(--teal); transition: color .3s; letter-spacing: -0.01em; }
   .totals-row .spent.warn { color: var(--amber); }
   .totals-row .spent.danger { color: var(--red); }
   .totals-row .of { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); }
@@ -169,7 +191,7 @@
   .edit-budget-btn { background: none; border: none; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--red); cursor: pointer; text-decoration: underline; padding: 0; }
   .route-bar { position: relative; height: 34px; margin: 6px 0 4px; }
   .route-track { position: absolute; top: 15px; left: 0; right: 0; height: 3px; background: repeating-linear-gradient(90deg, var(--border) 0 6px, transparent 6px 10px); }
-  .route-fill { position: absolute; top: 15px; left: 0; height: 3px; background: var(--teal); transition: width 0.4s ease, background .3s; }
+  .route-fill { position: absolute; top: 15px; left: 0; height: 3px; background: linear-gradient(90deg, var(--teal-dark), var(--teal)); transition: width 0.4s ease, background .3s; }
   .route-fill.warn { background: var(--amber); }
   .route-fill.danger { background: var(--red); }
   .route-marker { position: absolute; top: 6px; width: 20px; height: 20px; margin-left: -10px; background: var(--red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--bg); font-size: 10px; font-family: 'IBM Plex Mono', monospace; transition: left 0.4s ease; box-shadow: 0 0 0 3px var(--card); }
@@ -192,7 +214,8 @@
   .ref-row span:first-child { font-weight: 500; }
   .ref-row span:last-child { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--teal); }
   .presets-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
-  .preset-chip { font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 7px 11px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--ink); cursor: pointer; }
+  .preset-chip { font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 7px 11px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--ink); cursor: pointer; transition: transform .12s, box-shadow .12s, background .12s; }
+  .preset-chip:active { background: var(--border-faint); transform: scale(0.96); }
   .preset-chip:active { background: var(--border-faint); }
 
   form.entry { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
@@ -207,7 +230,8 @@
   .toggle-row { display: flex; gap: 8px; }
   .toggle-btn { flex: 1; font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 8px 6px; border: 1px solid var(--border); border-radius: 3px; background: var(--card); color: var(--muted); cursor: pointer; }
   .toggle-btn.active { background: #22201B; color: #F4EFE3; border-color: #22201B; }
-  .add-btn { grid-column: 1 / -1; background: var(--teal); color: var(--bg); border: none; border-radius: 3px; padding: 11px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; letter-spacing: 0.03em; cursor: pointer; margin-top: 2px; }
+  .add-btn { grid-column: 1 / -1; background: var(--teal); color: var(--bg); border: none; border-radius: 6px; padding: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; letter-spacing: 0.03em; cursor: pointer; margin-top: 2px; box-shadow: var(--shadow-sm); transition: transform .12s, box-shadow .12s; }
+  .add-btn:active { transform: scale(0.98); }
   .add-btn:active { background: var(--teal-dark); }
   .add-btn.added { background: var(--red); transition: background .15s; }
   .error-msg { grid-column: 1 / -1; color: var(--red); font-size: 12px; font-family: 'IBM Plex Mono', monospace; }
@@ -232,7 +256,7 @@
 
   /* Visa countdown */
   .visa-strip { display:flex; gap:10px; margin-bottom:14px; }
-  .visa-chip { flex:1; background:var(--card); border:1px solid var(--border); border-radius:3px; padding:9px 10px; font-family:'IBM Plex Mono', monospace; }
+  .visa-chip { flex:1; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:10px 12px; font-family:'IBM Plex Mono', monospace; box-shadow: var(--shadow-sm); }
   .visa-chip .vc-country { font-size:10px; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted); }
   .visa-chip .vc-days { font-family:'Fraunces', serif; font-size:19px; font-weight:600; color:var(--ink); margin-top:2px; }
   .visa-chip .vc-days.warn { color:var(--amber); }
@@ -275,7 +299,7 @@
 
   /* Wrapped summary */
   .wrapped-grid { display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:6px; }
-  .wrapped-stat { background:var(--card); border:1px solid var(--border); border-radius:3px; padding:12px; }
+  .wrapped-stat { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:12px; box-shadow: var(--shadow-sm); }
   .wrapped-stat .ws-label { font-family:'IBM Plex Mono', monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted); }
   .wrapped-stat .ws-val { font-family:'Fraunces', serif; font-size:19px; font-weight:600; margin-top:2px; }
   .wrapped-stat .ws-sub { font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--muted2); margin-top:2px; }
@@ -284,12 +308,21 @@
 </style>
 </head>
 <body>
-<div class="wrap" id="wrapEl"><div class="container">
-
-  <div class="masthead">
-    <h1>The Ledger</h1>
-    <div class="route">Orange County → Taipei → Vietnam → Cambodia → Japan</div>
+<div class="wrap" id="wrapEl">
+  <div class="masthead-band">
+    <div class="masthead">
+      <div>
+        <span class="kicker">Trip log · Est. 2026</span>
+        <h1>The Ledger</h1>
+      </div>
+      <div class="route-wrap">
+        <div class="route">Orange County → Taipei → Vietnam → Cambodia → Japan</div>
+      </div>
+    </div>
   </div>
+  <div class="stub-tear"></div>
+<div class="container">
+
   <div class="location-banner" id="locationBanner">
     <div class="loc-main">
       <span class="loc-label" id="locLabel">Loading...</span>
