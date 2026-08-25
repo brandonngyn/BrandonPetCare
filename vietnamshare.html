@@ -12,49 +12,67 @@
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
 
   :root {
-    --bg: #F4EFE3;
-    --card: #FFFDF7;
-    --ink: #22201B;
+    --bg: #F5EEDD;
+    --bg-wash: #EFE6D0;
+    --card: #FFFCF5;
+    --ink: #1B1810;
     --muted: #6B6555;
     --muted2: #8C8578;
     --faint: #B0A88F;
     --border: #D8CFB8;
     --border-faint: #EAE3D2;
-    --teal: #1F4E45;
-    --red: #A63D2F;
-    --amber: #A6702F;
+    --teal: #123C33;
+    --teal-dark: #0C2B24;
+    --red: #96311F;
+    --amber: #A8701C;
+    --gold: #B7902E;
     --current-bg: #F0EAD8;
+    --shadow-sm: 0 1px 3px rgba(27,24,16,0.07);
+    --shadow-md: 0 3px 14px rgba(27,24,16,0.09);
   }
   .dark {
-    --bg: #17140F;
-    --card: #211D17;
-    --ink: #EDE6D5;
+    --bg: #15130E;
+    --bg-wash: #1B1811;
+    --card: #201C15;
+    --ink: #EFE8D8;
     --muted: #A79E8A;
     --muted2: #8C8271;
     --faint: #5C5646;
     --border: #3A3527;
-    --border-faint: #2C2820;
-    --teal: #3D8672;
-    --red: #D4685A;
-    --amber: #D19654;
-    --current-bg: #2E2A20;
+    --border-faint: #2A2619;
+    --teal: #3F8A75;
+    --teal-dark: #2E6B5A;
+    --red: #D97561;
+    --amber: #D6A85C;
+    --gold: #D6B45E;
+    --current-bg: #2C2718;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.35);
+    --shadow-md: 0 3px 16px rgba(0,0,0,0.4);
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body { margin: 0; }
-  .wrap { background: var(--bg); min-height: 100vh; font-family: 'Inter', sans-serif; color: var(--ink); padding: 24px 16px 60px; transition: background .2s, color .2s; }
+  .wrap { background: var(--bg); min-height: 100vh; font-family: 'Inter', sans-serif; color: var(--ink); padding: 0 0 60px; transition: background .2s, color .2s; }
   .wrap.large-text { zoom: 1.18; }
-  .container { max-width: 640px; margin: 0 auto; }
+  .container { max-width: 640px; margin: 0 auto; padding: 0 16px; }
 
-  .masthead { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid var(--ink); padding-bottom: 10px; margin-bottom: 4px; }
-  .masthead h1 { font-family: 'Fraunces', serif; font-weight: 700; font-size: 26px; letter-spacing: -0.01em; margin: 0; }
-  .masthead .route { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .masthead-band { background: linear-gradient(180deg, var(--bg-wash) 0%, var(--bg) 100%); padding: 28px 16px 0; }
+  .masthead { display: flex; justify-content: space-between; align-items: flex-end; max-width: 640px; margin: 0 auto; padding-bottom: 18px; }
+  .masthead .kicker { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 4px; display: block; }
+  .masthead h1 { font-family: 'Fraunces', serif; font-weight: 700; font-size: 32px; letter-spacing: -0.02em; margin: 0; line-height: 1; }
+  .masthead .route-wrap { text-align: right; }
+  .masthead .route { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.5; }
+  .stub-tear { position: relative; max-width: 640px; margin: 0 auto; height: 14px; overflow: hidden; }
+  .stub-tear::before { content: ""; position: absolute; left: -16px; right: -16px; top: 0; height: 14px; background-image: radial-gradient(circle at 10px 0, transparent 7px, var(--bg) 7.5px); background-size: 20px 14px; background-repeat: repeat-x; }
+  .stub-tear::after { content: ""; position: absolute; left: 16px; right: 16px; top: 6px; border-top: 1.5px dashed var(--border); }
+  .masthead-band + .stub-tear + .container { padding-top: 22px; }
   .subline { display:flex; justify-content: space-between; align-items:center; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--muted); margin: 8px 0 14px; flex-wrap: wrap; gap: 6px; }
   .subline .site-link { color: var(--muted); text-decoration: none; border-bottom: 1px dotted var(--faint); }
   .read-badge { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted2); background: var(--border-faint); padding: 3px 8px; border-radius: 999px; }
-  .theme-toggle { background: none; border: 1px solid var(--faint); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 4px 9px; border-radius: 999px; cursor: pointer; }
+  .theme-toggle { background: none; border: 1px solid var(--faint); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 4px 9px; border-radius: 999px; cursor: pointer; transition: background .15s; }
+  .theme-toggle:active { background: var(--border-faint); }
 
-  .location-banner { display:flex; justify-content:space-between; align-items:center; background:#22201B; color:#F4EFE3; border-radius:3px; padding:12px 14px; margin-bottom:10px; }
-  .util-banner { background: var(--card); color: var(--ink); border: 1px solid var(--border); cursor: pointer; }
+  .location-banner { display:flex; justify-content:space-between; align-items:center; background:#1B1810; color:#F5EEDD; border-radius:8px; padding:14px 16px; margin-bottom:10px; box-shadow: var(--shadow-md); }
+  .util-banner { background: var(--card); color: var(--ink); border: 1px solid var(--border); cursor: pointer; box-shadow: var(--shadow-sm); }
   .util-banner .loc-sub { color: var(--muted2); }
   .loc-caret { font-size:20px; color:var(--faint); transition: transform .2s; }
   .loc-caret.open { transform: rotate(90deg); }
@@ -68,9 +86,9 @@
   .loc-label { font-family:'Fraunces', serif; font-size:16px; font-weight:600; }
   .loc-sub { font-family:'IBM Plex Mono', monospace; font-size:11px; color:#B0A88F; }
 
-  .ledger-card { background: var(--card); border: 1px solid var(--border); border-radius: 3px; padding: 18px 18px 16px; margin-bottom: 16px; }
+  .ledger-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 18px 16px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
 
-  .checkin-card { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--red); border-radius: 3px; padding: 12px 14px; margin-bottom: 16px; }
+  .checkin-card { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--red); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
   .checkin-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 4px; }
   .checkin-text { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; color: var(--ink); }
   .local-time-line { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--teal); margin-top: 4px; }
@@ -88,7 +106,7 @@
   .itin-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .temp-toggle { background: none; border: 1px dashed var(--border); color: var(--teal); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 3px 9px; border-radius: 999px; cursor: pointer; }
   .itin-row { display:grid; grid-template-columns: 22px 1fr 68px 90px; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--border-faint); }
-  .itin-row.current { background:var(--current-bg); margin:0 -8px; padding:6px 8px; border-radius:3px; }
+  .itin-row.current { background:var(--current-bg); margin:0 -8px; padding:6px 8px; border-radius:6px; box-shadow: inset 2px 0 0 var(--gold); }
   .itin-row .itin-dot { width:8px; height:8px; border-radius:50%; background:var(--border); }
   .itin-row.current .itin-dot { background:var(--red); }
   .itin-row .itin-name { font-size:13.5px; font-weight:500; }
@@ -151,12 +169,21 @@
 </style>
 </head>
 <body>
-<div class="wrap" id="wrapEl"><div class="container">
-
-  <div class="masthead">
-    <h1>The Ledger</h1>
-    <div class="route">Orange County &rarr; Taipei &rarr; Vietnam &rarr; Cambodia &rarr; Japan</div>
+<div class="wrap" id="wrapEl">
+  <div class="masthead-band">
+    <div class="masthead">
+      <div>
+        <span class="kicker">Trip log · Est. 2026</span>
+        <h1>The Ledger</h1>
+      </div>
+      <div class="route-wrap">
+        <div class="route">Orange County &rarr; Taipei &rarr; Vietnam &rarr; Cambodia &rarr; Japan</div>
+      </div>
+    </div>
   </div>
+  <div class="stub-tear"></div>
+<div class="container">
+
   <div class="subline">
     <span class="read-badge">Read-only</span>
     <button class="theme-toggle" id="themeToggle">Dark mode</button>
