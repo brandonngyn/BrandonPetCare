@@ -395,6 +395,7 @@
   <div id="pretripCard"></div>
 
   <div class="ledger-card">
+    <div class="presets-title" style="margin-bottom:6px;">On-the-ground budget · Vietnam + Cambodia + Japan</div>
     <div class="totals-row">
       <div><div class="spent" id="spentTotal">$0.00</div></div>
       <div class="of" id="budgetDisplay"></div>
@@ -560,6 +561,17 @@
   </div>
   <div class="ledger-card" id="wrappedCard" style="display:none;">
     <div class="wrapped-grid" id="wrappedGrid"></div>
+  </div>
+
+  <div class="location-banner util-banner" id="countryBanner">
+    <div class="loc-main">
+      <span class="loc-label">Country breakdown</span>
+      <span class="loc-sub">Days & spend per country</span>
+    </div>
+    <span class="loc-caret" id="countryCaret">›</span>
+  </div>
+  <div class="ledger-card" id="countryCard" style="display:none;">
+    <div class="wrapped-grid" id="countryGrid"></div>
   </div>
 
   <div class="location-banner util-banner" id="emergencyBanner">
@@ -792,6 +804,30 @@ function setGhToken(t){
   } catch(e){}
 }
 
+async function throwGistFetchError(res){
+  // Stored token is invalid/expired is handled by the caller (falls back to
+  // an unauthenticated retry); everything else that reaches here is fatal.
+  if (res.status === 403 && res.headers.get("x-ratelimit-remaining") === "0") {
+    const resetTs = parseInt(res.headers.get("x-ratelimit-reset") || "0", 10) * 1000;
+    const mins = resetTs ? Math.max(1, Math.ceil((resetTs - Date.now()) / 60000)) : 60;
+    throw new Error(`Rate limited by GitHub, try again in about ${mins}m`);
+  }
+  if (res.status === 404) throw new Error("Check-in gist not found (was it deleted?)");
+  throw new Error(`gist fetch failed (${res.status})`);
+}
+function parseGistCheckinList(data){
+  const filename = Object.keys(data.files || {})[0] || "gistfile1.txt";
+  const raw = (data.files[filename] && data.files[filename].content) || "";
+  try {
+    const list = JSON.parse(raw);
+    if (!Array.isArray(list)) throw new Error("not array");
+    return { list, filename };
+  } catch(e) {
+    // legacy plain-text check-in, wrap as a single history entry
+    const list = raw.trim() ? [{ place: raw.trim(), ts: new Date(data.updated_at).getTime() }] : [];
+    return { list, filename };
+  }
+}
 async function fetchCheckinGist(skipAuth){
   // cache-bust: mobile networks/browsers can silently serve a stale cached
   // GET response, which makes saves look successful but not actually show up
@@ -806,29 +842,11 @@ async function fetchCheckinGist(skipAuth){
     headers,
   });
   if (!res.ok) {
-    // Stored token is invalid/expired: fall back to an unauthenticated read
-    // rather than hard-failing, so check-ins still load either way.
     if (res.status === 401 && token) return fetchCheckinGist(true);
-    if (res.status === 403 && res.headers.get("x-ratelimit-remaining") === "0") {
-      const resetTs = parseInt(res.headers.get("x-ratelimit-reset") || "0", 10) * 1000;
-      const mins = resetTs ? Math.max(1, Math.ceil((resetTs - Date.now()) / 60000)) : 60;
-      throw new Error(`Rate limited by GitHub, try again in about ${mins}m`);
-    }
-    if (res.status === 404) throw new Error("Check-in gist not found (was it deleted?)");
-    throw new Error(`gist fetch failed (${res.status})`);
+    await throwGistFetchError(res);
   }
   const data = await res.json();
-  const filename = Object.keys(data.files || {})[0] || "gistfile1.txt";
-  const raw = (data.files[filename] && data.files[filename].content) || "";
-  let list;
-  try {
-    list = JSON.parse(raw);
-    if (!Array.isArray(list)) throw new Error("not array");
-  } catch(e) {
-    // legacy plain-text check-in, wrap as a single history entry
-    list = raw.trim() ? [{ place: raw.trim(), ts: new Date(data.updated_at).getTime() }] : [];
-  }
-  return { list, filename };
+  return parseGistCheckinList(data);
 }
 async function saveCheckinList(list, filename){
   const token = getGhToken();
@@ -1147,15 +1165,18 @@ const LEG_FLAG = {
   "Tokyo": "🇯🇵", "Hakone": "🇯🇵", "Kyoto": "🇯🇵", "Osaka": "🇯🇵", "Hiroshima": "🇯🇵", "Tokyo (return, fly out)": "🇯🇵",
   "Los Angeles": "🇺🇸",
 };
+const WEATHER_ICON_RULES = [
+  { icon: "☀️", test: code => code === 0 },
+  { icon: "⛅", test: code => code <= 3 },
+  { icon: "🌫️", test: code => code === 45 || code === 48 },
+  { icon: "🌧️", test: code => code >= 51 && code <= 67 },
+  { icon: "🌨️", test: code => code >= 71 && code <= 77 },
+  { icon: "🌦️", test: code => code >= 80 && code <= 82 },
+  { icon: "⛈️", test: code => code >= 95 },
+];
 function weatherIcon(code){
-  if (code === 0) return "☀️";
-  if (code <= 3) return "⛅";
-  if (code === 45 || code === 48) return "🌫️";
-  if (code >= 51 && code <= 67) return "🌧️";
-  if (code >= 71 && code <= 77) return "🌨️";
-  if (code >= 80 && code <= 82) return "🌦️";
-  if (code >= 95) return "⛈️";
-  return "🌤️";
+  const match = WEATHER_ICON_RULES.find(rule => rule.test(code));
+  return match ? match.icon : "🌤️";
 }
 const LS_TEMPUNIT = "vn-kh-tempunit-v1";
 let tempUnit = "F";
@@ -1409,20 +1430,22 @@ document.getElementById("entryForm").addEventListener("keydown", (e) => {
 document.getElementById("fSplitToggle").addEventListener("change", (e) => {
   document.getElementById("splitFields").classList.toggle("open", e.target.checked);
 });
-document.getElementById("entryForm").addEventListener("submit", (e) => {
-  e.preventDefault();
-  const amt = parseFloat(document.getElementById("fAmount").value);
-  const errEl = document.getElementById("formError");
-  if (!amt || amt <= 0) { errEl.textContent = "Enter an amount greater than 0."; return; }
-  errEl.textContent = "";
+function readSplitFields(amt){
   const isSplit = document.getElementById("fSplitToggle").checked;
-  const splitWith = isSplit ? document.getElementById("fSplitWith").value.trim() : "";
-  const splitTotalRaw = isSplit ? parseFloat(document.getElementById("fSplitTotal").value) : 0;
+  if (!isSplit) return { splitWith: null, splitTotal: null };
+  const name = document.getElementById("fSplitWith").value.trim();
+  if (!name) return { splitWith: null, splitTotal: null };
+  const totalRaw = parseFloat(document.getElementById("fSplitTotal").value);
   // "amount" always stays what YOU actually owe/spent, so budget totals
   // aren't inflated by covering someone else's share. splitTotal (the full
   // bill) minus your amount is what they owe you, shown in the Split
   // expenses summary card.
-  const entry = {
+  const splitTotal = totalRaw > amt ? Math.round(totalRaw * 100) / 100 : null;
+  return { splitWith: name, splitTotal };
+}
+function buildExpenseEntry(amt){
+  const { splitWith, splitTotal } = readSplitFields(amt);
+  return {
     id: uid(),
     date: document.getElementById("fDate").value || todayStr(),
     leg: formType === "pretrip" ? "Pre-trip" : fLeg.value,
@@ -1430,22 +1453,35 @@ document.getElementById("entryForm").addEventListener("submit", (e) => {
     category: document.getElementById("fCategory").value,
     note: document.getElementById("fNote").value.trim(),
     amount: Math.round(amt * 100) / 100,
-    splitWith: (isSplit && splitWith) ? splitWith : null,
-    splitTotal: (isSplit && splitWith && splitTotalRaw > amt) ? Math.round(splitTotalRaw * 100) / 100 : null,
+    splitWith,
+    splitTotal,
   };
-  expenses = [entry, ...expenses];
-  saveExpenses(expenses);
+}
+function resetEntryForm(){
   document.getElementById("fNote").value = "";
   document.getElementById("fAmount").value = "";
   document.getElementById("fSplitToggle").checked = false;
   document.getElementById("fSplitWith").value = "";
   document.getElementById("fSplitTotal").value = "";
   document.getElementById("splitFields").classList.remove("open");
+}
+function flashAddButton(){
   const btn = document.getElementById("addBtn");
   const original = btn.textContent;
   btn.textContent = "Added";
   btn.classList.add("added");
   setTimeout(() => { btn.textContent = original; btn.classList.remove("added"); }, 700);
+}
+document.getElementById("entryForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const amt = parseFloat(document.getElementById("fAmount").value);
+  const errEl = document.getElementById("formError");
+  if (!amt || amt <= 0) { errEl.textContent = "Enter an amount greater than 0."; return; }
+  errEl.textContent = "";
+  expenses = [buildExpenseEntry(amt), ...expenses];
+  saveExpenses(expenses);
+  resetEntryForm();
+  flashAddButton();
   render();
 });
 
@@ -1999,6 +2035,53 @@ document.getElementById("wrappedBanner").addEventListener("click", () => {
   if (!isOpen) renderWrapped();
 });
 
+// ---- Country breakdown: days + money spent, grouped Vietnam / Cambodia / Japan ----
+const COUNTRY_GROUPS = [
+  { flag: "🇻🇳", name: "Vietnam", legs: ["Hanoi","Ha Giang","Ninh Binh","Phong Nha","Hoi An","Da Nang","Ho Chi Minh City"] },
+  { flag: "🇰🇭", name: "Cambodia", legs: ["Phnom Penh","Koh Rong","Siem Reap"] },
+  { flag: "🇯🇵", name: "Japan", legs: ["Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)"] },
+];
+function countryDateRange(group, groupIndex){
+  const legDates = group.legs.map(l => itinerary[l]).filter(Boolean).sort();
+  if (legDates.length === 0) return null;
+  const start = legDates[0];
+  // End date is the start of the next country group (or the trip's final
+  // confirmed date for the last group), so ranges cover the transit day too.
+  const nextGroup = COUNTRY_GROUPS[groupIndex + 1];
+  const nextGroupDates = nextGroup ? nextGroup.legs.map(l => itinerary[l]).filter(Boolean).sort() : [];
+  const end = nextGroupDates[0] || itinerary["Los Angeles"] || legDates[legDates.length - 1];
+  return { start, end };
+}
+function renderCountryBreakdown(){
+  const gridEl = document.getElementById("countryGrid");
+  const onGround = expenses.filter(x => x.type !== "pretrip");
+  const rows = COUNTRY_GROUPS.map((group, i) => {
+    const range = countryDateRange(group, i);
+    const days = range ? Math.max(0, daysBetween(range.start, range.end)) : 0;
+    const spent = onGround.filter(x => group.legs.includes(x.leg)).reduce((s,x)=>s+x.amount,0);
+    return { group, days, spent };
+  });
+  if (rows.every(r => r.days === 0 && r.spent === 0)) {
+    gridEl.innerHTML = `<div class="empty">Set your itinerary dates first, breakdown shows up here once they're filled in.</div>`;
+    return;
+  }
+  gridEl.innerHTML = rows.map(r => `
+    <div class="wrapped-stat">
+      <div class="ws-label">${r.group.flag} ${escapeHtml(r.group.name)}</div>
+      <div class="ws-val">${fmtMoney(r.spent)}</div>
+      <div class="ws-sub">${r.days}d planned</div>
+    </div>
+  `).join("");
+}
+document.getElementById("countryBanner").addEventListener("click", () => {
+  const panel = document.getElementById("countryCard");
+  const caret = document.getElementById("countryCaret");
+  const isOpen = panel.style.display !== "none";
+  panel.style.display = isOpen ? "none" : "block";
+  caret.classList.toggle("open", !isOpen);
+  if (!isOpen) renderCountryBreakdown();
+});
+
 document.getElementById("emergencyBanner").addEventListener("click", () => {
   const panel = document.getElementById("emergencyCard");
   const caret = document.getElementById("emergencyCaret");
@@ -2132,16 +2215,11 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   render();
 });
 
-function render(){
-  const onGround = expenses.filter(x => x.type !== "pretrip");
-  const pretrip = expenses.filter(x => x.type === "pretrip");
-  const total = onGround.reduce((s,x)=>s+x.amount,0);
-  const pretripTotal = pretrip.reduce((s,x)=>s+x.amount,0);
-
-  // location banner: uses the trip budget (Taipei + tripBudget days) so it
-  // reflects the whole planned trip once Brandon picks an extension, not
-  // just the confirmed Taipei→Siem Reap leg — he knows he's extending, just
-  // not where yet, so the countdown should already assume the full length.
+function renderLocationStatus(){
+  // Uses the trip budget (Taipei + tripBudget days) so it reflects the whole
+  // planned trip once Brandon picks an extension, not just the confirmed
+  // Taipei→Siem Reap leg — he knows he's extending, just not where yet, so
+  // the countdown should already assume the full length.
   const today = todayStr();
   const tripStart = itinerary[ITINERARY_LEGS[0]];
   const totalDays = Math.max(1, tripBudget);
@@ -2149,17 +2227,8 @@ function render(){
   let elapsed = daysBetween(tripStart, today);
   elapsed = Math.max(0, Math.min(totalDays, elapsed));
   const daysLeft = Math.max(0, totalDays - elapsed - 1);
+  const currentLeg = getCurrentLeg(today);
 
-  // The $ on-ground budget only covers the confirmed Vietnam/Cambodia leg,
-  // so pace math ("need $X/day") stays keyed to the Siem Reap date, not the
-  // full trip budget — otherwise adding 20 days of Japan would make the
-  // required daily spend look artificially generous.
-  const confirmedTotalDays = Math.max(1, daysBetween(tripStart, itinerary["Siem Reap"]));
-  let confirmedElapsed = daysBetween(tripStart, today);
-  confirmedElapsed = Math.max(0, Math.min(confirmedTotalDays, confirmedElapsed));
-  const confirmedDaysLeft = Math.max(0, confirmedTotalDays - confirmedElapsed - 1);
-
-  let currentLeg = getCurrentLeg(today);
   const locLabelEl = document.getElementById("locLabel");
   const locSubEl = document.getElementById("locSub");
   if (today < tripStart) {
@@ -2177,23 +2246,29 @@ function render(){
     fLeg.value = currentLeg;
   }
   updateSunTimes(currentLeg);
+}
 
-  // pretrip card
+function renderPretripCard(){
   const pretripCard = document.getElementById("pretripCard");
-  if (pretrip.length > 0){
-    const byCat = {};
-    PRETRIP_CATEGORIES.forEach(c => byCat[c.key]=0);
-    pretrip.forEach(x => byCat[x.category] = (byCat[x.category]||0) + x.amount);
-    let rows = PRETRIP_CATEGORIES.filter(c => byCat[c.key] > 0).map(c =>
-      `<div class="pretrip-row"><span>${c.mark} ${c.label}</span><span>${fmtMoney(byCat[c.key])}</span></div>`
-    ).join("");
-    pretripCard.innerHTML = `<div class="ledger-card pretrip-card">
-      <div class="pretrip-head"><span>Pre-trip costs</span><span class="pretrip-total">${fmtMoney(pretripTotal)}</span></div>
-      <div class="pretrip-note">Flight + insurance, outside the on-ground budget below</div>
-      ${rows}
-    </div>`;
-  } else { pretripCard.innerHTML = ""; }
+  const pretrip = expenses.filter(x => x.type === "pretrip");
+  if (pretrip.length === 0) { pretripCard.innerHTML = ""; return; }
+  const pretripTotal = pretrip.reduce((s,x)=>s+x.amount,0);
+  const byCat = {};
+  PRETRIP_CATEGORIES.forEach(c => byCat[c.key]=0);
+  pretrip.forEach(x => byCat[x.category] = (byCat[x.category]||0) + x.amount);
+  const rows = PRETRIP_CATEGORIES.filter(c => byCat[c.key] > 0).map(c =>
+    `<div class="pretrip-row"><span>${c.mark} ${c.label}</span><span>${fmtMoney(byCat[c.key])}</span></div>`
+  ).join("");
+  pretripCard.innerHTML = `<div class="ledger-card pretrip-card">
+    <div class="pretrip-head"><span>Pre-trip costs</span><span class="pretrip-total">${fmtMoney(pretripTotal)}</span></div>
+    <div class="pretrip-note">Flight + insurance, outside the on-ground budget below</div>
+    ${rows}
+  </div>`;
+}
 
+function renderBudgetBar(){
+  const onGround = expenses.filter(x => x.type !== "pretrip");
+  const total = onGround.reduce((s,x)=>s+x.amount,0);
   const pct = budget > 0 ? Math.min(100, (total/budget)*100) : 0;
   const spentEl = document.getElementById("spentTotal");
   const fillEl = document.getElementById("routeFill");
@@ -2216,127 +2291,179 @@ function render(){
   if (remaining >= 0){ remEl.textContent = `${fmtMoney(remaining)} left in the budget`; remEl.classList.remove("over"); }
   else { remEl.textContent = `${fmtMoney(Math.abs(remaining))} over budget`; remEl.classList.add("over"); }
 
+  const today = todayStr();
   const todaySpend = onGround.filter(x => x.date === today).reduce((s,x)=>s+x.amount,0);
   document.getElementById("todayLine").textContent = todaySpend > 0 ? `${fmtMoney(todaySpend)} spent today` : `Nothing logged today yet`;
+}
 
-  // backup banner
+function readMsSinceStamp(key){
+  try {
+    const v = localStorage.getItem(key);
+    if (v) return { stamp: Number(v), msSince: Date.now() - Number(v) };
+  } catch(e){}
+  return { stamp: null, msSince: Infinity };
+}
+function shouldShowBackupBanner(){
+  const exported = readMsSinceStamp(LS_LAST_EXPORT);
+  const dismissed = readMsSinceStamp(LS_BANNER_DISMISS);
+  const daysSinceExport = exported.msSince / 86400000;
+  const daysSinceDismiss = dismissed.msSince / 86400000;
+  return {
+    show: expenses.length >= 5 && daysSinceExport > 5 && daysSinceDismiss > 2,
+    everExported: exported.stamp !== null,
+  };
+}
+function renderBackupBanner(){
   const bannerEl = document.getElementById("backupBanner");
-  let lastExport = null;
-  try { const v = localStorage.getItem(LS_LAST_EXPORT); if (v) lastExport = Number(v); } catch(e){}
-  let dismissedAt = null;
-  try { const v = localStorage.getItem(LS_BANNER_DISMISS); if (v) dismissedAt = Number(v); } catch(e){}
-  const daysSinceExport = lastExport ? (Date.now() - lastExport) / 86400000 : Infinity;
-  const daysSinceDismiss = dismissedAt ? (Date.now() - dismissedAt) / 86400000 : Infinity;
-  if (expenses.length >= 5 && daysSinceExport > 5 && daysSinceDismiss > 2) {
-    bannerEl.innerHTML = `<div class="backup-banner">
-      <span>${lastExport ? "It's been a few days" : "You haven't backed up yet"} , export a copy in case you switch devices.</span>
-      <span style="display:flex;gap:8px;">
-        <button id="bannerExportBtn">Export</button>
-        <button class="dismiss" id="bannerDismissBtn">Dismiss</button>
-      </span>
-    </div>`;
-    document.getElementById("bannerExportBtn").addEventListener("click", () => document.getElementById("exportBtn").click());
-    document.getElementById("bannerDismissBtn").addEventListener("click", () => {
-      try { localStorage.setItem(LS_BANNER_DISMISS, String(Date.now())); } catch(e){}
-      render();
-    });
-  } else {
-    bannerEl.innerHTML = "";
-  }
+  const { show, everExported } = shouldShowBackupBanner();
+  if (!show) { bannerEl.innerHTML = ""; return; }
+  bannerEl.innerHTML = `<div class="backup-banner">
+    <span>${everExported ? "It's been a few days" : "You haven't backed up yet"} , export a copy in case you switch devices.</span>
+    <span style="display:flex;gap:8px;">
+      <button id="bannerExportBtn">Export</button>
+      <button class="dismiss" id="bannerDismissBtn">Dismiss</button>
+    </span>
+  </div>`;
+  document.getElementById("bannerExportBtn").addEventListener("click", () => document.getElementById("exportBtn").click());
+  document.getElementById("bannerDismissBtn").addEventListener("click", () => {
+    try { localStorage.setItem(LS_BANNER_DISMISS, String(Date.now())); } catch(e){}
+    render();
+  });
+}
 
-  // pace line
+function renderPaceLine(){
   const paceEl = document.getElementById("paceLine");
+  const today = todayStr();
+  const tripStart = itinerary[ITINERARY_LEGS[0]];
+  const tripEndDate = itinerary["Los Angeles"] || itinerary["Tokyo (return, fly out)"] || itinerary["Siem Reap"];
+  if (today < tripStart || today > tripEndDate) { paceEl.innerHTML = ""; return; }
+
+  const onGround = expenses.filter(x => x.type !== "pretrip");
+  const total = onGround.reduce((s,x)=>s+x.amount,0);
+  const remaining = budget - total;
+
+  // The $4000 budget now covers the whole confirmed trip, Vietnam through
+  // Japan, so pace math is keyed to the actual trip end (LA arrival), not
+  // just Siem Reap.
+  const confirmedTotalDays = Math.max(1, daysBetween(tripStart, tripEndDate));
+  let confirmedElapsed = daysBetween(tripStart, today);
+  confirmedElapsed = Math.max(0, Math.min(confirmedTotalDays, confirmedElapsed));
+  const confirmedDaysLeft = Math.max(0, confirmedTotalDays - confirmedElapsed - 1);
+
   const paceSoFar = total / Math.max(1, confirmedElapsed || 1);
-  if (today >= tripStart && today <= itinerary["Siem Reap"]) {
-    const reqPace = confirmedDaysLeft > 0 ? Math.max(0, remaining) / confirmedDaysLeft : 0;
-    const tight = reqPace < paceSoFar && remaining > 0;
-    paceEl.className = "pace-line" + (tight ? " tight" : "");
-    if (remaining >= 0) {
-      paceEl.innerHTML = `<b>${fmtMoney(paceSoFar)}</b>/day so far · need <b class="req">${fmtMoney(reqPace)}</b>/day to stay on budget`;
-    } else {
-      paceEl.innerHTML = `<b>${fmtMoney(paceSoFar)}</b>/day so far · already over, ${confirmedDaysLeft}d left`;
-    }
+  const reqPace = confirmedDaysLeft > 0 ? Math.max(0, remaining) / confirmedDaysLeft : 0;
+  const tight = reqPace < paceSoFar && remaining > 0;
+  paceEl.className = "pace-line" + (tight ? " tight" : "");
+  if (remaining >= 0) {
+    paceEl.innerHTML = `<b>${fmtMoney(paceSoFar)}</b>/day so far · could spend up to <b class="req">${fmtMoney(reqPace)}</b>/day for the remaining ${confirmedDaysLeft}d and still hit budget`;
   } else {
-    paceEl.innerHTML = "";
+    paceEl.innerHTML = `<b>${fmtMoney(paceSoFar)}</b>/day so far · already over budget, ${confirmedDaysLeft}d left`;
   }
+}
 
-  // category bars
+function renderCategoryBars(){
   const catBars = document.getElementById("catBars");
-  if (onGround.length > 0){
-    const byCat = {};
-    CATEGORIES.forEach(c => byCat[c.key]=0);
-    onGround.forEach(x => byCat[x.category] = (byCat[x.category]||0) + x.amount);
-    catBars.innerHTML = CATEGORIES.map(c => {
-      const amt = byCat[c.key] || 0;
-      const w = total > 0 ? (amt/total)*100 : 0;
-      return `<div class="cat-row"><span>${c.mark} ${c.label}</span><div class="cat-track"><div class="cat-fill" style="width:${w}%;background:${CAT_COLOR[c.key]}"></div></div><span class="amt">${fmtMoney(amt)}</span></div>`;
-    }).join("");
-  } else { catBars.innerHTML = ""; }
+  const onGround = expenses.filter(x => x.type !== "pretrip");
+  if (onGround.length === 0) { catBars.innerHTML = ""; return; }
+  const total = onGround.reduce((s,x)=>s+x.amount,0);
+  const byCat = {};
+  CATEGORIES.forEach(c => byCat[c.key]=0);
+  onGround.forEach(x => byCat[x.category] = (byCat[x.category]||0) + x.amount);
+  catBars.innerHTML = CATEGORIES.map(c => {
+    const amt = byCat[c.key] || 0;
+    const w = total > 0 ? (amt/total)*100 : 0;
+    return `<div class="cat-row"><span>${c.mark} ${c.label}</span><div class="cat-track"><div class="cat-fill" style="width:${w}%;background:${CAT_COLOR[c.key]}"></div></div><span class="amt">${fmtMoney(amt)}</span></div>`;
+  }).join("");
+}
 
-  // leg filter options
+function updateLegFilterOptions(){
+  const onGround = expenses.filter(x => x.type !== "pretrip");
   const legsWithSpend = LEGS.filter(l => onGround.some(x => x.leg === l));
   legFilter.innerHTML = '<option value="All">All legs</option>' + legsWithSpend.map(l => `<option value="${l}">${l}</option>`).join("");
   legFilter.value = filterLeg;
+}
 
-  // entries list
+function getFilteredEntries(){
   let filtered = filterLeg === "All" ? expenses : expenses.filter(x => x.leg === filterLeg);
-  if (searchTerm) {
-    const q = searchTerm.toLowerCase();
-    filtered = filtered.filter(x => (x.note || "").toLowerCase().includes(q) || (x.splitWith || "").toLowerCase().includes(q));
-  }
+  if (!searchTerm) return filtered;
+  const q = searchTerm.toLowerCase();
+  return filtered.filter(x => (x.note || "").toLowerCase().includes(q) || (x.splitWith || "").toLowerCase().includes(q));
+}
+
+function entryRowHtml(x){
+  const cat = [...CATEGORIES, ...PRETRIP_CATEGORIES].find(c => c.key === x.category);
+  const mark = cat ? cat.mark : "○";
+  const label = escapeHtml(x.note || (cat ? cat.label : "Expense"));
+  const splitTag = x.splitWith ? `<span class="split-badge">split w/ ${escapeHtml(x.splitWith)}</span>` : "";
+  return `<div class="entry-row">
+    <div class="catmark" style="background:${CAT_COLOR[x.category]||'#8C8578'}">${mark}</div>
+    <div class="info" data-id="${x.id}"><div class="note">${label}${splitTag}</div><div class="meta">${x.date} · ${x.leg}</div></div>
+    <div class="amt" data-id="${x.id}">${fmtMoney(x.amount)}</div>
+    <button class="del" data-id="${x.id}">✕</button>
+  </div>`;
+}
+
+function bindEntryRowHandlers(listEl){
+  listEl.querySelectorAll(".del").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (btn.dataset.confirming === "1") {
+        clearTimeout(btn._confirmTimer);
+        removeExpense(btn.getAttribute("data-id"));
+        return;
+      }
+      btn.dataset.confirming = "1";
+      btn.textContent = "✓ sure?";
+      btn.classList.add("confirm");
+      btn._confirmTimer = setTimeout(() => {
+        btn.dataset.confirming = "0";
+        btn.textContent = "✕";
+        btn.classList.remove("confirm");
+      }, 3000);
+    });
+  });
+  listEl.querySelectorAll(".info, .amt").forEach(el => {
+    el.addEventListener("click", () => editEntry(el.getAttribute("data-id")));
+  });
+}
+
+function renderEntriesList(){
+  updateLegFilterOptions();
+  const filtered = getFilteredEntries();
   const listEl = document.getElementById("entryList");
   if (filtered.length === 0){
     listEl.innerHTML = `<div class="empty">${expenses.length === 0 ? "No expenses logged yet. Add your first one above." : "No entries match."}</div>`;
-  } else {
-    listEl.innerHTML = filtered.map(x => {
-      const cat = [...CATEGORIES, ...PRETRIP_CATEGORIES].find(c => c.key === x.category);
-      const mark = cat ? cat.mark : "○";
-      const label = escapeHtml(x.note || (cat ? cat.label : "Expense"));
-      const splitTag = x.splitWith ? `<span class="split-badge">split w/ ${escapeHtml(x.splitWith)}</span>` : "";
-      return `<div class="entry-row">
-        <div class="catmark" style="background:${CAT_COLOR[x.category]||'#8C8578'}">${mark}</div>
-        <div class="info" data-id="${x.id}"><div class="note">${label}${splitTag}</div><div class="meta">${x.date} · ${x.leg}</div></div>
-        <div class="amt" data-id="${x.id}">${fmtMoney(x.amount)}</div>
-        <button class="del" data-id="${x.id}">✕</button>
-      </div>`;
-    }).join("");
-    listEl.querySelectorAll(".del").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (btn.dataset.confirming === "1") {
-          clearTimeout(btn._confirmTimer);
-          removeExpense(btn.getAttribute("data-id"));
-        } else {
-          btn.dataset.confirming = "1";
-          btn.textContent = "✓ sure?";
-          btn.classList.add("confirm");
-          btn._confirmTimer = setTimeout(() => {
-            btn.dataset.confirming = "0";
-            btn.textContent = "✕";
-            btn.classList.remove("confirm");
-          }, 3000);
-        }
-      });
-    });
-    listEl.querySelectorAll(".info, .amt").forEach(el => {
-      el.addEventListener("click", () => editEntry(el.getAttribute("data-id")));
-    });
+    return;
   }
+  listEl.innerHTML = filtered.map(entryRowHtml).join("");
+  bindEntryRowHandlers(listEl);
+}
 
-  // split-cost owed summary, grouped by person
+function renderOwedSummary(){
   const owedEl = document.getElementById("owedSummary");
   const splitEntries = expenses.filter(x => x.splitWith && x.splitTotal);
   if (splitEntries.length === 0) {
     owedEl.innerHTML = `<div class="empty" style="padding:10px 0;">No split expenses yet, check "Split with someone?" when adding one.</div>`;
-  } else {
-    const byPerson = {};
-    splitEntries.forEach(x => {
-      byPerson[x.splitWith] = (byPerson[x.splitWith] || 0) + (x.splitTotal - x.amount);
-    });
-    owedEl.innerHTML = Object.entries(byPerson).map(([name, owed]) =>
-      `<div class="owed-row"><span>${escapeHtml(name)} owes you</span><b>${fmtMoney(owed)}</b></div>`
-    ).join("");
+    return;
   }
+  const byPerson = {};
+  splitEntries.forEach(x => {
+    byPerson[x.splitWith] = (byPerson[x.splitWith] || 0) + (x.splitTotal - x.amount);
+  });
+  owedEl.innerHTML = Object.entries(byPerson).map(([name, owed]) =>
+    `<div class="owed-row"><span>${escapeHtml(name)} owes you</span><b>${fmtMoney(owed)}</b></div>`
+  ).join("");
+}
+
+function render(){
+  renderLocationStatus();
+  renderPretripCard();
+  renderBudgetBar();
+  renderBackupBanner();
+  renderPaceLine();
+  renderCategoryBars();
+  renderEntriesList();
+  renderOwedSummary();
 }
 
 legFilter.addEventListener("change", () => { filterLeg = legFilter.value; render(); });
