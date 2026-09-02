@@ -690,7 +690,7 @@ document.getElementById("currencyToggle").addEventListener("click", () => {
   renderPricesCard();
 });
 
-const LEGS = ["Taipei","Hanoi","Ha Giang","Ninh Binh","Phong Nha","Hoi An","Da Nang","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)","Los Angeles","Other"];
+const LEGS = ["Taipei","Hanoi","Ha Giang","Ninh Binh","Phong Nha","Hoi An","Da Nang","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Battambang","Phnom Penh (return)","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)","Los Angeles","Other"];
 const CATEGORIES = [
   { key:"Stay", label:"Stay", mark:"⌂" },
   { key:"Food", label:"Food", mark:"✦" },
@@ -1117,7 +1117,7 @@ function loadExpenses(){
 function saveExpenses(list){ try { localStorage.setItem(LS_EXPENSES, JSON.stringify(list)); } catch(e){} }
 function loadBudget(){ try { const v = localStorage.getItem(LS_BUDGET); return v ? Number(v) : 2200; } catch(e){ return 2200; } }
 function saveBudget(v){ try { localStorage.setItem(LS_BUDGET, String(v)); } catch(e){} }
-const ITINERARY_LEGS = ["Taipei","Hanoi","Ha Giang","Ninh Binh","Phong Nha","Hoi An","Da Nang","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)","Los Angeles"];
+const ITINERARY_LEGS = ["Taipei","Hanoi","Ha Giang","Ninh Binh","Phong Nha","Hoi An","Da Nang","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Battambang","Phnom Penh (return)","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)","Los Angeles"];
 const DEFAULT_ITINERARY = {
   "Taipei": "2026-08-08",
   "Hanoi": "2026-08-09",
@@ -1127,12 +1127,14 @@ const DEFAULT_ITINERARY = {
   "Hoi An": "2026-08-21",
   "Da Nang": "2026-08-23",
   "Ho Chi Minh City": "2026-08-28",
-  "Phnom Penh": "2026-09-07",
-  "Koh Rong": "2026-09-11",
-  "Siem Reap": "2026-09-13",
-  "Tokyo": "2026-09-17", "Hakone": "2026-09-21", "Kyoto": "2026-09-23",
-  "Osaka": "2026-09-27", "Hiroshima": "2026-09-30", "Tokyo (return, fly out)": "2026-10-02",
-  "Los Angeles": "2026-10-02",
+  "Phnom Penh": "2026-08-30",
+  "Koh Rong": "2026-09-01",
+  "Siem Reap": "2026-09-02",
+  "Battambang": "2026-09-05",
+  "Phnom Penh (return)": "2026-09-07",
+  "Tokyo": "2026-09-16", "Hakone": "2026-09-20", "Kyoto": "2026-09-22",
+  "Osaka": "2026-09-26", "Hiroshima": "2026-09-29", "Tokyo (return, fly out)": "2026-10-01",
+  "Los Angeles": "2026-10-01",
 };
 const DEFAULT_TRIP_END = "2026-09-16";
 
@@ -1148,6 +1150,8 @@ const LEG_COORDS = {
   "Phnom Penh": [11.5564, 104.9282],
   "Koh Rong": [10.7215, 103.2394],
   "Siem Reap": [13.3633, 103.8564],
+  "Battambang": [13.0957, 103.2022],
+  "Phnom Penh (return)": [11.5564, 104.9282],
   "Tokyo": [35.6762, 139.6503],
   "Hakone": [35.2323, 139.1069],
   "Kyoto": [35.0116, 135.7681],
@@ -1161,7 +1165,7 @@ const LEG_FLAG = {
   "Taipei": "🇹🇼",
   "Hanoi": "🇻🇳", "Ha Giang": "🇻🇳",
   "Ninh Binh": "🇻🇳", "Phong Nha": "🇻🇳", "Da Nang": "🇻🇳", "Hoi An": "🇻🇳", "Ho Chi Minh City": "🇻🇳",
-  "Phnom Penh": "🇰🇭", "Koh Rong": "🇰🇭", "Siem Reap": "🇰🇭",
+  "Phnom Penh": "🇰🇭", "Koh Rong": "🇰🇭", "Siem Reap": "🇰🇭", "Battambang": "🇰🇭", "Phnom Penh (return)": "🇰🇭",
   "Tokyo": "🇯🇵", "Hakone": "🇯🇵", "Kyoto": "🇯🇵", "Osaka": "🇯🇵", "Hiroshima": "🇯🇵", "Tokyo (return, fly out)": "🇯🇵",
   "Los Angeles": "🇺🇸",
 };
@@ -2038,7 +2042,7 @@ document.getElementById("wrappedBanner").addEventListener("click", () => {
 // ---- Country breakdown: days + money spent, grouped Vietnam / Cambodia / Japan ----
 const COUNTRY_GROUPS = [
   { flag: "🇻🇳", name: "Vietnam", legs: ["Hanoi","Ha Giang","Ninh Binh","Phong Nha","Hoi An","Da Nang","Ho Chi Minh City"] },
-  { flag: "🇰🇭", name: "Cambodia", legs: ["Phnom Penh","Koh Rong","Siem Reap"] },
+  { flag: "🇰🇭", name: "Cambodia", legs: ["Phnom Penh","Koh Rong","Siem Reap","Battambang","Phnom Penh (return)"] },
   { flag: "🇯🇵", name: "Japan", legs: ["Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)"] },
 ];
 function countryDateRange(group, groupIndex){
