@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -26,41 +26,21 @@
 }
 :root:not([data-theme="light"]){
   @media (prefers-color-scheme: dark){
-    --ink:#ece8dd;
-    --ink-soft:#a3a091;
-    --paper:#11141c;
-    --paper-2:#191d27;
-    --line:#2c3343;
-    --indigo:#7ea6e0;
-    --indigo-2:#9dbdea;
-    --persimmon:#e07c56;
-    --moss:#8fb08b;
-    --plum:#c08fb3;
-    --gold:#d6a955;
-    --teal:#5fb0b3;
-    --rail:#3d5d8f;
-    --shadow:rgba(0,0,0,.45);
+    --ink:#ece8dd; --ink-soft:#a3a091; --paper:#11141c; --paper-2:#191d27;
+    --line:#2c3343; --indigo:#7ea6e0; --indigo-2:#9dbdea; --persimmon:#e07c56;
+    --moss:#8fb08b; --plum:#c08fb3; --gold:#d6a955; --teal:#5fb0b3;
+    --rail:#3d5d8f; --shadow:rgba(0,0,0,.45);
   }
 }
 :root[data-theme="dark"]{
-  --ink:#ece8dd;
-  --ink-soft:#a3a091;
-  --paper:#11141c;
-  --paper-2:#191d27;
-  --line:#2c3343;
-  --indigo:#7ea6e0;
-  --indigo-2:#9dbdea;
-  --persimmon:#e07c56;
-  --moss:#8fb08b;
-  --plum:#c08fb3;
-  --gold:#d6a955;
-  --teal:#5fb0b3;
-  --rail:#3d5d8f;
-  --shadow:rgba(0,0,0,.45);
+  --ink:#ece8dd; --ink-soft:#a3a091; --paper:#11141c; --paper-2:#191d27;
+  --line:#2c3343; --indigo:#7ea6e0; --indigo-2:#9dbdea; --persimmon:#e07c56;
+  --moss:#8fb08b; --plum:#c08fb3; --gold:#d6a955; --teal:#5fb0b3;
+  --rail:#3d5d8f; --shadow:rgba(0,0,0,.45);
 }
 
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{
   margin:0;
   background:var(--paper);
@@ -74,55 +54,69 @@ img{max-width:100%}
 a{color:inherit}
 .wrap{max-width:52rem;margin:0 auto;padding:0 1.25rem 5rem}
 
-/* ---------- masthead ---------- */
-header.top{
-  padding:3.5rem 0 2rem;
+/* ---------- quick nav ---------- */
+.qbar{
+  position:sticky;top:0;z-index:40;
+  background:color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter:blur(6px);
   border-bottom:1px solid var(--line);
-  margin-bottom:2.5rem;
 }
+.qbar-inner{
+  max-width:52rem;margin:0 auto;padding:.55rem 1.25rem;
+  display:flex;gap:.4rem;align-items:center;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.qbar-inner::-webkit-scrollbar{display:none}
+.qpill{
+  flex:0 0 auto;font-size:.82rem;font-weight:500;text-decoration:none;
+  padding:.35rem .7rem;border:1px solid var(--line);border-radius:999px;
+  color:var(--ink-soft);white-space:nowrap;background:var(--paper);
+}
+.qpill:hover,.qpill:focus-visible{color:var(--ink);border-color:var(--ink-soft)}
+.qctrls{margin-left:auto;display:flex;gap:.4rem;flex:0 0 auto;padding-left:.5rem}
+.qbtn{
+  flex:0 0 auto;font-size:.82rem;font-weight:700;cursor:pointer;
+  padding:.35rem .65rem;border:1px solid var(--line);border-radius:999px;
+  color:var(--ink);background:var(--paper-2);
+  font-family:inherit;
+}
+.qbtn[aria-pressed="true"]{background:var(--indigo);border-color:var(--indigo);color:var(--paper)}
+.qbtn:focus-visible{outline:2px solid var(--persimmon);outline-offset:2px}
+
+/* ---------- back to top ---------- */
+#top{position:relative}
+.totop{
+  position:fixed;right:1.1rem;bottom:1.1rem;z-index:50;
+  width:2.9rem;height:2.9rem;border-radius:50%;
+  background:var(--indigo);color:var(--paper);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px var(--shadow);
+  opacity:0;visibility:hidden;transform:translateY(8px);
+  transition:opacity .2s,transform .2s,visibility .2s;
+}
+.totop.show{opacity:1;visibility:visible;transform:translateY(0)}
+.totop:focus-visible{outline:2px solid var(--persimmon);outline-offset:2px}
+.totop svg{width:1.3rem;height:1.3rem}
+
+/* ---------- masthead ---------- */
+header.top{padding:2.4rem 0 2rem;border-bottom:1px solid var(--line);margin-bottom:2.5rem}
 .kanji{
-  font-size:clamp(3.2rem,14vw,5.5rem);
-  font-weight:900;
-  line-height:.95;
-  letter-spacing:-.02em;
-  margin:0;
-  color:var(--indigo);
+  font-size:clamp(3.2rem,14vw,5.5rem);font-weight:900;line-height:.95;
+  letter-spacing:-.02em;margin:0;color:var(--indigo);
 }
 .kanji span{color:var(--persimmon)}
-.dates{
-  font-size:1.05rem;
-  font-weight:500;
-  margin:.85rem 0 0;
-  color:var(--ink-soft);
-  font-variant-numeric:tabular-nums;
-}
-.flights{
-  margin-top:1.6rem;
-  display:grid;
-  gap:.6rem;
-  grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));
-}
-.flight{
-  border:1px solid var(--line);
-  border-left:3px solid var(--persimmon);
-  padding:.7rem .9rem;
-  background:var(--paper-2);
-}
+.dates{font-size:1.05rem;font-weight:500;margin:.85rem 0 0;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.flights{margin-top:1.6rem;display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}
+.flight{border:1px solid var(--line);border-left:3px solid var(--persimmon);padding:.7rem .9rem;background:var(--paper-2)}
 .flight b{display:block;font-weight:700;font-size:.95rem}
 .flight small{color:var(--ink-soft);font-variant-numeric:tabular-nums;font-size:.85rem}
 
 /* ---------- rail spine ---------- */
 .legs{position:relative;margin:0 0 3rem;padding:0;list-style:none}
-.legs::before{
-  content:"";position:absolute;left:.55rem;top:.6rem;bottom:.6rem;
-  width:3px;background:var(--rail);border-radius:2px;
-}
+.legs::before{content:"";position:absolute;left:.55rem;top:.6rem;bottom:.6rem;width:3px;background:var(--rail);border-radius:2px}
 .leg{position:relative;padding:0 0 1.15rem 2.1rem}
-.leg::before{
-  content:"";position:absolute;left:0;top:.45rem;
-  width:1.15rem;height:1.15rem;border-radius:50%;
-  background:var(--paper);border:3px solid var(--rail);
-}
+.leg::before{content:"";position:absolute;left:0;top:.45rem;width:1.15rem;height:1.15rem;border-radius:50%;background:var(--paper);border:3px solid var(--rail)}
 .leg[data-stop="hub"]::before{background:var(--rail)}
 .leg a{text-decoration:none;display:block}
 .leg a:hover .lname,.leg a:focus-visible .lname{color:var(--persimmon)}
@@ -130,12 +124,8 @@ header.top{
 .lmeta{font-size:.87rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
 
 /* ---------- city sections ---------- */
-section.city{margin:0 0 3.5rem;scroll-margin-top:1rem}
-.cityhead{
-  display:flex;align-items:baseline;gap:.75rem;flex-wrap:wrap;
-  padding-bottom:.6rem;border-bottom:2px solid var(--accent,var(--indigo));
-  margin-bottom:1.5rem;
-}
+section.city{margin:0 0 3.5rem;scroll-margin-top:3.5rem}
+.cityhead{display:flex;align-items:baseline;gap:.75rem;flex-wrap:wrap;padding-bottom:.6rem;border-bottom:2px solid var(--accent,var(--indigo));margin-bottom:1.5rem}
 .cityhead h2{margin:0;font-size:1.7rem;font-weight:900;letter-spacing:-.01em}
 .cityhead .when{color:var(--ink-soft);font-size:.92rem;font-variant-numeric:tabular-nums}
 .city[data-c="tokyo"]{--accent:var(--indigo)}
@@ -144,67 +134,57 @@ section.city{margin:0 0 3.5rem;scroll-margin-top:1rem}
 .city[data-c="osaka"]{--accent:var(--persimmon)}
 .city[data-c="hiroshima"]{--accent:var(--teal)}
 .city[data-c="tokyo2"]{--accent:var(--gold)}
+.city[data-c="budget"]{--accent:var(--indigo-2)}
 .intro{margin:0 0 1.4rem;max-width:44rem;color:var(--ink-soft)}
 
-.day{
-  font-weight:700;font-size:1rem;margin:2rem 0 .8rem;
-  color:var(--accent,var(--indigo));
-  font-variant-numeric:tabular-nums;
-}
+.day{font-weight:700;font-size:1rem;margin:2rem 0 .8rem;color:var(--accent,var(--indigo));font-variant-numeric:tabular-nums}
 .day:first-of-type{margin-top:0}
 
 /* ---------- stop cards ---------- */
-details.stop{
-  border:1px solid var(--line);
-  background:var(--paper-2);
-  margin-bottom:.55rem;
-}
-details.stop summary{
-  cursor:pointer;list-style:none;padding:.8rem .95rem;
-  display:flex;justify-content:space-between;gap:.75rem;align-items:baseline;
-}
+details.stop{border:1px solid var(--line);background:var(--paper-2);margin-bottom:.55rem}
+details.stop summary{cursor:pointer;list-style:none;padding:.8rem .95rem;display:flex;justify-content:space-between;gap:.75rem;align-items:baseline}
 details.stop summary::-webkit-details-marker{display:none}
 summary:focus-visible{outline:2px solid var(--persimmon);outline-offset:2px}
 .sname{font-weight:700;flex:1}
-.scost{
-  font-size:.85rem;color:var(--ink-soft);white-space:nowrap;
-  font-variant-numeric:tabular-nums;
-}
+.scost{font-size:.85rem;color:var(--ink-soft);white-space:nowrap;font-variant-numeric:tabular-nums}
 .body{padding:0 .95rem 1rem;border-top:1px solid var(--line);margin-top:-1px}
 .body p{margin:.85rem 0 0;font-size:.95rem}
-.route{
-  margin:.85rem 0 0;padding:.6rem .75rem;
-  background:var(--paper);border-left:3px solid var(--accent,var(--indigo));
-  font-size:.9rem;
-}
+.route{margin:.85rem 0 0;padding:.6rem .75rem;background:var(--paper);border-left:3px solid var(--accent,var(--indigo));font-size:.9rem}
 .route b{display:block;font-size:.8rem;color:var(--ink-soft);font-weight:500}
-.maplink{
-  display:inline-block;margin-top:.9rem;font-size:.88rem;font-weight:500;
-  color:var(--accent,var(--indigo));text-decoration:underline;text-underline-offset:3px;
-}
+.maplink{display:inline-block;margin-top:.9rem;font-size:.88rem;font-weight:500;color:var(--accent,var(--indigo));text-decoration:underline;text-underline-offset:3px}
 
 /* ---------- money ---------- */
-table.money{
-  width:100%;border-collapse:collapse;font-size:.92rem;
-  font-variant-numeric:tabular-nums;margin-top:.5rem;
-}
-table.money th,table.money td{
-  text-align:left;padding:.55rem .5rem;border-bottom:1px solid var(--line);
-}
+table.money{width:100%;border-collapse:collapse;font-size:.92rem;font-variant-numeric:tabular-nums;margin-top:.5rem}
+table.money th,table.money td{text-align:left;padding:.55rem .5rem;border-bottom:1px solid var(--line)}
 table.money th{font-weight:500;color:var(--ink-soft);font-size:.85rem}
 table.money td:last-child,table.money th:last-child{text-align:right}
 table.money tr.total td{font-weight:700;border-bottom:none}
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.m{font-variant-numeric:tabular-nums}
 
-.note{
-  font-size:.88rem;color:var(--ink-soft);
-  border-top:1px solid var(--line);margin-top:3rem;padding-top:1.2rem;
-}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.note{font-size:.88rem;color:var(--ink-soft);border-top:1px solid var(--line);margin-top:3rem;padding-top:1.2rem}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
+
+<nav class="qbar" aria-label="Quick navigation">
+  <div class="qbar-inner">
+    <a class="qpill" href="#tokyo">Tokyo</a>
+    <a class="qpill" href="#hakone">Hakone</a>
+    <a class="qpill" href="#kyoto">Kyoto</a>
+    <a class="qpill" href="#osaka">Osaka</a>
+    <a class="qpill" href="#hiroshima">Hiroshima</a>
+    <a class="qpill" href="#tokyo2">Tokyo again</a>
+    <a class="qpill" href="#budget">Budget</a>
+    <div class="qctrls">
+      <button class="qbtn" id="curBtn" type="button" aria-pressed="false" title="Switch cost figures between yen and USD">¥ / $</button>
+      <button class="qbtn" id="themeBtn" type="button" title="Switch light / dark">◐</button>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap" id="top">
 
 <header class="top">
   <h1 class="kanji">Japan<span>.</span></h1>
@@ -247,7 +227,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   </details>
 
   <details class="stop">
-    <summary><span class="sname">Tokyo Skytree</span><span class="scost">¥2,100–3,500</span></summary>
+    <summary><span class="sname">Tokyo Skytree</span><span class="scost m" data-y1="2100" data-y2="3500">¥2,100–3,500</span></summary>
     <div class="body">
       <p>Tallest tower in Japan. Tembo Deck at 350 m is the standard ticket; the Tembo Galleria at 450 m costs more and isn't essential. On a clear day you can see Fuji. Book a timed slot online to skip the queue — walk-up is pricier.</p>
       <div class="route"><b>From Sensō-ji</b>Walk 15–20 min across the river, or Tobu Skytree Line one stop. ~¥160</div>
@@ -276,7 +256,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   </details>
 
   <details class="stop">
-    <summary><span class="sname">Shibuya Crossing</span><span class="scost">free · Sky ¥2,500</span></summary>
+    <summary><span class="sname">Shibuya Crossing</span><span class="scost">free · Sky <span class="m" data-y="2500">¥2,500</span></span></summary>
     <div class="body">
       <p>The scramble everyone has seen in films. Worth crossing once, then watching from above — the free view is the Starbucks window at Tsutaya; the paid one is Shibuya Sky, an open rooftop deck with the best sunset view in the city. If you do one paid viewpoint in Tokyo, most people rate Shibuya Sky over Skytree.</p>
       <div class="route"><b>From Harajuku</b>JR Yamanote one stop to Shibuya, or walk 20 min down Meiji-dōri. ~¥150</div>
@@ -305,7 +285,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   </details>
 
   <details class="stop">
-    <summary><span class="sname">teamLab Planets, Toyosu</span><span class="scost">¥3,800–4,200</span></summary>
+    <summary><span class="sname">teamLab Planets, Toyosu</span><span class="scost m" data-y1="3800" data-y2="4200">¥3,800–4,200</span></summary>
     <div class="body">
       <p>Barefoot digital art museum — you wade through knee-deep water in some rooms, so wear shorts or trousers you can roll up. Allow 90 minutes inside. <strong>Book a timed ticket well in advance</strong>; it sells out weeks ahead and there is no walk-up.</p>
       <div class="route"><b>From Akihabara</b>Hibiya Line to Tsukiji, Yūrakuchō Line to Toyosu, then Yurikamome to Shin-Toyosu. ~40 min · ~¥450</div>
@@ -316,7 +296,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   <div class="day">Day 4 · Sat 19 Sep — Ueno, and a slower day</div>
 
   <details class="stop">
-    <summary><span class="sname">Ueno Park</span><span class="scost">free · museums ¥1,000</span></summary>
+    <summary><span class="sname">Ueno Park</span><span class="scost">free · museums <span class="m" data-y="1000">¥1,000</span></span></summary>
     <div class="body">
       <p>Big open park with the Tokyo National Museum, the science museum, a zoo and Shinobazu Pond. Pick one museum rather than trying for several. Ameyoko market runs along the railway just south of the station — good for cheap street food.</p>
       <div class="route"><b>From Cogo Ryōgoku</b>JR Sōbu to Akihabara, JR Yamanote one stop to Ueno. ~12 min · ¥170</div>
@@ -325,7 +305,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   </details>
 
   <details class="stop">
-    <summary><span class="sname">Ryōgoku, on your doorstep</span><span class="scost">free–¥1,000</span></summary>
+    <summary><span class="sname">Ryōgoku, on your doorstep</span><span class="scost">free–<span class="m" data-y="1000">¥1,000</span></span></summary>
     <div class="body">
       <p>You're staying in the sumo district. The Kokugikan arena, the sumo museum, and chanko-nabe restaurants serving the stew wrestlers eat are all within a few minutes' walk. Worth an evening you don't spend on a train — and a good low-effort close to the Tokyo leg before Hakone.</p>
       <div class="route"><b>From Cogo Ryōgoku</b>On foot.</div>
@@ -337,12 +317,12 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   <div class="scroll">
   <table class="money">
     <tr><th>Item</th><th>Estimate</th></tr>
-    <tr><td>Local trains, 4 days</td><td>¥3,500–4,500</td></tr>
-    <tr><td>Tokyo Skytree</td><td>¥2,100–3,500</td></tr>
-    <tr><td>Shibuya Sky (optional)</td><td>¥2,500</td></tr>
-    <tr><td>teamLab Planets</td><td>¥3,800–4,200</td></tr>
-    <tr><td>One museum in Ueno</td><td>¥1,000</td></tr>
-    <tr class="total"><td>Transit + tickets</td><td>¥13,000–15,700</td></tr>
+    <tr><td>Local trains, 4 days</td><td class="m" data-y1="3500" data-y2="4500">¥3,500–4,500</td></tr>
+    <tr><td>Tokyo Skytree</td><td class="m" data-y1="2100" data-y2="3500">¥2,100–3,500</td></tr>
+    <tr><td>Shibuya Sky (optional)</td><td class="m" data-y="2500">¥2,500</td></tr>
+    <tr><td>teamLab Planets</td><td class="m" data-y1="3800" data-y2="4200">¥3,800–4,200</td></tr>
+    <tr><td>One museum in Ueno</td><td class="m" data-y="1000">¥1,000</td></tr>
+    <tr class="total"><td>Transit + tickets</td><td class="m" data-y1="13000" data-y2="15700">¥13,000–15,700</td></tr>
   </table>
   </div>
 </section>
@@ -353,7 +333,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   <p class="intro">A mountain onsen town two hours from Tokyo. Two nights is the right length — enough for the loop and a proper soak, not so long that you run out of things to do.</p>
 
   <details class="stop">
-    <summary><span class="sname">Getting there</span><span class="scost">¥2,500–3,500</span></summary>
+    <summary><span class="sname">Getting there</span><span class="scost m" data-y1="2500" data-y2="3500">¥2,500–3,500</span></summary>
     <div class="body">
       <p>Odakyū Romancecar from Shinjuku to Hakone-Yumoto, reserved seats, about 85 minutes. Book the seat in advance for a weekend departure.</p>
       <div class="route"><b>From Cogo Ryōgoku</b>Toei Ōedo Line direct to Shinjuku (~25 min, ¥280), then Romancecar.</div>
@@ -361,7 +341,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   </details>
 
   <details class="stop">
-    <summary><span class="sname">The Hakone loop</span><span class="scost">Free Pass ¥6,100</span></summary>
+    <summary><span class="sname">The Hakone loop</span><span class="scost">Free Pass <span class="m" data-y="6100">¥6,100</span></span></summary>
     <div class="body">
       <p>A circuit you do in one day using one pass: mountain railway to Gōra, cable car and ropeway over Ōwakudani's sulphur vents (buy a black egg, boiled in the hot springs), then a pirate-ship cruise across Lake Ashi with Fuji behind it if the weather holds, and a bus back. The Hakone Free Pass covers all of it.</p>
       <div class="route"><b>Start</b>Hakone-Yumoto station, first departure of the day beats the coach tours.</div>
@@ -370,14 +350,14 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   </details>
 
   <details class="stop">
-    <summary><span class="sname">Onsen</span><span class="scost">¥1,000–2,000 day use</span></summary>
+    <summary><span class="sname">Onsen</span><span class="scost m" data-y1="1000" data-y2="2000" data-suf=" day use">¥1,000–2,000 day use</span></summary>
     <div class="body">
       <p>The whole point of stopping here. Many ryokan open their baths to day visitors; if your lodging has its own, use it twice. Note that a number of traditional baths still refuse entry to visible tattoos — check before you go, or look for a private <em>kashikiri</em> bath you book by the hour.</p>
     </div>
   </details>
 
   <details class="stop">
-    <summary><span class="sname">Hakone Open-Air Museum</span><span class="scost">¥1,600</span></summary>
+    <summary><span class="sname">Hakone Open-Air Museum</span><span class="scost m" data-y="1600">¥1,600</span></summary>
     <div class="body">
       <p>Sculpture park in the mountains with a Picasso pavilion and a foot bath fed by a hot spring. Easy to fold into the loop — it's a stop on the mountain railway at Chōkoku-no-mori.</p>
       <a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Hakone+Open-Air+Museum" target="_blank" rel="noopener">Open in Maps</a>
@@ -391,7 +371,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   <p class="intro">The longest single stop of the trip, and it needs to be. Kyoto's sights are spread across the edges of the city rather than clustered downtown, so group them by direction: east one day, west another, south another.</p>
 
   <details class="stop">
-    <summary><span class="sname">Getting there</span><span class="scost">~¥13,000</span></summary>
+    <summary><span class="sname">Getting there</span><span class="scost m" data-y="13000" data-prefix="~">~¥13,000</span></summary>
     <div class="body">
       <p>Bus or train down from Hakone to Odawara, then Tōkaidō Shinkansen straight to Kyoto — about 2 hours 15 from Odawara. Reserve a seat with luggage space if you're carrying a large bag.</p>
     </div>
@@ -407,7 +387,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   </details>
 
   <details class="stop">
-    <summary><span class="sname">Arashiyama &amp; the bamboo grove</span><span class="scost">free · temple ¥500</span></summary>
+    <summary><span class="sname">Arashiyama &amp; the bamboo grove</span><span class="scost">free · temple <span class="m" data-y="500">¥500</span></span></summary>
     <div class="body">
       <p>Western edge of the city. The bamboo path is short and extremely busy after 9am — go at opening. While you're out there: Tenryū-ji's garden, the Iwatayama monkey park up the hill, and the Hozu river.</p>
       <div class="route"><b>From Kyoto Station</b>JR Sagano/San-in Line to Saga-Arashiyama. ~17 min · ¥240</div>
@@ -416,7 +396,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   </details>
 
   <details class="stop">
-    <summary><span class="sname">Higashiyama: Kiyomizu-dera &amp; Gion</span><span class="scost">¥500</span></summary>
+    <summary><span class="sname">Higashiyama: Kiyomizu-dera &amp; Gion</span><span class="scost m" data-y="500">¥500</span></summary>
     <div class="body">
       <p>Do this as one long walk. Kiyomizu-dera's wooden terrace over the hillside, then downhill through the preserved lanes of Sannenzaka and Ninenzaka, through Yasaka Shrine and into Gion for the evening. This is where you're most likely to see geiko and maiko heading to appointments around dusk — watch, don't chase.</p>
       <div class="route"><b>From Kyoto Station</b>City bus 100 or 206 to Kiyomizu-michi. ~15 min · ¥230</div>
@@ -425,7 +405,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   </details>
 
   <details class="stop">
-    <summary><span class="sname">Kinkaku-ji</span><span class="scost">¥500</span></summary>
+    <summary><span class="sname">Kinkaku-ji</span><span class="scost m" data-y="500">¥500</span></summary>
     <div class="body">
       <p>The gold pavilion over a reflecting pond. It's a fifteen-minute visit on a fixed one-way path and it is always crowded, but the image is the reason people come to Kyoto. Pair it with Ryōan-ji's rock garden nearby to make the trip north worthwhile.</p>
       <div class="route"><b>From Kyoto Station</b>City bus 101 or 205. ~40 min · ¥230</div>
@@ -434,7 +414,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   </details>
 
   <details class="stop">
-    <summary><span class="sname">Day trip: Nara</span><span class="scost">¥1,800 return</span></summary>
+    <summary><span class="sname">Day trip: Nara</span><span class="scost m" data-y="1800" data-suf=" return">¥1,800 return</span></summary>
     <div class="body">
       <p>Free-roaming deer that bow for crackers, and Tōdai-ji, which holds a 15-metre bronze Buddha in the largest wooden building you'll ever stand in. Half a day is enough, and it's the best use of your fourth Kyoto day.</p>
       <div class="route"><b>From Kyoto Station</b>JR Nara Line rapid, direct. ~45 min · ¥720 each way</div>
@@ -458,7 +438,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   </details>
 
   <details class="stop">
-    <summary><span class="sname">Osaka Castle</span><span class="scost">¥600</span></summary>
+    <summary><span class="sname">Osaka Castle</span><span class="scost m" data-y="600">¥600</span></summary>
     <div class="body">
       <p>Reconstructed keep in a large moated park. The interior is a museum with a lift, so it's more history exhibit than castle — the grounds and the view from the top floor are the draw.</p>
       <div class="route"><b>From Osaka Station</b>JR Osaka Loop Line to Osakajō-kōen. ~11 min · ¥180</div>
@@ -489,14 +469,14 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   <p class="intro">Two full days so you don't have to choose between the city and Miyajima. Give the Peace Park a morning at least — it deserves more time than people usually plan for.</p>
 
   <details class="stop">
-    <summary><span class="sname">Getting there</span><span class="scost">~¥10,500</span></summary>
+    <summary><span class="sname">Getting there</span><span class="scost m" data-y="10500" data-prefix="~">~¥10,500</span></summary>
     <div class="body">
       <p>Sanyō Shinkansen from Shin-Osaka to Hiroshima, about 90 minutes on a Nozomi.</p>
     </div>
   </details>
 
   <details class="stop">
-    <summary><span class="sname">Peace Memorial Park &amp; Museum</span><span class="scost">¥200</span></summary>
+    <summary><span class="sname">Peace Memorial Park &amp; Museum</span><span class="scost m" data-y="200">¥200</span></summary>
     <div class="body">
       <p>The A-Bomb Dome, the cenotaph, the children's memorial hung with paper cranes, and a museum that is deliberately difficult. Allow three hours and don't schedule something demanding straight afterwards. The museum entry is almost free by design.</p>
       <div class="route"><b>From Hiroshima Station</b>Tram line 2 or 6 to Genbaku Dome-mae. ~15 min · ¥240</div>
@@ -505,7 +485,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   </details>
 
   <details class="stop">
-    <summary><span class="sname">Miyajima &amp; the floating torii</span><span class="scost">~¥1,000 + ¥300 shrine</span></summary>
+    <summary><span class="sname">Miyajima &amp; the floating torii</span><span class="scost">~<span class="m" data-y="1000">¥1,000</span> + <span class="m" data-y="300">¥300</span> shrine</span></summary>
     <div class="body">
       <p>Island in the bay where the great torii stands in the water at high tide and you can walk out to it at low tide — check the tide table before you pick your hour. Itsukushima Shrine sits on stilts over the same water, wild deer wander the streets, and the ropeway up Mt Misen gives you the inland sea. A full day.</p>
       <div class="route"><b>From Hiroshima Station</b>JR Sanyō Line to Miyajimaguchi (~27 min, ¥420), then the JR ferry across (~10 min, ¥200). Plus a ¥100 island visitor tax.</div>
@@ -514,7 +494,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   </details>
 
   <details class="stop">
-    <summary><span class="sname">Okonomiyaki, Hiroshima style</span><span class="scost">¥900–1,400</span></summary>
+    <summary><span class="sname">Okonomiyaki, Hiroshima style</span><span class="scost m" data-y1="900" data-y2="1400">¥900–1,400</span></summary>
     <div class="body">
       <p>Layered rather than mixed, with noodles inside — a different dish from the Osaka version and worth eating both to compare. Okonomimura is a building of stacked okonomiyaki counters near the Peace Park.</p>
       <a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Okonomimura+Hiroshima" target="_blank" rel="noopener">Open in Maps</a>
@@ -564,7 +544,7 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   <div class="day">Tue 6 Oct · getting to Narita</div>
 
   <details class="stop">
-    <summary><span class="sname">Ryōgoku → Narita Terminal 1</span><span class="scost">¥1,300–3,000</span></summary>
+    <summary><span class="sname">Ryōgoku → Narita Terminal 1</span><span class="scost m" data-y1="1300" data-y2="3000">¥1,300–3,000</span></summary>
     <div class="body">
       <p>ZIPAIR departs 14:35, so be airside by around 12:15 and leave Ryōgoku by <strong>10:00–10:30</strong>. That makes the 6th a checkout-and-travel day — the last real morning in Tokyo is the 5th. ZIPAIR flies from Terminal 1, not the Terminal 2 you arrive into.</p>
       <div class="route"><b>Fastest</b>JR Sōbu to Akihabara, Yamanote to Nippori, then Keisei Skyliner to Narita. ~75 min · ~¥2,800<br><b>Simplest with bags</b>JR Narita Express from Tokyo Station, no transfers after that. ~80 min · ~¥3,000<br><b>Cheapest</b>Keisei Access Express via Asakusa Line — one transfer, no reservation. ~95 min · ~¥1,300</div>
@@ -572,8 +552,137 @@ table.money tr.total td{font-weight:700;border-bottom:none}
   </details>
 </section>
 
-<p class="note">Prices are 2026 estimates in yen and will drift — treat them as planning figures, not quotes. Train times assume a Suica or Pasmo card rather than paper tickets. Anything with a timed entry (teamLab Planets, Shibuya Sky, Ghibli Museum, Shinkansen reserved seats) should be booked before you fly.</p>
+<!-- ================= BUDGET ================= -->
+<section class="city" data-c="budget" id="budget">
+  <div class="cityhead"><h2>Budget</h2><span class="when">20 nights · per person · hostel-level</span></div>
+  <p class="intro">Everything below except flights, since those are already booked. Use the ¥ / $ switch in the top bar — conversions are rough, at ¥150 to the dollar, so treat them as a planning figure rather than an exchange rate.</p>
+
+  <div class="day">Accommodation — dorm beds</div>
+  <div class="scroll">
+  <table class="money">
+    <tr><th>City</th><th>Pick</th><th>Nights</th><th>Total</th></tr>
+    <tr><td>Tokyo</td><td>Cogo Ryōgoku (booked)</td><td>4</td><td class="m" data-y="16000">¥16,000</td></tr>
+    <tr><td>Hakone</td><td>K's House Hakone</td><td>2</td><td class="m" data-y="9000">¥9,000</td></tr>
+    <tr><td>Kyoto</td><td>Gion Kyoto Guesthouse Hanakanzashi</td><td>4</td><td class="m" data-y="14000">¥14,000</td></tr>
+    <tr><td>Osaka</td><td>KOREGA! Hostel Namba</td><td>3</td><td class="m" data-y="10500">¥10,500</td></tr>
+    <tr><td>Hiroshima</td><td>WeBase Hiroshima</td><td>3</td><td class="m" data-y="11400">¥11,400</td></tr>
+    <tr><td>Tokyo again</td><td>Cogo Ryōgoku (booked)</td><td>4</td><td class="m" data-y="16000">¥16,000</td></tr>
+    <tr class="total"><td colspan="3">Lodging total</td><td class="m" data-y="76900">¥76,900</td></tr>
+  </table>
+  </div>
+  <p style="font-size:.85rem;color:var(--ink-soft);margin-top:.6rem">Skipped on purpose: Kiyamachi Guesthouse (Kyoto) and a couple of Osaka/Hiroshima budget spots — recent reviews flagged bedbugs or safety issues.</p>
+
+  <div class="day">Transit</div>
+  <div class="scroll">
+  <table class="money">
+    <tr><th>Type</th><th>Estimate</th></tr>
+    <tr><td>Intercity trains, all 6 legs incl. Shinkansen</td><td class="m" data-y1="48000" data-y2="55000">¥48,000–55,000</td></tr>
+    <tr><td>Local transit across all cities</td><td class="m" data-y1="18000" data-y2="21000">¥18,000–21,000</td></tr>
+    <tr><td>Narita ⇄ Tokyo, both ways</td><td class="m" data-y1="4000" data-y2="6000">¥4,000–6,000</td></tr>
+    <tr class="total"><td>Transit total</td><td class="m" data-y1="70000" data-y2="82000">¥70,000–82,000</td></tr>
+  </table>
+  </div>
+
+  <div class="day">Attractions &amp; tickets</div>
+  <p>Skytree, teamLab, Shibuya Sky, Hakone Free Pass, Kyoto temples, Osaka Castle, Miyajima and the Peace Museum, and the rest of what's listed above: <span class="m" data-y1="22000" data-y2="28000">¥22,000–28,000</span>.</p>
+
+  <div class="day">Food</div>
+  <p>Budget pace — konbini breakfast, cheap lunch, one real dinner — at <span class="m" data-y1="2500" data-y2="4000" data-suf="/day">¥2,500–4,000/day</span> across 20 days: <span class="m" data-y1="50000" data-y2="80000">¥50,000–80,000</span>.</p>
+
+  <div class="day">Total</div>
+  <div class="scroll">
+  <table class="money">
+    <tr><th>Category</th><th>Estimate</th></tr>
+    <tr><td>Lodging</td><td class="m" data-y="77000">¥77,000</td></tr>
+    <tr><td>Transit</td><td class="m" data-y="76000">¥76,000</td></tr>
+    <tr><td>Attractions</td><td class="m" data-y="25000">¥25,000</td></tr>
+    <tr><td>Food</td><td class="m" data-y="65000">¥65,000</td></tr>
+    <tr class="total"><td>Whole trip, per person</td><td class="m" data-y="243000">¥243,000</td></tr>
+  </table>
+  </div>
+  <p style="font-size:.85rem;color:var(--ink-soft);margin-top:.6rem">Doesn't include your international flights (already booked) or shopping/souvenirs.</p>
+</section>
+
+<p class="note">Prices are 2026 estimates and will drift — treat them as planning figures, not quotes. Train times assume a Suica or Pasmo card rather than paper tickets. Anything with a timed entry (teamLab Planets, Shibuya Sky, Ghibli Museum, Shinkansen reserved seats) should be booked before you fly.</p>
 
 </div>
+
+<button class="totop" id="totopBtn" type="button" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<script>
+(function(){
+  "use strict";
+  var RATE = 150;
+
+  function fmtYen(n){ return "¥" + Math.round(n).toLocaleString("en-US"); }
+  function fmtUsd(n){ return "$" + Math.round(n / RATE).toLocaleString("en-US"); }
+
+  function render(el, usd){
+    var suf = el.getAttribute("data-suf") || "";
+    var pre = el.getAttribute("data-prefix") || "";
+    var y1 = el.getAttribute("data-y1"), y2 = el.getAttribute("data-y2"), y = el.getAttribute("data-y");
+    var text;
+    if (y1 !== null && y2 !== null){
+      text = pre + (usd ? fmtUsd(y1) + "–" + fmtUsd(y2) : fmtYen(y1) + "–" + fmtYen(y2));
+    } else if (y !== null){
+      text = pre + (usd ? fmtUsd(y) : fmtYen(y));
+    } else { return; }
+    el.textContent = text + suf;
+  }
+
+  var moneyEls = Array.prototype.slice.call(document.querySelectorAll(".m"));
+  var curBtn = document.getElementById("curBtn");
+  var showUsd = false;
+  try { showUsd = localStorage.getItem("jp-trip-currency") === "usd"; } catch(e){}
+
+  function applyCurrency(){
+    moneyEls.forEach(function(el){ render(el, showUsd); });
+    curBtn.textContent = showUsd ? "$ USD" : "¥ JPY";
+    curBtn.setAttribute("aria-pressed", showUsd ? "true" : "false");
+  }
+  curBtn.addEventListener("click", function(){
+    showUsd = !showUsd;
+    try { localStorage.setItem("jp-trip-currency", showUsd ? "usd" : "jpy"); } catch(e){}
+    applyCurrency();
+  });
+  applyCurrency();
+
+  var themeBtn = document.getElementById("themeBtn");
+  var root = document.documentElement;
+  var savedTheme = null;
+  try { savedTheme = localStorage.getItem("jp-trip-theme"); } catch(e){}
+  if (savedTheme === "light" || savedTheme === "dark"){ root.setAttribute("data-theme", savedTheme); }
+  function currentIsDark(){
+    var attr = root.getAttribute("data-theme");
+    if (attr === "dark") return true;
+    if (attr === "light") return false;
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  themeBtn.textContent = currentIsDark() ? "☀" : "☾";
+  themeBtn.addEventListener("click", function(){
+    var next = currentIsDark() ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("jp-trip-theme", next); } catch(e){}
+    themeBtn.textContent = next === "dark" ? "☀" : "☾";
+  });
+
+  var totop = document.getElementById("totopBtn");
+  var ticking = false;
+  window.addEventListener("scroll", function(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      if (window.scrollY > 420) totop.classList.add("show");
+      else totop.classList.remove("show");
+      ticking = false;
+    });
+  }, { passive: true });
+  totop.addEventListener("click", function(){
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+})();
+</script>
 </body>
 </html>
