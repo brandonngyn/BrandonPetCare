@@ -304,6 +304,19 @@
   .wrapped-stat .ws-val { font-family:'Fraunces', serif; font-size:19px; font-weight:600; margin-top:2px; }
   .wrapped-stat .ws-sub { font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--muted2); margin-top:2px; }
 
+  /* Country budgets */
+  .country-budget-card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:12px; box-shadow: var(--shadow-sm); margin-bottom:10px; }
+  .country-budget-head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; }
+  .country-budget-head .cb-name { font-family:'Fraunces', serif; font-size:16px; font-weight:600; }
+  .country-budget-head .cb-amounts { font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--muted); }
+  .country-budget-head .cb-amounts b { color:var(--ink); }
+  .cb-track { height:6px; background:var(--border-faint); border-radius:3px; overflow:hidden; margin:6px 0; }
+  .cb-fill { height:100%; border-radius:3px; background:linear-gradient(90deg, var(--teal-dark), var(--teal)); transition: width .3s; }
+  .cb-fill.warn { background: var(--amber); }
+  .cb-fill.danger { background: var(--red); }
+  .cb-sub-row { display:flex; justify-content:space-between; font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--muted2); }
+  .cb-edit-btn { background:none; border:none; color:var(--red); font-family:'IBM Plex Mono', monospace; font-size:10.5px; cursor:pointer; text-decoration:underline; padding:0; }
+
   @media (max-width: 380px) { form.entry { grid-template-columns: 1fr; } .wrapped-grid, .split-fields { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -440,7 +453,7 @@
         <label>Amount (USD)</label>
         <span class="dollar">$</span>
         <input type="number" inputmode="decimal" step="0.01" placeholder="0.00" id="fAmount" />
-        <button type="button" class="convert-toggle" id="convertToggle">🔁 Convert from VND / KHR</button>
+        <button type="button" class="convert-toggle" id="convertToggle">🔁 Convert from VND / KHR / JPY</button>
         <div class="convert-panel" id="convertPanel">
           <div class="field">
             <label>Local amount</label>
@@ -451,6 +464,7 @@
             <select id="cCurrency">
               <option value="VND">VND (Vietnam)</option>
               <option value="KHR">KHR (Cambodia)</option>
+              <option value="JPY">JPY (Japan)</option>
             </select>
           </div>
           <div class="convert-result">
@@ -572,6 +586,8 @@
   </div>
   <div class="ledger-card" id="countryCard" style="display:none;">
     <div class="wrapped-grid" id="countryGrid"></div>
+    <div class="presets-title" style="margin-top:16px;">Budget per country</div>
+    <div id="countryBudgetBars"></div>
   </div>
 
   <div class="location-banner util-banner" id="emergencyBanner">
@@ -672,20 +688,25 @@ document.getElementById("textSizeToggle").addEventListener("click", () => {
 });
 
 const LS_CURRENCY = "vn-kh-currency-v1";
+const CURRENCY_CYCLE = ["USD", "VND", "KHR", "JPY"];
+const CURRENCY_SYMBOL = { VND: "₫", KHR: "៛", JPY: "¥" };
+const CURRENCY_LABEL = { USD: "$ USD", VND: "₫ VND", KHR: "៛ KHR", JPY: "¥ JPY" };
 let displayCurrency = "USD";
 try { displayCurrency = localStorage.getItem(LS_CURRENCY) || "USD"; } catch(e){}
 function fmtMoney(usd){
-  if (displayCurrency === "VND") {
-    const rate = (typeof rates !== "undefined" && rates.VND) ? rates.VND : FALLBACK_RATES.VND;
-    return `${Math.round(usd * rate).toLocaleString()}₫`;
-  }
-  return `$${usd.toFixed(2)}`;
+  if (displayCurrency === "USD") return `$${usd.toFixed(2)}`;
+  const rate = (typeof rates !== "undefined" && rates[displayCurrency]) ? rates[displayCurrency] : FALLBACK_RATES[displayCurrency];
+  return `${Math.round(usd * rate).toLocaleString()}${CURRENCY_SYMBOL[displayCurrency]}`;
 }
-document.getElementById("currencyToggle").textContent = displayCurrency === "USD" ? "Show in ₫ VND" : "Show in $ USD";
+function nextCurrencyLabel(){
+  const next = CURRENCY_CYCLE[(CURRENCY_CYCLE.indexOf(displayCurrency) + 1) % CURRENCY_CYCLE.length];
+  return `Show in ${CURRENCY_LABEL[next]}`;
+}
+document.getElementById("currencyToggle").textContent = nextCurrencyLabel();
 document.getElementById("currencyToggle").addEventListener("click", () => {
-  displayCurrency = displayCurrency === "USD" ? "VND" : "USD";
+  displayCurrency = CURRENCY_CYCLE[(CURRENCY_CYCLE.indexOf(displayCurrency) + 1) % CURRENCY_CYCLE.length];
   try { localStorage.setItem(LS_CURRENCY, displayCurrency); } catch(e){}
-  document.getElementById("currencyToggle").textContent = displayCurrency === "USD" ? "Show in ₫ VND" : "Show in $ USD";
+  document.getElementById("currencyToggle").textContent = nextCurrencyLabel();
   render();
   renderPricesCard();
 });
@@ -770,7 +791,7 @@ const LS_TRIP_END = "vn-kh-trip-end-v1";
 const LS_RATES = "vn-kh-rates-v1";
 const LS_LAST_EXPORT = "vn-kh-last-export-v1";
 const LS_BANNER_DISMISS = "vn-kh-banner-dismiss-v1";
-const FALLBACK_RATES = { VND: 25500, KHR: 4100 };
+const FALLBACK_RATES = { VND: 25500, KHR: 4100, JPY: 150 };
 const LS_VISA = "vn-kh-visa-v1";
 const LS_JOURNAL = "vn-kh-journal-v1";
 const DEFAULT_VISA = { Vietnam: "", Cambodia: "" };
@@ -1117,6 +1138,16 @@ function loadExpenses(){
 function saveExpenses(list){ try { localStorage.setItem(LS_EXPENSES, JSON.stringify(list)); } catch(e){} }
 function loadBudget(){ try { const v = localStorage.getItem(LS_BUDGET); return v ? Number(v) : 2200; } catch(e){ return 2200; } }
 function saveBudget(v){ try { localStorage.setItem(LS_BUDGET, String(v)); } catch(e){} }
+const LS_COUNTRY_BUDGETS = "vn-kh-country-budgets-v1";
+const DEFAULT_COUNTRY_BUDGETS = { Vietnam: 1400, Cambodia: 600, Japan: 2000 };
+function loadCountryBudgets(){
+  try {
+    const raw = localStorage.getItem(LS_COUNTRY_BUDGETS);
+    if (raw) return Object.assign({}, DEFAULT_COUNTRY_BUDGETS, JSON.parse(raw));
+  } catch(e){}
+  return { ...DEFAULT_COUNTRY_BUDGETS };
+}
+function saveCountryBudgets(obj){ try { localStorage.setItem(LS_COUNTRY_BUDGETS, JSON.stringify(obj)); } catch(e){} }
 const ITINERARY_LEGS = ["Taipei","Hanoi","Ha Giang","Ninh Binh","Phong Nha","Hoi An","Da Nang","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Battambang","Phnom Penh (return)","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)","Los Angeles"];
 const DEFAULT_ITINERARY = {
   "Taipei": "2026-08-08",
@@ -1132,9 +1163,9 @@ const DEFAULT_ITINERARY = {
   "Siem Reap": "2026-09-02",
   "Battambang": "2026-09-05",
   "Phnom Penh (return)": "2026-09-07",
-  "Tokyo": "2026-09-16", "Hakone": "2026-09-20", "Kyoto": "2026-09-22",
-  "Osaka": "2026-09-26", "Hiroshima": "2026-09-29", "Tokyo (return, fly out)": "2026-10-01",
-  "Los Angeles": "2026-10-01",
+  "Tokyo": "2026-09-16", "Hakone": "2026-09-22", "Kyoto": "2026-09-24",
+  "Osaka": "2026-09-29", "Hiroshima": "2026-10-02", "Tokyo (return, fly out)": "2026-10-04",
+  "Los Angeles": "2026-10-06",
 };
 const DEFAULT_TRIP_END = "2026-09-16";
 
@@ -1273,9 +1304,9 @@ function saveTripBudget(v){ try { localStorage.setItem(LS_TRIP_BUDGET, String(v)
 function loadRates(){
   try {
     const raw = localStorage.getItem(LS_RATES);
-    if (raw) return JSON.parse(raw);
+    if (raw) return Object.assign({}, { VND: FALLBACK_RATES.VND, KHR: FALLBACK_RATES.KHR, JPY: FALLBACK_RATES.JPY, fetchedAt: null }, JSON.parse(raw));
   } catch(e){}
-  return { VND: FALLBACK_RATES.VND, KHR: FALLBACK_RATES.KHR, fetchedAt: null };
+  return { VND: FALLBACK_RATES.VND, KHR: FALLBACK_RATES.KHR, JPY: FALLBACK_RATES.JPY, fetchedAt: null };
 }
 function saveRates(r){ try { localStorage.setItem(LS_RATES, JSON.stringify(r)); } catch(e){} }
 
@@ -1290,35 +1321,37 @@ async function refreshRates(force){
   try {
     const res = await fetch("https://open.er-api.com/v6/latest/USD");
     const data = await res.json();
-    if (data && data.rates && data.rates.VND && data.rates.KHR) {
-      rates = { VND: data.rates.VND, KHR: data.rates.KHR, fetchedAt: now };
+    if (data && data.rates && data.rates.VND && data.rates.KHR && data.rates.JPY) {
+      rates = { VND: data.rates.VND, KHR: data.rates.KHR, JPY: data.rates.JPY, fetchedAt: now };
       saveRates(rates);
     }
   } catch(e) {
     // offline or blocked, keep using cached/fallback rates
   }
   renderRateLine();
-  if (displayCurrency === "VND") { render(); renderPricesCard(); }
+  if (displayCurrency !== "USD") { render(); renderPricesCard(); }
 }
 
 function renderRateLine(){
   const el = document.getElementById("rateLine");
   const vnd = Math.round(rates.VND).toLocaleString();
   const khr = Math.round(rates.KHR).toLocaleString();
+  const jpy = Math.round(rates.JPY).toLocaleString();
   if (!rates.fetchedAt) {
     el.className = "rate-line stale";
-    el.innerHTML = `<span class="dot"></span>1 USD ≈ ${vnd} VND · ${khr} KHR (offline estimate, tap to try live)`;
+    el.innerHTML = `<span class="dot"></span>1 USD ≈ ${vnd} VND · ${khr} KHR · ${jpy} JPY (offline estimate, tap to try live)`;
   } else {
     const hrsAgo = Math.max(0, Math.round((Date.now() - rates.fetchedAt) / 3600000));
     const stale = hrsAgo > 30;
     el.className = "rate-line" + (stale ? " stale" : "");
-    el.innerHTML = `<span class="dot"></span>1 USD ≈ ${vnd} VND · ${khr} KHR (updated ${hrsAgo === 0 ? "just now" : hrsAgo + "h ago"})`;
+    el.innerHTML = `<span class="dot"></span>1 USD ≈ ${vnd} VND · ${khr} KHR · ${jpy} JPY (updated ${hrsAgo === 0 ? "just now" : hrsAgo + "h ago"})`;
   }
 }
 document.getElementById("rateLine").addEventListener("click", () => refreshRates(true));
 
 let expenses = loadExpenses();
 let budget = loadBudget();
+let countryBudgets = loadCountryBudgets();
 let itinerary = loadItinerary();
 let packingChecked = loadPackingChecked();
 let packingCustom = loadPackingCustom();
@@ -1786,11 +1819,9 @@ const PRICE_GROUPS = [
   ]},
 ];
 function fmtPrice(usd){
-  if (displayCurrency === "VND") {
-    const rate = (typeof rates !== "undefined" && rates.VND) ? rates.VND : FALLBACK_RATES.VND;
-    return `${Math.round(usd * rate).toLocaleString()}₫`;
-  }
-  return usd % 1 === 0 ? `$${usd}` : `$${usd.toFixed(2)}`;
+  if (displayCurrency === "USD") return usd % 1 === 0 ? `$${usd}` : `$${usd.toFixed(2)}`;
+  const rate = (typeof rates !== "undefined" && rates[displayCurrency]) ? rates[displayCurrency] : FALLBACK_RATES[displayCurrency];
+  return `${Math.round(usd * rate).toLocaleString()}${CURRENCY_SYMBOL[displayCurrency]}`;
 }
 function renderPricesCard(){
   const listEl = document.getElementById("pricesList");
@@ -1802,7 +1833,7 @@ function renderPricesCard(){
       else if (r.type === "approx") priceText = `~${fmtPrice(r.usd)}`;
       else if (r.type === "exact") priceText = fmtPrice(r.usd);
       else if (r.type === "from") priceText = `from ${fmtPrice(r.usd)}`;
-      else if (r.type === "range") priceText = displayCurrency === "VND" ? `~${fmtPrice(r.low)}-${fmtPrice(r.high)}` : `~$${r.low}-${r.high}`;
+      else if (r.type === "range") priceText = displayCurrency === "USD" ? `~$${r.low}-${r.high}` : `~${fmtPrice(r.low)}-${fmtPrice(r.high)}`;
       const tag = r.url ? "a" : "div";
       const attrs = r.url ? `href="${r.url}" target="_blank" rel="noopener"` : "";
       return `<${tag} class="ref-row" ${attrs}><span>${escapeHtml(r.label)}</span><span>${priceText}</span></${tag}>`;
@@ -2076,6 +2107,46 @@ function renderCountryBreakdown(){
       <div class="ws-sub">${r.days}d planned</div>
     </div>
   `).join("");
+
+  renderCountryBudgetBars(rows);
+}
+
+function countryBudgetPct(spent, budgetAmt){
+  return budgetAmt > 0 ? Math.min(100, (spent / budgetAmt) * 100) : 0;
+}
+function renderCountryBudgetBars(rows){
+  const el = document.getElementById("countryBudgetBars");
+  if (!el) return;
+  const budgetTotal = COUNTRY_GROUPS.reduce((s,g) => s + (countryBudgets[g.name] || 0), 0);
+  el.innerHTML = rows.map(r => {
+    const budgetAmt = countryBudgets[r.group.name] || 0;
+    const pct = countryBudgetPct(r.spent, budgetAmt);
+    const over = r.spent > budgetAmt;
+    const fillClass = over ? "danger" : pct >= 80 ? "warn" : "";
+    const remaining = budgetAmt - r.spent;
+    const remLabel = remaining >= 0 ? `${fmtMoney(remaining)} left` : `${fmtMoney(Math.abs(remaining))} over`;
+    return `<div class="country-budget-card">
+      <div class="country-budget-head">
+        <span class="cb-name">${r.group.flag} ${escapeHtml(r.group.name)}</span>
+        <span class="cb-amounts"><b>${fmtMoney(r.spent)}</b> / ${fmtMoney(budgetAmt)}</span>
+      </div>
+      <div class="cb-track"><div class="cb-fill ${fillClass}" style="width:${pct}%"></div></div>
+      <div class="cb-sub-row"><span>${remLabel}</span><button type="button" class="cb-edit-btn" data-country="${r.group.name}">edit</button></div>
+    </div>`;
+  }).join("") + `<div class="cb-sub-row" style="margin-top:2px;"><span>Total allocated: ${fmtMoney(budgetTotal)}</span><span>${budgetTotal === budget ? "matches overall budget" : `overall budget is ${fmtMoney(budget)}`}</span></div>`;
+
+  el.querySelectorAll(".cb-edit-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const country = btn.getAttribute("data-country");
+      const v = prompt(`Set ${country} budget (USD):`, countryBudgets[country] || 0);
+      const num = parseFloat(v);
+      if (num >= 0) {
+        countryBudgets[country] = num;
+        saveCountryBudgets(countryBudgets);
+        renderCountryBreakdown();
+      }
+    });
+  });
 }
 document.getElementById("countryBanner").addEventListener("click", () => {
   const panel = document.getElementById("countryCard");
