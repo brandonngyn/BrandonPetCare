@@ -195,7 +195,7 @@
     <button class="theme-toggle" id="themeToggle">Dark mode</button>
   </div>
 
-  <div class="snapshot-note">📸 This is a snapshot Brandon shared, not a live feed. Dates and entries are current as of when he last updated this link. Check-ins and weather below <i>are</i> live.</div>
+  <div class="snapshot-note" id="snapshotNote">📸 This is a snapshot Brandon shared, not a live feed. Dates and entries are current as of when he last updated this link. Check-ins and weather below <i>are</i> live.</div>
 
   <div class="location-banner" id="locationBanner">
     <div class="loc-main">
@@ -433,7 +433,29 @@ document.getElementById("themeToggle").addEventListener("click", () => {
   applyTheme(theme);
 });
 
-const itinerary = SNAPSHOT_ITINERARY;
+// Same-origin hybrid: if this page and the main Ledger are hosted on the
+// same domain (e.g. both on brandonpetcare.com), Brandon's own browser
+// actually does share localStorage between the two pages — so check for
+// his real live data first. A friend's device will never have these keys
+// set, so they transparently fall through to the baked snapshot below.
+const LS_LIVE_EXPENSES = "vn-kh-expenses-v1";
+const LS_LIVE_ITINERARY = "vn-kh-itinerary-v1";
+const LS_LIVE_VISA = "vn-kh-visa-v1";
+const LS_LIVE_JOURNAL = "vn-kh-journal-v1";
+const LS_LIVE_TRIP_BUDGET = "vn-kh-trip-budget-v1";
+function readLiveJSON(key){
+  try { const raw = localStorage.getItem(key); if (raw) return JSON.parse(raw); } catch(e){}
+  return null;
+}
+const liveItinerary = readLiveJSON(LS_LIVE_ITINERARY);
+const liveExpenses = readLiveJSON(LS_LIVE_EXPENSES);
+const liveVisa = readLiveJSON(LS_LIVE_VISA);
+const liveJournal = readLiveJSON(LS_LIVE_JOURNAL);
+let liveTripBudget = null;
+try { const v = localStorage.getItem(LS_LIVE_TRIP_BUDGET); if (v) liveTripBudget = Number(v); } catch(e){}
+const usingLiveData = !!(liveItinerary || liveExpenses);
+
+const itinerary = liveItinerary ? Object.assign({}, SNAPSHOT_ITINERARY, liveItinerary) : SNAPSHOT_ITINERARY;
 let filterLeg = "All";
 let searchTerm = "";
 
@@ -507,8 +529,9 @@ function renderItinerary(){
 function renderLocationBanner(){
   const today = todayStr();
   const tripStart = itinerary[ITINERARY_LEGS[0]];
-  const totalDays = Math.max(1, SNAPSHOT_TRIP_BUDGET);
-  const plannedEnd = addDays(tripStart, SNAPSHOT_TRIP_BUDGET);
+  const tripBudgetToUse = liveTripBudget != null ? liveTripBudget : SNAPSHOT_TRIP_BUDGET;
+  const totalDays = Math.max(1, tripBudgetToUse);
+  const plannedEnd = addDays(tripStart, tripBudgetToUse);
   let elapsed = daysBetween(tripStart, today);
   elapsed = Math.max(0, Math.min(totalDays, elapsed));
   const daysLeft = Math.max(0, totalDays - elapsed - 1);
@@ -630,7 +653,7 @@ let pricesUnlocked = false;
 try { pricesUnlocked = localStorage.getItem(LS_PRICE_UNLOCK) === "1"; } catch(e){}
 function fmtMoney(usd){ return `$${usd.toFixed(2)}`; }
 function renderEntries(){
-  const expenses = SNAPSHOT_EXPENSES.filter(x => x.type !== "pretrip");
+  const expenses = (liveExpenses || SNAPSHOT_EXPENSES).filter(x => x.type !== "pretrip");
   const legsWithEntries = ALL_LEGS.filter(l => expenses.some(x => x.leg === l));
   const legFilter = document.getElementById("legFilter");
   const prevVal = legFilter.value || "All";
@@ -911,9 +934,10 @@ document.getElementById("emergencyBanner").addEventListener("click", () => {
 
 function renderVisaStrip(){
   const el = document.getElementById("visaStrip");
+  const visaData = liveVisa || SNAPSHOT_VISA;
   const countries = [{ key:"Vietnam", flag:"🇻🇳" }, { key:"Cambodia", flag:"🇰🇭" }];
   el.innerHTML = countries.map(c => {
-    const dateVal = SNAPSHOT_VISA[c.key] || "";
+    const dateVal = visaData[c.key] || "";
     let daysHtml = `<div class="vc-days">–</div>`;
     if (dateVal) {
       const days = daysBetween(todayStr(), dateVal);
@@ -978,7 +1002,7 @@ document.getElementById("cheatBanner").addEventListener("click", () => {
 });
 
 function renderJournal(){
-  const journal = SNAPSHOT_JOURNAL;
+  const journal = liveJournal || SNAPSHOT_JOURNAL;
   document.getElementById("journalSub").textContent = journal.length ? `${journal.length} ${journal.length===1?"entry":"entries"}` : "No entries yet";
   const listEl = document.getElementById("journalList");
   if (journal.length === 0) { listEl.innerHTML = `<div class="empty">Nothing logged yet.</div>`; return; }
@@ -986,8 +1010,9 @@ function renderJournal(){
   listEl.innerHTML = sorted.map(j => `<div class="journal-entry"><div class="j-date">${escapeHtml(j.date)}</div><div class="j-text">${escapeHtml(j.text)}</div></div>`).join("");
 }
 function renderWrapped(){
-  const onGround = SNAPSHOT_EXPENSES.filter(x => x.type !== "pretrip");
-  const pretrip = SNAPSHOT_EXPENSES.filter(x => x.type === "pretrip");
+  const allExpenses = liveExpenses || SNAPSHOT_EXPENSES;
+  const onGround = allExpenses.filter(x => x.type !== "pretrip");
+  const pretrip = allExpenses.filter(x => x.type === "pretrip");
   const gridEl = document.getElementById("wrappedGrid");
   if (onGround.length === 0 && pretrip.length === 0) { gridEl.innerHTML = `<div class="empty">Nothing logged yet.</div>`; return; }
   const total = onGround.reduce((s,x)=>s+x.amount,0);
@@ -1045,6 +1070,12 @@ window.addEventListener("scroll", () => {
 backToTopBtn.addEventListener("click", () => window.scrollTo({ top:0, behavior:"smooth" }));
 
 function refreshAll(){
+  const noteEl = document.getElementById("snapshotNote");
+  if (noteEl) {
+    noteEl.textContent = usingLiveData
+      ? "🟢 Viewing live — this browser has Brandon's real Ledger data (same device/site). Friends on their own phones will see the baked-in snapshot instead."
+      : "📸 This is a snapshot Brandon shared, not a live feed. Dates and entries are current as of when he last updated this link. Check-ins and weather below are live.";
+  }
   renderLocationBanner();
   renderItinerary();
   renderEntries();
