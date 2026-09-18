@@ -348,6 +348,12 @@
   .jp-maplink { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--teal); text-decoration: underline; }
   .jp-copy { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; border: 1px solid var(--border); background: var(--card); border-radius: 999px; padding: 3px 9px; cursor: pointer; color: var(--muted); }
   .jp-copy.copied { color: var(--teal); border-color: var(--teal); }
+  .jp-lodging { font-size: 12.5px; background: var(--current-bg); border: 1px solid var(--gold); border-radius: 4px; padding: 8px 10px; margin-bottom: 8px; }
+  .jp-lodging-status.ok { color: var(--teal); font-weight: 600; }
+  .jp-lodging-status.pending { color: var(--amber); font-weight: 600; }
+  .jp-alert { font-family: 'IBM Plex Mono', monospace; font-size: 11px; background: var(--backup-bg); border: 1px solid var(--backup-border); color: var(--backup-text); border-radius: 4px; padding: 8px 10px; margin-bottom: 10px; line-height: 1.5; }
+  .back-to-top { position: fixed; right: 16px; bottom: 20px; width: 44px; height: 44px; border-radius: 50%; background: var(--teal); color: var(--bg); border: none; font-size: 18px; cursor: pointer; box-shadow: var(--shadow-md); opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity .2s, transform .2s, visibility .2s; z-index: 35; }
+  .back-to-top.show { opacity: 1; visibility: visible; transform: translateY(0); }
 </style>
 </head>
 <body>
@@ -373,6 +379,7 @@
     <a class="qn-pill" href="#pricesBanner" data-target="pricesBanner:pricesCard">Prices</a>
     <a class="qn-pill" href="#cheatBanner" data-target="cheatBanner:cheatCard">Cheat sheet</a>
     <a class="qn-pill" href="#journalBanner" data-target="journalBanner:journalCard">Journal</a>
+    <a class="qn-pill" href="#backupDataBanner" data-target="backupDataBanner:backupDataCard">Backup</a>
     <a class="qn-pill" href="#emergencyBanner" data-target="emergencyBanner:emergencyCard">Emergency</a>
   </nav>
 <div class="container">
@@ -644,6 +651,21 @@
     <div id="countryBudgetBars"></div>
   </div>
 
+  <div class="location-banner util-banner" id="backupDataBanner">
+    <div class="loc-main">
+      <span class="loc-label">Backup & restore</span>
+      <span class="loc-sub">Save everything to a file, or restore it</span>
+    </div>
+    <span class="loc-caret" id="backupDataCaret">›</span>
+  </div>
+  <div class="ledger-card" id="backupDataCard" style="display:none;">
+    <div class="ref-note">CSV export above only covers expenses. This saves everything — itinerary dates, packing list, journal, visa dates, Japan visited-stops, budgets — in one file, in case you switch devices or clear your browser.</div>
+    <button type="button" class="export-btn" id="fullBackupExportBtn" style="width:100%; margin-bottom:8px;">⬇ Export full backup (.json)</button>
+    <label class="export-btn" for="fullBackupImportInput" style="display:block; text-align:center; width:100%; box-sizing:border-box; cursor:pointer;">⬆ Import backup (.json)</label>
+    <input type="file" id="fullBackupImportInput" accept="application/json" style="display:none;" />
+    <div id="backupStatusLine" style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--muted2); margin-top:8px;"></div>
+  </div>
+
   <div class="location-banner util-banner" id="emergencyBanner">
     <div class="loc-main">
       <span class="loc-label">Emergency numbers</span>
@@ -695,6 +717,7 @@
   <div class="save-note">Brandon Nguyen Vietnam trip expense 2026</div>
 
 </div></div>
+<button type="button" class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
 
 <script>
 const LS_THEME = "vn-kh-theme-v1";
@@ -1975,8 +1998,15 @@ const JAPAN_CITY_LEG = {
   "Hiroshima": "Hiroshima", "Tokyo (return)": "Tokyo (return, fly out)",
 };
 const JAPAN_CITY_ORDER = ["Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return)"];
+function jpLodgingLabel(l){
+  if (!l) return "";
+  if (l.usd != null) return fmtMoney(l.usd);
+  if (l.jpy != null) return fmtMoneyFromJPY(l.jpy);
+  return "";
+}
 const JAPAN_GUIDE = {
   "Tokyo": {
+    lodging: { name: "Cogo Ryōgoku", nights: 2, jpy: 8000, status: "booked" },
     intro: "Just two nights this stint — Akihabara, teamLab, and Ueno live in the longer Tokyo return leg instead. Ryōgoku sits on the JR Sōbu and Toei Ōedo lines, so almost everything below is one train or one easy transfer.",
     weather: "Late-summer heat: 26–31°C, humid, outside chance of a passing typhoon. Light clothes, compact umbrella.",
     stops: [
@@ -1989,7 +2019,9 @@ const JAPAN_GUIDE = {
     ],
   },
   "Hakone": {
-    intro: "A mountain onsen town two hours from Tokyo. Two nights, one full loop day. This window overlaps Silver Week (19–23 Sep), Japan's first full 5-day holiday since 2015 — expect bigger crowds and prices than a normal weekend.",
+    lodging: { name: "Guesthouse, 852-5 Yumoto", nights: 2, jpy: 14400, status: "booked" },
+    alert: "Silver Week (19–23 Sep) — Japan's first full 5-day national holiday since 2015. Expect bigger crowds and higher prices than a normal weekend.",
+    intro: "A mountain onsen town two hours from Tokyo. Two nights, one full loop day.",
     weather: "Cooler in the hills: 18–24°C, mist and drizzle common. Bring a light jacket.",
     stops: [
       { id:"hk-getting", name:"Getting there: Romancecar", jpyLow:2500, jpyHigh:3500, route:"Ōedo Line to Shinjuku (~25 min, ¥280), then Odakyū Romancecar, reserved seat, ~85 min. Book the seat now, then buy the Hakone Free Pass same-day at Shinjuku's Odakyu Sightseeing Service Center.", desc:"Sit on the C or D side for Mount Fuji views. Romancecar surcharge is separate from the Free Pass — buy both.", map:null },
@@ -2000,6 +2032,8 @@ const JAPAN_GUIDE = {
     ],
   },
   "Kyoto": {
+    lodging: { name: "Ryokan Hostel Gion", nights: 4, usd: 141, status: "pick — not yet booked" },
+    alert: "Sep 21–23 is still inside Silver Week. The Nozomi Shinkansen runs fully reserved-only Sep 18–23 — no unreserved cars. Book that seat ahead.",
     intro: "The longest single stop, spread across the edges of the city — group sights by direction: east one day, west another, south another.",
     weather: "Warm and humid, 25–30°C, easing off by evening. Hat and sunscreen for temple-hopping.",
     stops: [
@@ -2012,6 +2046,7 @@ const JAPAN_GUIDE = {
     ],
   },
   "Osaka": {
+    lodging: { name: "KOREGA! Hostel Namba", nights: 3, jpy: 10500, status: "pick — not yet booked" },
     intro: "Loud, unpretentious, built around eating — the palate cleanser after temple days.",
     weather: "Humid, 25–29°C. Evenings by the canal cool down enough for a light layer.",
     stops: [
@@ -2022,6 +2057,7 @@ const JAPAN_GUIDE = {
     ],
   },
   "Hiroshima": {
+    lodging: { name: "WeBase Hiroshima", nights: 3, jpy: 11400, status: "pick — not yet booked" },
     intro: "Two full days so you don't have to choose between the city and Miyajima.",
     weather: "Milder, breezier by the coast: 22–27°C. Light windbreaker for the ferry crossing.",
     stops: [
@@ -2032,6 +2068,7 @@ const JAPAN_GUIDE = {
     ],
   },
   "Tokyo (return)": {
+    lodging: { name: "Cogo Ryōgoku", nights: 5, jpy: 20000, status: "booked" },
     intro: "Five nights, four full days — Akihabara/teamLab and Ueno moved here from the first Tokyo stint. The last day (Oct 6) is a travel-only day to Narita.",
     weather: "Autumn shows up: 19–25°C, cooler mornings and evenings.",
     stops: [
@@ -2101,6 +2138,8 @@ function renderJapanGuide(){
       <span class="jp-dates">${dateVal ? new Date(dateVal + "T00:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"}) : ""}</span>
       <button type="button" class="jp-expand-btn" id="japanExpandBtn">${anyClosed ? "Expand all" : "Collapse all"}</button>
     </div>
+    ${cityData.lodging ? `<div class="jp-lodging"><b>🏨 ${escapeHtml(cityData.lodging.name)}</b> · ${cityData.lodging.nights} nights · ${jpLodgingLabel(cityData.lodging)} · <span class="jp-lodging-status ${cityData.lodging.status.includes("booked") ? "ok" : "pending"}">${escapeHtml(cityData.lodging.status)}</span></div>` : ""}
+    ${cityData.alert ? `<div class="jp-alert">⚠ ${escapeHtml(cityData.alert)}</div>` : ""}
     <div class="jp-intro">${escapeHtml(cityData.intro)}</div>
     <div class="jp-weather">${escapeHtml(cityData.weather)}</div>
     ${stops.map(s => {
@@ -2249,12 +2288,15 @@ document.getElementById("journalBanner").addEventListener("click", () => {
 // ---- Trip wrapped summary ----
 function renderWrapped(){
   const onGround = expenses.filter(x => x.type !== "pretrip");
+  const pretrip = expenses.filter(x => x.type === "pretrip");
   const gridEl = document.getElementById("wrappedGrid");
-  if (onGround.length === 0) {
+  if (onGround.length === 0 && pretrip.length === 0) {
     gridEl.innerHTML = `<div class="empty">Log a few expenses first, stats show up here once there's data.</div>`;
     return;
   }
   const total = onGround.reduce((s,x)=>s+x.amount,0);
+  const pretripTotal = pretrip.reduce((s,x)=>s+x.amount,0);
+  const grandTotal = total + pretripTotal;
   const daysWithSpend = new Set(onGround.map(x => x.date)).size;
   const avgPerDay = total / Math.max(1, daysWithSpend);
   const byCat = {};
@@ -2267,8 +2309,9 @@ function renderWrapped(){
   const catLabel = topCat ? (CATEGORIES.find(c => c.key === topCat[0]) || {}).label || topCat[0] : "–";
 
   const stats = [
-    { label: "Total spent", val: fmtMoney(total), sub: `${onGround.length} entries` },
-    { label: "Avg / day", val: fmtMoney(avgPerDay), sub: `across ${daysWithSpend} days` },
+    { label: "Trip grand total", val: fmtMoney(grandTotal), sub: `${fmtMoney(pretripTotal)} pre-trip + ${fmtMoney(total)} on the ground` },
+    { label: "On-the-ground spent", val: fmtMoney(total), sub: `${onGround.length} entries` },
+    { label: "Avg / day (on ground)", val: fmtMoney(avgPerDay), sub: `across ${daysWithSpend} days` },
     { label: "Top category", val: catLabel, sub: topCat ? fmtMoney(topCat[1]) : "" },
     { label: "Priciest day", val: priciestDay ? fmtMoney(priciestDay[1]) : "–", sub: priciestDay ? priciestDay[0] : "" },
   ];
@@ -2761,6 +2804,71 @@ function render(){
   renderEntriesList();
   renderOwedSummary();
 }
+
+// ---- Full backup / restore, everything localStorage this app uses ----
+const BACKUP_KEYS = [
+  LS_EXPENSES, LS_BUDGET, LS_COUNTRY_BUDGETS, LS_PACKING, LS_PACKING_CUSTOM,
+  LS_ITINERARY, LS_TRIP_BUDGET, LS_VISA, LS_JOURNAL, LS_BORDER_CHECKED,
+  LS_JAPAN_CHECKED, LS_CURRENCY, LS_TEMPUNIT, LS_THEME, LS_TEXTSIZE,
+];
+document.getElementById("backupDataBanner").addEventListener("click", () => {
+  const panel = document.getElementById("backupDataCard");
+  const caret = document.getElementById("backupDataCaret");
+  const isOpen = panel.style.display !== "none";
+  panel.style.display = isOpen ? "none" : "block";
+  caret.classList.toggle("open", !isOpen);
+});
+document.getElementById("fullBackupExportBtn").addEventListener("click", () => {
+  const dump = {};
+  BACKUP_KEYS.forEach(k => { try { const v = localStorage.getItem(k); if (v !== null) dump[k] = v; } catch(e){} });
+  const blob = new Blob([JSON.stringify(dump, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `the-ledger-backup-${todayStr()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  document.getElementById("backupStatusLine").textContent = "Saved just now.";
+});
+document.getElementById("fullBackupImportInput").addEventListener("change", (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById("backupStatusLine");
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      let restored = 0;
+      BACKUP_KEYS.forEach(k => {
+        if (Object.prototype.hasOwnProperty.call(data, k)) {
+          localStorage.setItem(k, data[k]);
+          restored++;
+        }
+      });
+      statusEl.textContent = `Restored ${restored} item(s). Reloading...`;
+      setTimeout(() => location.reload(), 800);
+    } catch (err) {
+      statusEl.textContent = "Couldn't read that file, is it a Ledger backup .json?";
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+});
+
+// ---- Back to top ----
+const backToTopBtn = document.getElementById("backToTop");
+let backToTopTicking = false;
+window.addEventListener("scroll", () => {
+  if (backToTopTicking) return;
+  backToTopTicking = true;
+  requestAnimationFrame(() => {
+    backToTopBtn.classList.toggle("show", window.scrollY > 500);
+    backToTopTicking = false;
+  });
+}, { passive: true });
+backToTopBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
 legFilter.addEventListener("change", () => { filterLeg = legFilter.value; render(); });
 document.getElementById("entrySearch").addEventListener("input", (e) => { searchTerm = e.target.value; render(); });
