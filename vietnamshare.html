@@ -10,51 +10,25 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2322201B'/%3E%3Ctext x='50' y='68' font-size='58' text-anchor='middle' font-family='Georgia,serif' fill='%23F4EFE3'%3E%E2%82%AB%3C/text%3E%3C/svg%3E">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
-
   :root {
-    --bg: #F5EEDD;
-    --bg-wash: #EFE6D0;
-    --card: #FFFCF5;
-    --ink: #1B1810;
-    --muted: #6B6555;
-    --muted2: #8C8578;
-    --faint: #B0A88F;
-    --border: #D8CFB8;
-    --border-faint: #EAE3D2;
-    --teal: #123C33;
-    --teal-dark: #0C2B24;
-    --red: #96311F;
-    --amber: #A8701C;
-    --gold: #B7902E;
-    --current-bg: #F0EAD8;
-    --shadow-sm: 0 1px 3px rgba(27,24,16,0.07);
-    --shadow-md: 0 3px 14px rgba(27,24,16,0.09);
+    --bg: #F5EEDD; --bg-wash: #EFE6D0; --card: #FFFCF5; --ink: #1B1810;
+    --muted: #6B6555; --muted2: #8C8578; --faint: #B0A88F; --border: #D8CFB8; --border-faint: #EAE3D2;
+    --teal: #123C33; --teal-dark: #0C2B24; --red: #96311F; --amber: #A8701C; --gold: #B7902E;
+    --current-bg: #F0EAD8; --backup-bg:#EFE1D8; --backup-border:#D9BFA8; --backup-text:#6B4530;
+    --shadow-sm: 0 1px 3px rgba(27,24,16,0.07); --shadow-md: 0 3px 14px rgba(27,24,16,0.09);
   }
   .dark {
-    --bg: #15130E;
-    --bg-wash: #1B1811;
-    --card: #201C15;
-    --ink: #EFE8D8;
-    --muted: #A79E8A;
-    --muted2: #8C8271;
-    --faint: #5C5646;
-    --border: #3A3527;
-    --border-faint: #2A2619;
-    --teal: #3F8A75;
-    --teal-dark: #2E6B5A;
-    --red: #D97561;
-    --amber: #D6A85C;
-    --gold: #D6B45E;
-    --current-bg: #2C2718;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.35);
-    --shadow-md: 0 3px 16px rgba(0,0,0,0.4);
+    --bg: #15130E; --bg-wash: #1B1811; --card: #201C15; --ink: #EFE8D8;
+    --muted: #A79E8A; --muted2: #8C8271; --faint: #5C5646; --border: #3A3527; --border-faint: #2A2619;
+    --teal: #3F8A75; --teal-dark: #2E6B5A; --red: #D97561; --amber: #D6A85C; --gold: #D6B45E;
+    --current-bg: #2C2718; --backup-bg:#302921; --backup-border:#4A3C2E; --backup-text:#E0B896;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.35); --shadow-md: 0 3px 16px rgba(0,0,0,0.4);
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body { margin: 0; }
   .wrap { background: var(--bg); min-height: 100vh; font-family: 'Inter', sans-serif; color: var(--ink); padding: 0 0 60px; transition: background .2s, color .2s; }
   .wrap.large-text { zoom: 1.18; }
   .container { max-width: 640px; margin: 0 auto; padding: 0 16px; }
-
   .masthead-band { background: linear-gradient(180deg, var(--bg-wash) 0%, var(--bg) 100%); padding: 28px 16px 0; }
   .masthead { display: flex; justify-content: space-between; align-items: flex-end; max-width: 640px; margin: 0 auto; padding-bottom: 18px; }
   .masthead .kicker { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 4px; display: block; }
@@ -64,12 +38,14 @@
   .stub-tear { position: relative; max-width: 640px; margin: 0 auto; height: 14px; overflow: hidden; }
   .stub-tear::before { content: ""; position: absolute; left: -16px; right: -16px; top: 0; height: 14px; background-image: radial-gradient(circle at 10px 0, transparent 7px, var(--bg) 7.5px); background-size: 20px 14px; background-repeat: repeat-x; }
   .stub-tear::after { content: ""; position: absolute; left: 16px; right: 16px; top: 6px; border-top: 1.5px dashed var(--border); }
-  .masthead-band + .stub-tear + .container { padding-top: 22px; }
   .subline { display:flex; justify-content: space-between; align-items:center; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--muted); margin: 8px 0 14px; flex-wrap: wrap; gap: 6px; }
-  .subline .site-link { color: var(--muted); text-decoration: none; border-bottom: 1px dotted var(--faint); }
   .read-badge { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted2); background: var(--border-faint); padding: 3px 8px; border-radius: 999px; }
-  .theme-toggle { background: none; border: 1px solid var(--faint); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 4px 9px; border-radius: 999px; cursor: pointer; transition: background .15s; }
+  .theme-toggle { background: none; border: 1px solid var(--faint); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; padding: 4px 9px; border-radius: 999px; cursor: pointer; }
   .theme-toggle:active { background: var(--border-faint); }
+  .quicknav { position: sticky; top: 0; z-index: 30; background: var(--bg); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; padding: 8px 16px; -webkit-overflow-scrolling: touch; }
+  .quicknav::-webkit-scrollbar { display: none; }
+  .qn-pill { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 6px 11px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--ink); margin-right: 6px; cursor: pointer; text-decoration: none; }
+  .qn-pill:active { background: var(--border-faint); }
 
   .location-banner { display:flex; justify-content:space-between; align-items:center; background:#1B1810; color:#F5EEDD; border-radius:8px; padding:14px 16px; margin-bottom:10px; box-shadow: var(--shadow-md); }
   .util-banner { background: var(--card); color: var(--ink); border: 1px solid var(--border); cursor: pointer; box-shadow: var(--shadow-sm); }
@@ -85,7 +61,6 @@
   .loc-main { display:flex; flex-direction:column; gap:2px; }
   .loc-label { font-family:'Fraunces', serif; font-size:16px; font-weight:600; }
   .loc-sub { font-family:'IBM Plex Mono', monospace; font-size:11px; color:#B0A88F; }
-
   .ledger-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 18px 16px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
 
   .checkin-card { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--red); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
@@ -112,10 +87,6 @@
   .itin-row .itin-name { font-size:13.5px; font-weight:500; }
   .itin-row .itin-weather { font-size: 12px; font-family: 'IBM Plex Mono', monospace; color: var(--muted); text-align: center; white-space: nowrap; }
   .itin-row .itin-date { font-family:'IBM Plex Mono', monospace; font-size:11.5px; color: var(--muted); text-align: right; }
-  .itin-row.tentative { opacity: 0.68; }
-  .itin-row.tentative .itin-dot { background: transparent; border: 1px dashed var(--faint); }
-  .itin-row.tentative .itin-name::after { content: " (tentative)"; font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--amber); font-weight: 400; }
-  .itin-section-label { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--amber); margin: 12px 0 4px; padding-top: 8px; border-top: 1px dashed var(--border); }
 
   .list-header { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 10px; gap: 8px; flex-wrap: wrap; }
   .list-header h2 { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; margin: 0; }
@@ -166,6 +137,30 @@
   .wrapped-stat .ws-sub { font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--muted2); margin-top:2px; }
   .split-badge { font-family:'IBM Plex Mono', monospace; font-size:9.5px; color:var(--teal); border:1px solid var(--teal); border-radius:999px; padding:1px 6px; margin-left:6px; }
   @media (max-width: 380px) { .wrapped-grid { grid-template-columns: 1fr; } }
+
+  /* Japan day-by-day (read-only) */
+  .jp-intro { font-size: 12.5px; color: var(--muted); margin-bottom: 8px; }
+  .jp-weather { font-family: 'IBM Plex Mono', monospace; font-size: 11px; background: #EFE9D8; border: 1px solid #DDD4BF; border-radius: 4px; padding: 7px 9px; margin-bottom: 10px; color: var(--ink); }
+  .dark .jp-weather { background:#292319; border-color:#3A3527; }
+  .jp-city-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
+  .jp-dates { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); }
+  .jp-lodging { font-size: 12.5px; background: var(--current-bg); border: 1px solid var(--gold); border-radius: 4px; padding: 8px 10px; margin-bottom: 8px; }
+  .jp-lodging-status.ok { color: var(--teal); font-weight: 600; }
+  .jp-lodging-status.pending { color: var(--amber); font-weight: 600; }
+  .jp-alert { font-family: 'IBM Plex Mono', monospace; font-size: 11px; background: var(--backup-bg); border: 1px solid var(--backup-border); color: var(--backup-text); border-radius: 4px; padding: 8px 10px; margin-bottom: 10px; line-height: 1.5; }
+  .jp-stop { border: 1px solid var(--border); border-radius: 6px; margin-bottom: 8px; background: var(--bg); }
+  .jp-stop summary { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 9px 10px; cursor: pointer; list-style: none; }
+  .jp-stop summary::-webkit-details-marker { display: none; }
+  .jp-name { font-size: 13.5px; font-weight: 500; }
+  .jp-cost { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+  .jp-stop-body { padding: 0 10px 10px; font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--border-faint); }
+  .jp-stop-body p { margin: 8px 0 0; line-height: 1.5; }
+  .jp-route { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; background: var(--border-faint); padding: 6px 8px; border-radius: 4px; margin-top: 8px; color: var(--ink); line-height: 1.5; }
+  .jp-maplink { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--teal); text-decoration: underline; margin-top: 8px; display: inline-block; }
+
+  .back-to-top { position: fixed; right: 16px; bottom: 20px; width: 44px; height: 44px; border-radius: 50%; background: var(--teal); color: var(--bg); border: none; font-size: 18px; cursor: pointer; box-shadow: var(--shadow-md); opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity .2s, transform .2s, visibility .2s; z-index: 35; }
+  .back-to-top.show { opacity: 1; visibility: visible; transform: translateY(0); }
+  .snapshot-note { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--muted2); background: var(--border-faint); border-radius: 4px; padding: 8px 10px; margin-bottom: 14px; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -182,12 +177,25 @@
     </div>
   </div>
   <div class="stub-tear"></div>
+  <nav class="quicknav" id="quicknav" aria-label="Quick navigation">
+    <a class="qn-pill" href="#checkinCard" data-target="checkinCard">Check-in</a>
+    <a class="qn-pill" href="#itinCard" data-target="itinCard">Itinerary</a>
+    <a class="qn-pill" href="#japanBanner" data-target="japanBanner:japanCard">🇯🇵 Japan</a>
+    <a class="qn-pill" href="#entriesHeader" data-target="entriesHeader">Ledger</a>
+    <a class="qn-pill" href="#thingsBanner" data-target="thingsBanner:thingsCard">Things to do</a>
+    <a class="qn-pill" href="#cheatBanner" data-target="cheatBanner:cheatCard">Cheat sheet</a>
+    <a class="qn-pill" href="#journalBanner" data-target="journalBanner:journalCard">Journal</a>
+    <a class="qn-pill" href="#wrappedBanner" data-target="wrappedBanner:wrappedCard">Wrapped</a>
+    <a class="qn-pill" href="#emergencyBanner" data-target="emergencyBanner:emergencyCard">Emergency</a>
+  </nav>
 <div class="container">
 
   <div class="subline">
     <span class="read-badge">Read-only</span>
     <button class="theme-toggle" id="themeToggle">Dark mode</button>
   </div>
+
+  <div class="snapshot-note">📸 This is a snapshot Brandon shared, not a live feed. Dates and entries are current as of when he last updated this link. Check-ins and weather below <i>are</i> live.</div>
 
   <div class="location-banner" id="locationBanner">
     <div class="loc-main">
@@ -211,7 +219,7 @@
     <div class="checkin-history" id="checkinHistory" style="display:none;"></div>
   </div>
 
-  <div class="ledger-card">
+  <div class="ledger-card" id="itinCard">
     <div class="itin-header-row">
       <div class="presets-title" style="margin-bottom:0;">Itinerary</div>
       <button type="button" class="temp-toggle" id="tempToggle">&deg;F</button>
@@ -226,7 +234,20 @@
     <div id="itineraryList"></div>
   </div>
 
-  <div class="list-header">
+  <div class="location-banner util-banner" id="japanBanner">
+    <div class="loc-main">
+      <span class="loc-label">🇯🇵 Japan day-by-day</span>
+      <span class="loc-sub" id="japanSub">Routes, costs, lodging per stop</span>
+    </div>
+    <span class="loc-caret" id="japanCaret">&rsaquo;</span>
+  </div>
+  <div class="ledger-card" id="japanCard" style="display:none;">
+    <div class="search-row"><input type="text" id="japanSearch" placeholder="🔍 Filter stops..." /></div>
+    <div class="cheat-tabs" id="japanTabs"></div>
+    <div id="japanCityContent"></div>
+  </div>
+
+  <div class="list-header" id="entriesHeader">
     <h2>Ledger entries</h2>
     <select class="leg-filter" id="legFilter"><option value="All">All legs</option></select>
   </div>
@@ -309,24 +330,49 @@
     <div class="ref-group-label">Local emergency lines, Cambodia</div>
     <a class="ref-row" href="tel:117"><span>Police</span><span>117</span></a>
     <a class="ref-row" href="tel:119"><span>Ambulance</span><span>119</span></a>
-    <div class="ref-group-label">Local emergency lines, Laos (if extension happens)</div>
-    <a class="ref-row" href="tel:191"><span>Police</span><span>191</span></a>
-    <a class="ref-row" href="tel:195"><span>Ambulance</span><span>195</span></a>
+    <div class="ref-group-label">Local emergency lines, Japan</div>
+    <a class="ref-row" href="tel:110"><span>Police</span><span>110</span></a>
+    <a class="ref-row" href="tel:119"><span>Fire / Ambulance</span><span>119</span></a>
   </div>
 
-  <div class="save-note">Brandon Nguyen Vietnam trip expense 2026 &middot; view only, amounts and insurance hidden</div>
+  <div class="save-note">Brandon Nguyen Vietnam trip expense 2026 &middot; view only, amounts hidden by default</div>
 
 </div></div>
+<button type="button" class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
 
 <script>
-// ---- shared keys, must match the main tracker exactly so this reads the same data ----
-const LS_EXPENSES = "vn-kh-expenses-v1";
-const LS_ITINERARY = "vn-kh-itinerary-v1";
-const LS_TRIP_END = "vn-kh-trip-end-v1";
-const LS_THEME = "vn-kh-theme-v1";
-const LS_TEXTSIZE = "vn-kh-textsize-v1";
-const LS_TEMPUNIT = "vn-kh-tempunit-v1";
-const CHECKIN_GIST_ID = "67e1390e31c93e97aaec5cb9fde54019";
+// ==================================================================
+// STATIC SNAPSHOT — baked in, not read from shared localStorage.
+// A share link can't see the browser storage on Brandon's own device
+// or a friend's device, so this data is fixed as of whenever Brandon
+// last asked for a refresh. Only check-in (GitHub Gist) and weather
+// (a public API) are genuinely live below.
+// ==================================================================
+const SNAPSHOT_ITINERARY = {
+  "Taipei": "2026-08-08",
+  "Hanoi": "2026-08-09", "Ha Giang": "2026-08-11",
+  "Ninh Binh": "2026-08-15", "Phong Nha": "2026-08-18", "Hoi An": "2026-08-21",
+  "Da Nang": "2026-08-23", "Ho Chi Minh City": "2026-08-28", "Phnom Penh": "2026-08-30",
+  "Koh Rong": "2026-09-01", "Siem Reap": "2026-09-02",
+  "Battambang": "2026-09-05", "Phnom Penh (return)": "2026-09-07",
+  "Tokyo": "2026-09-17", "Hakone": "2026-09-19", "Kyoto": "2026-09-21",
+  "Osaka": "2026-09-25", "Hiroshima": "2026-09-28", "Tokyo (return, fly out)": "2026-10-01",
+  "Los Angeles": "2026-10-06",
+};
+const SNAPSHOT_EXPENSES = [
+  { leg:"Pre-trip", type:"pretrip", category:"Flight", note:"One-way ticket to Hanoi (via Taipei)", amount:580, date:"2026-07-01" },
+  { leg:"Pre-trip", type:"pretrip", category:"Flight", note:"One-way ticket to Los Angeles", amount:600, date:"2026-07-01" },
+  { leg:"Pre-trip", type:"pretrip", category:"Insurance", note:"Travel insurance, 2 months", amount:95, date:"2026-07-01" },
+  { leg:"Hanoi", type:"onground", category:"Visa/Fees", note:"Vietnam visa", amount:75, date:"2026-08-09" },
+  { leg:"Hanoi", type:"onground", category:"Transport", note:"Ibis bus", amount:37, date:"2026-08-09" },
+  { leg:"Hanoi", type:"onground", category:"Stay", note:"Backpackers hostel, rooftop bar", amount:20.53, date:"2026-08-09" },
+];
+// NOTE FOR BRANDON: this list is only as complete as what you'd logged
+// when you last asked for a refresh — ask again any time to bring it
+// current with the real Ledger.
+const SNAPSHOT_VISA = { Vietnam: "", Cambodia: "" };
+const SNAPSHOT_JOURNAL = [];
+const SNAPSHOT_TRIP_BUDGET = 60;
 
 const CATEGORIES = [
   { key:"Stay", label:"Stay", mark:"\u2318" },
@@ -337,22 +383,13 @@ const CATEGORIES = [
   { key:"Misc", label:"Misc", mark:"\u25CB" },
 ];
 const CAT_COLOR = { Stay:"#8A6D3B", Food:"#A63D2F", Transport:"#1F4E45", Tours:"#5B7C8D", "Visa/Fees":"#6B4A82", Misc:"#8C8578" };
-
 const ITINERARY_LEGS = ["Taipei","Hanoi","Ha Giang","Ninh Binh","Phong Nha","Hoi An","Da Nang","Ho Chi Minh City","Phnom Penh","Koh Rong","Siem Reap","Battambang","Phnom Penh (return)","Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return, fly out)","Los Angeles"];
 const ALL_LEGS = ITINERARY_LEGS;
+const CHECKIN_GIST_ID = "67e1390e31c93e97aaec5cb9fde54019";
+const LS_TEMPUNIT = "vn-kh-share-tempunit-v1";
+const LS_PRICE_UNLOCK = "vn-kh-share-price-unlock-v1";
+const LS_SHARE_THEME = "vn-kh-share-theme-v1";
 
-const DEFAULT_ITINERARY = {
-  "Taipei": "2026-08-08",
-  "Hanoi": "2026-08-09", "Ha Giang": "2026-08-11",
-  "Ninh Binh": "2026-08-15", "Phong Nha": "2026-08-18", "Hoi An": "2026-08-21",
-  "Da Nang": "2026-08-23", "Ho Chi Minh City": "2026-08-28", "Phnom Penh": "2026-08-30",
-  "Koh Rong": "2026-09-01", "Siem Reap": "2026-09-02",
-  "Battambang": "2026-09-05", "Phnom Penh (return)": "2026-09-07",
-  "Tokyo": "2026-09-16", "Hakone": "2026-09-20", "Kyoto": "2026-09-22",
-  "Osaka": "2026-09-26", "Hiroshima": "2026-09-29", "Tokyo (return, fly out)": "2026-10-01",
-  "Los Angeles": "2026-10-01",
-};
-const DEFAULT_TRIP_END = "2026-09-16";
 const LEG_COORDS = {
   "Taipei": [25.0330, 121.5654],
   "Hanoi": [21.0285, 105.8542], "Ha Giang": [22.8025, 104.9784],
@@ -364,7 +401,6 @@ const LEG_COORDS = {
   "Osaka": [34.6937, 135.5023], "Hiroshima": [34.3853, 132.4553], "Tokyo (return, fly out)": [35.6762, 139.6503],
   "Los Angeles": [34.0522, -118.2437],
 };
-// Flags are plain unicode text (no image requests), so this stays free.
 const LEG_FLAG = {
   "Taipei": "🇹🇼",
   "Hanoi": "🇻🇳", "Ha Giang": "🇻🇳",
@@ -381,8 +417,6 @@ function escapeHtml(str){
   return String(str).replace(/[&<>"']/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[ch]));
 }
 
-// ---- theme + text size (own preference, separate from main tracker's) ----
-const LS_SHARE_THEME = "vn-kh-share-theme-v1";
 function loadTheme(){
   try { const v = localStorage.getItem(LS_SHARE_THEME); if (v) return v; } catch(e){}
   return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
@@ -399,47 +433,16 @@ document.getElementById("themeToggle").addEventListener("click", () => {
   applyTheme(theme);
 });
 
-// ---- read-only data loaders, same keys as main tracker but never write except our own display prefs ----
-function loadExpenses(){
-  try { const raw = localStorage.getItem(LS_EXPENSES); if (raw) return JSON.parse(raw); } catch(e){}
-  return [];
-}
-function loadItinerary(){
-  try {
-    const raw = localStorage.getItem(LS_ITINERARY);
-    if (raw) return Object.assign({}, DEFAULT_ITINERARY, JSON.parse(raw));
-  } catch(e){}
-  return { ...DEFAULT_ITINERARY };
-}
-function loadTripEnd(){
-  try { const v = localStorage.getItem(LS_TRIP_END); if (v) return v; } catch(e){}
-  return DEFAULT_TRIP_END;
-}
-const LS_VISA = "vn-kh-visa-v1";
-const LS_JOURNAL = "vn-kh-journal-v1";
-function loadVisa(){
-  try { const raw = localStorage.getItem(LS_VISA); if (raw) return JSON.parse(raw); } catch(e){}
-  return { Vietnam: "", Cambodia: "" };
-}
-function loadJournal(){
-  try { const raw = localStorage.getItem(LS_JOURNAL); if (raw) return JSON.parse(raw); } catch(e){}
-  return [];
-}
-
-let itinerary = loadItinerary();
-let tripEnd = loadTripEnd();
+const itinerary = SNAPSHOT_ITINERARY;
 let filterLeg = "All";
 let searchTerm = "";
 
 function getCurrentLeg(today){
   let best = null;
-  ITINERARY_LEGS.forEach(l => {
-    if (itinerary[l] <= today && (!best || itinerary[l] > itinerary[best])) best = l;
-  });
+  ITINERARY_LEGS.forEach(l => { if (itinerary[l] <= today && (!best || itinerary[l] > itinerary[best])) best = l; });
   return best;
 }
 
-// ---- temperature unit ----
 let tempUnit = "F";
 try { tempUnit = localStorage.getItem(LS_TEMPUNIT) || "F"; } catch(e){}
 function fmtTemp(celsius){
@@ -455,27 +458,20 @@ const WEATHER_ICON_RULES = [
   { icon: "\uD83C\uDF26\uFE0F", test: code => code >= 80 && code <= 82 },
   { icon: "\u26C8\uFE0F", test: code => code >= 95 },
 ];
-function weatherIcon(code){
-  const match = WEATHER_ICON_RULES.find(rule => rule.test(code));
-  return match ? match.icon : "\uD83C\uDF24\uFE0F";
-}
-let weatherCache = {};
-let weatherCacheTime = 0;
+function weatherIcon(code){ const m = WEATHER_ICON_RULES.find(r => r.test(code)); return m ? m.icon : "\uD83C\uDF24\uFE0F"; }
+let weatherCache = {}, weatherCacheTime = 0;
 async function fetchWeatherForLegs(){
   const now = Date.now();
-  if (now - weatherCacheTime < 30 * 60 * 1000 && Object.keys(weatherCache).length) return weatherCache;
-  const entries = Object.entries(LEG_COORDS);
-  const results = await Promise.all(entries.map(async ([leg, [lat, lon]]) => {
+  if (now - weatherCacheTime < 30*60*1000 && Object.keys(weatherCache).length) return weatherCache;
+  const results = await Promise.all(Object.entries(LEG_COORDS).map(async ([leg,[lat,lon]]) => {
     try {
       const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
       const data = await res.json();
       return [leg, data.current_weather];
-    } catch(e) { return [leg, null]; }
+    } catch(e){ return [leg, null]; }
   }));
-  const map = {};
-  results.forEach(([leg, w]) => { map[leg] = w; });
-  weatherCache = map;
-  weatherCacheTime = now;
+  const map = {}; results.forEach(([leg,w]) => map[leg]=w);
+  weatherCache = map; weatherCacheTime = now;
   return map;
 }
 document.getElementById("tempToggle").textContent = tempUnit === "F" ? "\u00B0F" : "\u00B0C";
@@ -490,18 +486,14 @@ function renderItinerary(){
   const listEl = document.getElementById("itineraryList");
   const today = todayStr();
   const currentLeg = getCurrentLeg(today);
-
-  const mainRows = ITINERARY_LEGS.map(l => `
+  listEl.innerHTML = ITINERARY_LEGS.map(l => `
     <div class="itin-row ${l === currentLeg ? "current" : ""}">
       <span class="itin-dot"></span>
-      <span class="itin-name">${LEG_FLAG[l] || ""} ${escapeHtml(l)}</span>
+      <span class="itin-name">${LEG_FLAG[l]||""} ${escapeHtml(l)}</span>
       <span class="itin-weather" id="wx-${l.replace(/[^a-zA-Z0-9]/g,"")}">&middot;&middot;&middot;</span>
-      <span class="itin-date">${itinerary[l] || ""}</span>
+      <span class="itin-date">${itinerary[l]||""}</span>
     </div>
   `).join("");
-
-  listEl.innerHTML = mainRows;
-
   fetchWeatherForLegs().then(map => {
     ALL_LEGS.forEach(l => {
       const el = document.getElementById(`wx-${l.replace(/[^a-zA-Z0-9]/g,"")}`);
@@ -512,13 +504,11 @@ function renderItinerary(){
   });
 }
 
-// ---- location banner ----
 function renderLocationBanner(){
   const today = todayStr();
   const tripStart = itinerary[ITINERARY_LEGS[0]];
-  const tripBudget = loadTripBudget();
-  const totalDays = Math.max(1, tripBudget);
-  const plannedEnd = addDays(tripStart, tripBudget);
+  const totalDays = Math.max(1, SNAPSHOT_TRIP_BUDGET);
+  const plannedEnd = addDays(tripStart, SNAPSHOT_TRIP_BUDGET);
   let elapsed = daysBetween(tripStart, today);
   elapsed = Math.max(0, Math.min(totalDays, elapsed));
   const daysLeft = Math.max(0, totalDays - elapsed - 1);
@@ -533,36 +523,26 @@ function renderLocationBanner(){
     subEl.textContent = "";
   } else {
     labelEl.textContent = `Brandon is in ${currentLeg || ITINERARY_LEGS[0]}`;
-    subEl.textContent = `Day ${elapsed + 1} of ${totalDays}, ${daysLeft}d left`;
+    subEl.textContent = `Day ${elapsed+1} of ${totalDays}, ${daysLeft}d left`;
   }
 }
 
-// ---- check-in (live, same gist the main tracker reads/writes) ----
 function timeAgo(ts){
-  const diffMs = Date.now() - ts;
-  const mins = Math.floor(diffMs / 60000);
+  const mins = Math.floor((Date.now()-ts)/60000);
   if (mins < 1) return "just now";
   if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
+  const hrs = Math.floor(mins/60);
   if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
+  return `${Math.floor(hrs/24)}d ago`;
 }
-let checkinHistoryOpen = false;
-let lastCheckinList = [];
+let checkinHistoryOpen = false, lastCheckinList = [];
 function renderCheckinHistory(){
   const wrap = document.getElementById("checkinHistory");
   if (!checkinHistoryOpen) { wrap.style.display = "none"; return; }
   wrap.style.display = "block";
-  if (lastCheckinList.length === 0) {
-    wrap.innerHTML = `<div class="checkin-hist-empty">No check-ins yet.</div>`;
-    return;
-  }
-  const reversed = [...lastCheckinList].reverse();
-  wrap.innerHTML = reversed.map(e => `
-    <div class="checkin-hist-row">
-      <span class="hp">${escapeHtml(e.place)}</span>
-      <span class="ht">${timeAgo(e.ts)}</span>
-    </div>
+  if (lastCheckinList.length === 0) { wrap.innerHTML = `<div class="checkin-hist-empty">No check-ins yet.</div>`; return; }
+  wrap.innerHTML = [...lastCheckinList].reverse().map(e => `
+    <div class="checkin-hist-row"><span class="hp">${escapeHtml(e.place)}</span><span class="ht">${timeAgo(e.ts)}</span></div>
   `).join("");
 }
 document.getElementById("historyToggleLink").addEventListener("click", () => {
@@ -578,26 +558,19 @@ async function refreshCheckin(){
     const res = await fetch(`https://api.github.com/gists/${CHECKIN_GIST_ID}?_=${Date.now()}`, { cache: "no-store" });
     if (!res.ok) throw new Error("fetch failed");
     const data = await res.json();
-    const filename = Object.keys(data.files || {})[0];
+    const filename = Object.keys(data.files||{})[0];
     const raw = filename ? (data.files[filename].content || "") : "";
     let list;
-    try {
-      list = JSON.parse(raw);
-      if (!Array.isArray(list)) throw new Error("not array");
-    } catch(e) {
-      list = raw.trim() ? [{ place: raw.trim(), ts: new Date(data.updated_at).getTime() }] : [];
-    }
+    try { list = JSON.parse(raw); if (!Array.isArray(list)) throw 0; }
+    catch(e){ list = raw.trim() ? [{ place: raw.trim(), ts: new Date(data.updated_at).getTime() }] : []; }
     lastCheckinList = list;
-    const latest = list[list.length - 1];
+    const latest = list[list.length-1];
     if (latest) {
-      textEl.textContent = latest.place.slice(0, 120);
-      const hrsAgo = (Date.now() - latest.ts) / 3600000;
+      textEl.textContent = latest.place.slice(0,120);
+      const hrsAgo = (Date.now()-latest.ts)/3600000;
       timeEl.innerHTML = `<span class="checkin-time-val">Updated ${timeAgo(latest.ts)}</span>`;
       metaEl.classList.toggle("stale", hrsAgo > 30);
-    } else {
-      textEl.textContent = "No check-in yet";
-      timeEl.textContent = "";
-    }
+    } else { textEl.textContent = "No check-in yet"; timeEl.textContent = ""; }
     renderCheckinHistory();
   } catch(e) {
     textEl.textContent = "Couldn't load check-in";
@@ -610,13 +583,12 @@ document.getElementById("checkinCard").addEventListener("click", (e) => {
   refreshCheckin();
 });
 
-// ---- time lines ----
 function updateLocalTime(){
   const el = document.getElementById("localTimeLine");
   if (!el) return;
   const now = new Date();
-  const timeStr = now.toLocaleTimeString("en-US", { timeZone: "Asia/Ho_Chi_Minh", hour: "numeric", minute: "2-digit" });
-  const dateStr = now.toLocaleDateString("en-US", { timeZone: "Asia/Ho_Chi_Minh", weekday: "short", month: "short", day: "numeric" });
+  const timeStr = now.toLocaleTimeString("en-US", { timeZone: "Asia/Ho_Chi_Minh", hour:"numeric", minute:"2-digit" });
+  const dateStr = now.toLocaleDateString("en-US", { timeZone: "Asia/Ho_Chi_Minh", weekday:"short", month:"short", day:"numeric" });
   el.textContent = `Vietnam/Cambodia time: ${dateStr}, ${timeStr} (ICT, UTC+7)`;
   updateViewerTime(now);
 }
@@ -624,39 +596,51 @@ function updateViewerTime(now){
   const el = document.getElementById("viewerTimeLine");
   if (!el) return;
   try {
-    const viewerTimeStr = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
-    const ictOffsetMinutes = 7 * 60;
-    const viewerOffsetMinutes = -now.getTimezoneOffset();
-    const diffMinutes = ictOffsetMinutes - viewerOffsetMinutes;
-    const diffHoursAbs = Math.abs(diffMinutes) / 60;
+    const viewerTimeStr = now.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit", timeZoneName:"short" });
+    const diffMinutes = 7*60 - (-now.getTimezoneOffset());
+    const diffHoursAbs = Math.abs(diffMinutes)/60;
     const diffLabel = diffHoursAbs % 1 === 0 ? `${diffHoursAbs}h` : `${diffHoursAbs.toFixed(1)}h`;
-    let relation;
-    if (diffMinutes === 0) relation = "same time as Brandon";
-    else if (diffMinutes > 0) relation = `Brandon is ${diffLabel} ahead of you`;
-    else relation = `Brandon is ${diffLabel} behind you`;
+    let relation = diffMinutes === 0 ? "same time as Brandon" : diffMinutes > 0 ? `Brandon is ${diffLabel} ahead of you` : `Brandon is ${diffLabel} behind you`;
     el.textContent = `Your time: ${viewerTimeStr}, ${relation}`;
   } catch(e) { el.textContent = ""; }
 }
 
-// ---- ledger entries, amounts intentionally never rendered ----
-const LS_PRICE_UNLOCK = "vn-kh-price-unlock-v1";
+let sunTimesCache = { leg:null, date:null, sunrise:null, sunset:null };
+async function updateSunTimes(leg){
+  const el = document.getElementById("locSun");
+  if (!el) return;
+  if (!leg || !LEG_COORDS[leg]) { el.textContent = ""; return; }
+  const today = todayStr();
+  if (sunTimesCache.leg === leg && sunTimesCache.date === today) {
+    if (sunTimesCache.sunrise) el.textContent = `☀️ ${sunTimesCache.sunrise} – 🌙 ${sunTimesCache.sunset}`;
+    return;
+  }
+  try {
+    const [lat,lon] = LEG_COORDS[leg];
+    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=sunrise,sunset&timezone=auto`);
+    const data = await res.json();
+    const sunrise = data.daily.sunrise[0].slice(11,16), sunset = data.daily.sunset[0].slice(11,16);
+    sunTimesCache = { leg, date: today, sunrise, sunset };
+    el.textContent = `☀️ ${sunrise} – 🌙 ${sunset}`;
+  } catch(e) { el.textContent = ""; }
+}
+
+// ---- ledger entries, amounts intentionally hidden until unlocked ----
 let pricesUnlocked = false;
 try { pricesUnlocked = localStorage.getItem(LS_PRICE_UNLOCK) === "1"; } catch(e){}
 function fmtMoney(usd){ return `$${usd.toFixed(2)}`; }
-
 function renderEntries(){
-  const expenses = loadExpenses().filter(x => x.type !== "pretrip");
+  const expenses = SNAPSHOT_EXPENSES.filter(x => x.type !== "pretrip");
   const legsWithEntries = ALL_LEGS.filter(l => expenses.some(x => x.leg === l));
   const legFilter = document.getElementById("legFilter");
   const prevVal = legFilter.value || "All";
   legFilter.innerHTML = '<option value="All">All legs</option>' + legsWithEntries.map(l => `<option value="${escapeHtml(l)}">${escapeHtml(l)}</option>`).join("");
   legFilter.value = legsWithEntries.includes(prevVal) ? prevVal : "All";
   filterLeg = legFilter.value;
-
   let filtered = filterLeg === "All" ? expenses : expenses.filter(x => x.leg === filterLeg);
   if (searchTerm) {
     const q = searchTerm.toLowerCase();
-    filtered = filtered.filter(x => (x.note || "").toLowerCase().includes(q) || (x.splitWith || "").toLowerCase().includes(q));
+    filtered = filtered.filter(x => (x.note||"").toLowerCase().includes(q));
   }
   const listEl = document.getElementById("entryList");
   if (filtered.length === 0) {
@@ -668,20 +652,16 @@ function renderEntries(){
     const cat = CATEGORIES.find(c => c.key === x.category);
     const mark = cat ? cat.mark : "\u25CB";
     const label = escapeHtml(x.note || (cat ? cat.label : "Expense"));
-    const splitTag = x.splitWith ? `<span class="split-badge">split w/ ${escapeHtml(x.splitWith)}</span>` : "";
-    const amtHtml = pricesUnlocked
-      ? `<div class="amt-hidden" style="color:var(--teal);">${fmtMoney(x.amount)}</div>`
-      : `<div class="amt-hidden">&bull;&bull;&bull;</div>`;
+    const amtHtml = pricesUnlocked ? `<div class="amt-hidden" style="color:var(--teal);">${fmtMoney(x.amount)}</div>` : `<div class="amt-hidden">&bull;&bull;&bull;</div>`;
     return `<div class="entry-row">
-      <div class="catmark" style="background:${CAT_COLOR[x.category] || '#8C8578'}">${mark}</div>
-      <div class="info"><div class="note">${label}${splitTag}</div><div class="meta">${x.date} &middot; ${escapeHtml(x.leg)}</div></div>
+      <div class="catmark" style="background:${CAT_COLOR[x.category]||'#8C8578'}">${mark}</div>
+      <div class="info"><div class="note">${label}</div><div class="meta">${x.date} &middot; ${escapeHtml(x.leg)}</div></div>
       ${amtHtml}
     </div>`;
   }).join("");
 }
 document.getElementById("legFilter").addEventListener("change", (e) => { filterLeg = e.target.value; renderEntries(); });
 document.getElementById("entrySearch").addEventListener("input", (e) => { searchTerm = e.target.value; renderEntries(); });
-
 function updateUnlockUI(){
   document.getElementById("unlockRow").style.display = pricesUnlocked ? "none" : "flex";
   document.getElementById("unlockNote").style.display = pricesUnlocked ? "flex" : "none";
@@ -693,24 +673,161 @@ document.getElementById("unlockBtn").addEventListener("click", () => {
     pricesUnlocked = true;
     try { localStorage.setItem(LS_PRICE_UNLOCK, "1"); } catch(e){}
     codeInput.value = "";
-    updateUnlockUI();
-    renderEntries();
-  } else {
-    codeInput.value = "";
-    codeInput.placeholder = "Nope, try again";
-  }
+    updateUnlockUI(); renderEntries();
+  } else { codeInput.value = ""; codeInput.placeholder = "Nope, try again"; }
 });
-document.getElementById("unlockCode").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") { e.preventDefault(); document.getElementById("unlockBtn").click(); }
-});
+document.getElementById("unlockCode").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); document.getElementById("unlockBtn").click(); } });
 document.getElementById("lockBtn").addEventListener("click", () => {
   pricesUnlocked = false;
   try { localStorage.removeItem(LS_PRICE_UNLOCK); } catch(e){}
-  updateUnlockUI();
-  renderEntries();
+  updateUnlockUI(); renderEntries();
 });
 
-// ---- things to do: place names, links, and researched ballpark prices ----
+// ---- Japan day-by-day (read-only): same data as the main Ledger ----
+function fmtMoneyFromJPY(jpy){ return fmtMoney(jpy / 150); }
+function jpCostLabel(stop){
+  if (stop.free) return "free";
+  if (stop.costText) return stop.costText;
+  const pre = stop.prefix || "", suf = stop.suffix || "";
+  if (stop.jpyLow != null) return `${pre}${fmtMoneyFromJPY(stop.jpyLow)}–${fmtMoneyFromJPY(stop.jpyHigh)}${suf}`;
+  if (stop.jpy != null) return `${pre}${fmtMoneyFromJPY(stop.jpy)}${suf}`;
+  return "";
+}
+function jpLodgingLabel(l){ if (!l) return ""; if (l.usd != null) return fmtMoney(l.usd); if (l.jpy != null) return fmtMoneyFromJPY(l.jpy); return ""; }
+const JAPAN_CITY_LEG = { "Tokyo":"Tokyo","Hakone":"Hakone","Kyoto":"Kyoto","Osaka":"Osaka","Hiroshima":"Hiroshima","Tokyo (return)":"Tokyo (return, fly out)" };
+const JAPAN_CITY_ORDER = ["Tokyo","Hakone","Kyoto","Osaka","Hiroshima","Tokyo (return)"];
+const JAPAN_GUIDE = {
+  "Tokyo": {
+    lodging: { name: "Cogo Ryōgoku", nights: 2, jpy: 8000, status: "booked" },
+    intro: "Just two nights this stint — Akihabara, teamLab, and Ueno live in the longer Tokyo return leg instead.",
+    weather: "Late-summer heat: 26–31°C, humid, outside chance of a passing typhoon.",
+    stops: [
+      { name:"Sensō-ji Temple", free:true, route:"Ōedo Line to Kuramae → Asakusa Line, 1 stop. ~15 min · ¥220", desc:"Tokyo's oldest temple — Kaminarimon Gate, Nakamise-dōri.", map:"Senso-ji Temple Asakusa" },
+      { name:"Tokyo Skytree", jpyLow:2100, jpyHigh:3500, route:"15–20 min walk from Sensō-ji.", desc:"Tallest tower in Japan.", map:"Tokyo Skytree" },
+      { name:"Meiji Jingū", free:true, route:"Ōedo Line to Shinjuku → JR Yamanote to Harajuku. ~35 min", desc:"Forested Shinto shrine.", map:"Meiji Jingu Tokyo" },
+      { name:"Takeshita Street", costText:"food only", route:"5 min from Meiji Jingū's south exit.", desc:"Teen fashion, crepe stands.", map:"Takeshita Street Harajuku" },
+      { name:"Shibuya Crossing", costText:"free · Sky ~¥2,500", route:"JR Yamanote, 1 stop from Harajuku.", desc:"Cross it, then watch from above.", map:"Shibuya Crossing" },
+      { name:"Shinjuku at night", costText:"food & drink", route:"JR Yamanote from Shibuya, 2 stops.", desc:"Omoide Yokochō, Golden Gai, Kabukichō.", map:"Omoide Yokocho Shinjuku" },
+    ],
+  },
+  "Hakone": {
+    lodging: { name: "Guesthouse, 852-5 Yumoto", nights: 2, jpy: 14400, status: "booked" },
+    alert: "Silver Week (19–23 Sep) — Japan's first full 5-day national holiday since 2015. Bigger crowds, higher prices than a normal weekend.",
+    intro: "A mountain onsen town two hours from Tokyo. Two nights, one full loop day.",
+    weather: "Cooler in the hills: 18–24°C, mist and drizzle common.",
+    stops: [
+      { name:"Getting there: Romancecar", jpyLow:2500, jpyHigh:3500, route:"Ōedo Line to Shinjuku, then Odakyū Romancecar, ~85 min.", desc:"Sit C/D side for Mt Fuji views.", map:null },
+      { name:"The Hakone loop", jpy:6100, route:"Start at Hakone-Yumoto, first departure.", desc:"Mountain railway, Ōwakudani ropeway, Lake Ashi cruise. Free Pass covers it all.", map:"Owakudani Hakone" },
+      { name:"Onsen", jpyLow:1000, jpyHigh:2000, suffix:" day use", route:"", desc:"The whole point of stopping here.", map:null },
+      { name:"Hakone Open-Air Museum", jpy:1600, route:"Stop on the mountain railway.", desc:"Sculpture park, Picasso pavilion.", map:"Hakone Open-Air Museum" },
+    ],
+  },
+  "Kyoto": {
+    lodging: { name: "Ryokan Hostel Gion", nights: 4, usd: 141, status: "pick — not yet booked" },
+    alert: "Sep 21–23 still inside Silver Week. The Nozomi Shinkansen runs fully reserved-only Sep 18–23 — no unreserved cars.",
+    intro: "The longest single stop, spread across the edges of the city.",
+    weather: "Warm and humid, 25–30°C, easing off by evening.",
+    stops: [
+      { name:"Getting there", jpy:13000, prefix:"~", route:"Bus/train to Odawara, then Tōkaidō Shinkansen, ~2h15m.", desc:"", map:null },
+      { name:"Fushimi Inari Taisha", free:true, route:"JR Nara Line, 2 stops to Inari.", desc:"Thousands of vermilion torii gates.", map:"Fushimi Inari Taisha" },
+      { name:"Arashiyama bamboo grove", costText:"free · temple ~¥500", route:"JR Sagano/San-in Line to Saga-Arashiyama.", desc:"Go at opening.", map:"Arashiyama Bamboo Grove" },
+      { name:"Kiyomizu-dera & Gion", jpy:500, route:"City bus 100 or 206 to Kiyomizu-michi.", desc:"Terrace, Sannenzaka/Ninenzaka, Gion evening.", map:"Kiyomizu-dera" },
+      { name:"Kinkaku-ji", jpy:500, route:"City bus 101 or 205.", desc:"The gold pavilion.", map:"Kinkaku-ji" },
+      { name:"Day trip: Nara", jpy:1800, suffix:" return", route:"JR Nara Line rapid, direct. ~45 min", desc:"Free-roaming deer, Tōdai-ji.", map:"Nara Park Todai-ji" },
+    ],
+  },
+  "Osaka": {
+    lodging: { name: "KOREGA! Hostel Namba", nights: 3, jpy: 10500, status: "pick — not yet booked" },
+    intro: "Loud, unpretentious, built around eating.",
+    weather: "Humid, 25–29°C.",
+    stops: [
+      { name:"Dōtonbori", costText:"food only", route:"Midōsuji subway to Namba.", desc:"Takoyaki, okonomiyaki under the Glico sign.", map:"Dotonbori Osaka" },
+      { name:"Osaka Castle", jpy:600, route:"JR Osaka Loop Line to Osakajō-kōen.", desc:"Reconstructed keep, big moated park.", map:"Osaka Castle" },
+      { name:"Kuromon Ichiba Market", costText:"food only", route:"5 min walk from Namba.", desc:"Seafood and skewers cooked in front of you.", map:"Kuromon Ichiba Market" },
+      { name:"Second-day options", costText:"varies", route:"", desc:"Umeda Sky Building, Shinsekai, Kobe day trip, or Universal Studios.", map:null },
+    ],
+  },
+  "Hiroshima": {
+    lodging: { name: "WeBase Hiroshima", nights: 3, jpy: 11400, status: "pick — not yet booked" },
+    intro: "Two full days so you don't have to choose between the city and Miyajima.",
+    weather: "Milder, breezier: 22–27°C.",
+    stops: [
+      { name:"Getting there", jpy:10500, prefix:"~", route:"Sanyō Shinkansen from Shin-Osaka, ~90 min.", desc:"", map:null },
+      { name:"Peace Memorial Park & Museum", jpy:200, route:"Tram line 2 or 6 to Genbaku Dome-mae.", desc:"A-Bomb Dome, cenotaph. Allow 3 hours.", map:"Hiroshima Peace Memorial Park" },
+      { name:"Miyajima & floating torii", costText:"~¥1,000 + ¥300 shrine", route:"JR Sanyō Line to Miyajimaguchi, then JR ferry.", desc:"Great torii in the water, wild deer.", map:"Itsukushima Shrine Miyajima" },
+      { name:"Okonomiyaki, Hiroshima style", jpyLow:900, jpyHigh:1400, route:"", desc:"Layered, with noodles inside.", map:"Okonomimura Hiroshima" },
+    ],
+  },
+  "Tokyo (return)": {
+    lodging: { name: "Cogo Ryōgoku", nights: 5, jpy: 20000, status: "booked" },
+    intro: "Five nights, four full days. The last day (Oct 6) is travel-only to Narita.",
+    weather: "Autumn shows up: 19–25°C.",
+    stops: [
+      { name:"Akihabara Electric Town", free:true, route:"JR Sōbu Line, direct from Ryōgoku.", desc:"Anime, manga, retro games.", map:"Akihabara Electric Town" },
+      { name:"teamLab Planets, Toyosu", jpyLow:3800, jpyHigh:4200, route:"Hibiya Line to Tsukiji, Yūrakuchō Line to Toyosu, Yurikamome onward.", desc:"Barefoot digital art. Book ahead.", map:"teamLab Planets TOKYO" },
+      { name:"Ueno Park", costText:"free · museums ~¥1,000", route:"JR Sōbu to Akihabara, Yamanote to Ueno.", desc:"Tokyo National Museum, Ameyoko market.", map:"Ueno Park Tokyo" },
+      { name:"Tsukiji Outer Market", costText:"food only", route:"Ōedo Line direct to Tsukijishijō.", desc:"Tamagoyaki, uni, dried goods.", map:"Tsukiji Outer Market" },
+      { name:"Shimokitazawa", free:true, route:"Ōedo Line to Shinjuku, Odakyū onward.", desc:"Second-hand clothing, record shops.", map:"Shimokitazawa Tokyo" },
+      { name:"Yanaka", free:true, route:"JR Sōbu to Akihabara, Yamanote to Nippori.", desc:"Old low-rise streets, cats everywhere.", map:"Yanaka Ginza Tokyo" },
+      { name:"Ryōgoku → Narita Terminal 1", jpyLow:1300, jpyHigh:3000, route:"Keisei Skyliner (fastest) or Keisei Access Express (cheapest, one transfer).", desc:"ZIPAIR departs Narita 14:35 — leave by 10:00–10:30 AM. Flies from Terminal 1.", map:null },
+    ],
+  },
+};
+let japanActiveCity = null, japanSearchTerm = "";
+function currentJapanCity(){
+  const today = todayStr();
+  for (let i=0;i<JAPAN_CITY_ORDER.length;i++){
+    const city = JAPAN_CITY_ORDER[i];
+    const start = itinerary[JAPAN_CITY_LEG[city]];
+    if (!start) continue;
+    const nextCity = JAPAN_CITY_ORDER[i+1];
+    const end = nextCity ? itinerary[JAPAN_CITY_LEG[nextCity]] : (itinerary["Los Angeles"] || null);
+    if (start <= today && (!end || today < end)) return city;
+  }
+  return null;
+}
+function renderJapanGuide(){
+  const tabsEl = document.getElementById("japanTabs");
+  const contentEl = document.getElementById("japanCityContent");
+  if (!tabsEl || !contentEl) return;
+  const todayCity = currentJapanCity();
+  if (!japanActiveCity) japanActiveCity = todayCity || "Tokyo";
+  document.getElementById("japanSub").textContent = todayCity ? `Brandon's in ${todayCity} right now` : "Routes, costs, lodging per stop";
+  tabsEl.innerHTML = JAPAN_CITY_ORDER.map(city => `
+    <button type="button" class="cheat-tab ${city===japanActiveCity?"active":""}" data-city="${escapeHtml(city)}">${escapeHtml(city)}${city===todayCity?" 📍":""}</button>
+  `).join("");
+  tabsEl.querySelectorAll(".cheat-tab").forEach(btn => btn.addEventListener("click", () => { japanActiveCity = btn.getAttribute("data-city"); renderJapanGuide(); }));
+  const cityData = JAPAN_GUIDE[japanActiveCity];
+  const q = japanSearchTerm.trim().toLowerCase();
+  const stops = cityData.stops.filter(s => !q || (s.name+" "+(s.desc||"")+" "+jpCostLabel(s)).toLowerCase().includes(q));
+  contentEl.innerHTML = `
+    ${cityData.lodging ? `<div class="jp-lodging"><b>🏨 ${escapeHtml(cityData.lodging.name)}</b> · ${cityData.lodging.nights} nights · ${jpLodgingLabel(cityData.lodging)} · <span class="jp-lodging-status ${cityData.lodging.status.includes("booked")?"ok":"pending"}">${escapeHtml(cityData.lodging.status)}</span></div>` : ""}
+    ${cityData.alert ? `<div class="jp-alert">⚠ ${escapeHtml(cityData.alert)}</div>` : ""}
+    <div class="jp-intro">${escapeHtml(cityData.intro)}</div>
+    <div class="jp-weather">${escapeHtml(cityData.weather)}</div>
+    ${stops.map(s => `
+      <details class="jp-stop">
+        <summary><span class="jp-name">${escapeHtml(s.name)}</span><span class="jp-cost">${escapeHtml(jpCostLabel(s))}</span></summary>
+        <div class="jp-stop-body">
+          <p>${escapeHtml(s.desc)}</p>
+          ${s.route ? `<div class="jp-route">${escapeHtml(s.route)}</div>` : ""}
+          ${s.map ? `<a class="jp-maplink" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.map)}" target="_blank" rel="noopener">Open in Maps</a>` : ""}
+        </div>
+      </details>
+    `).join("") || `<div class="empty">No stops match "${escapeHtml(japanSearchTerm)}".</div>`}
+  `;
+}
+document.getElementById("japanBanner").addEventListener("click", () => {
+  const panel = document.getElementById("japanCard");
+  const caret = document.getElementById("japanCaret");
+  const isOpen = panel.style.display !== "none";
+  panel.style.display = isOpen ? "none" : "block";
+  caret.classList.toggle("open", !isOpen);
+  if (!isOpen) renderJapanGuide();
+});
+document.getElementById("japanSearch").addEventListener("input", (e) => { japanSearchTerm = e.target.value; renderJapanGuide(); });
+
+// ---- Things to do (unchanged reference prices) ----
 const THINGS_GROUPS = [
   { group: "Taipei (layover)", rows: [
     { label: "MRT single ride", type: "approx", usd: 0.65 },
@@ -725,149 +842,51 @@ const THINGS_GROUPS = [
   ]},
   { group: "Ha Giang Loop (3-4 day, easy rider)", rows: [
     { label: "Road Kings, 4-day private room", type: "range", low: 305, high: 335, url: "https://www.roadkingshagiang.com/products/p/4-day-tour" },
-    { label: "Road Kings, 4-day dorm style (est.)", type: "range", low: 230, high: 260, url: "https://www.roadkingshagiang.com/products/p/4-day-tour-492jg" },
-    { label: "Bong Hostel, 4-day private room", type: "range", low: 245, high: 270, url: "https://bongbackpackerhostel.com/tours" },
     { label: "Bong Hostel, 4-day dorm/group (est.)", type: "range", low: 170, high: 200, url: "https://bongbackpackerhostel.com/tours/motorbike-group-tour/ha-giang-group-4d3n" },
   ]},
   { group: "Ninh Binh (Tam Coc / Trang An boats)", rows: [
-    { label: "Tam Coc rowing boat", type: "range", low: 8, high: 10, url: "https://ninhbinhtourist.com.vn" },
-    { label: "Trang An boat tour", type: "range", low: 8, high: 10, url: "https://ninhbinhtourist.com.vn" },
+    { label: "Tam Coc rowing boat", type: "range", low: 8, high: 10 },
     { label: "Hang Mua viewpoint (500-step climb)", type: "approx", usd: 4 },
   ]},
   { group: "Phong Nha", rows: [
     { label: "Paradise Cave entry", type: "approx", usd: 8.50 },
     { label: "Dark Cave zipline + mud bath tour", type: "range", low: 22, high: 25 },
-    { label: "Phong Nha-Ke Bang boat tour", type: "range", low: 6, high: 10 },
   ]},
   { group: "Da Nang", rows: [
     { label: "Marble Mountains + elevator", type: "approx", usd: 2.50 },
-    { label: "Ba Na Hills / Golden Bridge (cable car + entry)", type: "approx", usd: 39 },
+    { label: "Ba Na Hills / Golden Bridge", type: "approx", usd: 39 },
   ]},
   { group: "Hoi An", rows: [
     { label: "Ancient Town ticket (5 sites)", type: "approx", usd: 5 },
     { label: "Basket/lantern boat ride, per boat (2p)", type: "approx", usd: 5 },
-    { label: "Tailor to check out", type: "text", text: "Map \u2197", url: "https://maps.app.goo.gl/7dKAxt1as77BXtKC7" },
   ]},
   { group: "Ho Chi Minh City", rows: [
     { label: "Cu Chi Tunnels entrance", type: "approx", usd: 1.40 },
-    { label: "Cu Chi Tunnels, guided half-day tour", type: "from", usd: 15 },
     { label: "War Remnants Museum", type: "approx", usd: 1.50 },
   ]},
   { group: "Cambodia border bus", rows: [
     { label: "HCMC to Phnom Penh", type: "exact", usd: 37, url: "https://www.giantibis.com" },
     { label: "Phnom Penh to Siem Reap", type: "exact", usd: 27, url: "https://www.giantibis.com" },
   ]},
-  { group: "Cambodia SIM (Smart Axiata, buy at official airport counter or shop)", rows: [
-    { label: "Smart Axiata tourist SIM (~30GB)", type: "approx", usd: 5 },
-  ]},
   { group: "Phnom Penh", rows: [
     { label: "Killing Fields + Tuol Sleng, guided tour", type: "range", low: 19, high: 20 },
-    { label: "\uD83C\uDF82 Eclipse Sky Bar (birthday dinner, 23rd floor)", type: "text", text: "$$", url: "https://www.google.com/maps/search/?api=1&query=Eclipse+Sky+Bar,+Phnom+Penh&query_place_id=ChIJNRFIQDxRCTERTnoMg6FC1Es" },
     { label: "Sunset river cruise, Mekong/Tonle Sap", type: "range", low: 10, high: 15 },
   ]},
-  { group: "Koh Rong (bus + ferry via Sihanoukville, round trip)", rows: [
-    { label: "Phnom Penh \u2194 Koh Rong, bus + ferry combo", type: "range", low: 28, high: 50, url: "https://www.bookaway.com/routes/cambodia/phnom-penh-to-koh-rong" },
+  { group: "Koh Rong", rows: [
+    { label: "Phnom Penh ↔ Koh Rong, bus + ferry combo", type: "range", low: 28, high: 50 },
     { label: "Dorm bed on the island", type: "range", low: 8, high: 15 },
-    { label: "Snorkeling / boat day trip", type: "range", low: 10, high: 20 },
   ]},
   { group: "Siem Reap / Angkor Wat", rows: [
     { label: "3-day Angkor pass (official)", type: "exact", usd: 62, url: "https://angkorenterprise.gov.kh" },
   ]},
-  { group: "🇯🇵 Japan — Costs & Logistics", rows: [
-    { label: "Siem Reap/Bangkok → Tokyo flight", type: "range", low: 250, high: 450 },
-    { label: "Suica IC card — add to Apple Wallet, top up easily, used for all buses/subways", type: "text", text: "App" },
-    { label: "21-day JR Pass (often NOT worth it post price-hike)", type: "approx", usd: 540 },
-    { label: "Point-to-point Shinkansen instead (Tokyo↔Hakone↔Kyoto↔Osaka↔Hiroshima↔Tokyo)", type: "range", low: 300, high: 350 },
-    { label: "Klook — book longer trains, but compare vs JR/regional pass first", type: "text", text: "App" },
-    { label: "Konbini/cheap meal budget, per day", type: "range", low: 20, high: 30 },
-  ]},
-  { group: "🇯🇵 Japan — General Tips", rows: [
-    { label: "Book a ryokan at some point — Kyoto has beautiful, often-affordable ones", type: "text", text: "Do" },
-    { label: "Bring an umbrella + thin waterproof layers for rainy season", type: "text", text: "Pack" },
-    { label: "Dress modestly, avoid showing too much skin/cleavage — you'll get stared at otherwise", type: "text", text: "Etiquette" },
-    { label: "Train stations are confusing — give extra time to grab tickets and find your platform", type: "text", text: "Trains" },
-    { label: "Don't talk loudly on public transport", type: "text", text: "Etiquette" },
-  ]},
-  { group: "🇯🇵 Japan — Must Do", rows: [
-    { label: "Omakase sushi tasting, book ahead (Osaka rec: Hozenji Sushi Sakata 法善寺 鮨 さかた)", type: "range", low: 65, high: 100 },
-    { label: "2nd Street — thrift/charity shop chain in most cities, great cheap finds", type: "text", text: "Thrift" },
-  ]},
-  { group: "🇯🇵 Tokyo — Food", rows: [
-    { label: "Chocolate fish — Taiyaki Sawada", type: "text", text: "Try" },
-    { label: "Chocolate strawberry mochi — Fish Market", type: "text", text: "Try" },
-    { label: "Wagyu skewer — Fish Market", type: "text", text: "Try" },
-    { label: "Fatty tuna nigiri — Fish Market", type: "text", text: "Try" },
-    { label: "Ichiran ramen", type: "text", text: "Try" },
-    { label: "Matcha latte — Hatoya", type: "text", text: "Try" },
-  ]},
-  { group: "🇯🇵 Tokyo — Landmarks", rows: [
-    { label: "Asakusa — Senso-ji Temple + nearby markets, Nezu Shrine (favorite area)", type: "text", text: "Free" },
-    { label: "Shibuya Crossing — go early morning to beat the crowds", type: "text", text: "Free" },
-    { label: "Meiji Shrine — serene garden, great escape on a hot day", type: "text", text: "Free" },
-    { label: "Gotokuji Cat Temple (lucky cats) → Shimokitazawa thrifting on the way back", type: "text", text: "Fun" },
-    { label: "Harajuku — shopping", type: "text", text: "Shop" },
-    { label: "Golden Gai — tiny alley bars, great to walk at night", type: "text", text: "Nightlife" },
-    { label: "Gonpachi Nishi-Azabu — Kill Bill filming location, food/drinks", type: "text", text: "Film" },
-    { label: "Tokyo Metro day pass", type: "approx", usd: 6 },
-  ]},
-  { group: "🇯🇵 Hakone / Mt Fuji", rows: [
-    { label: "Hakone Free Pass (transport + attractions)", type: "approx", usd: 50 },
-    { label: "Ryokan with onsen, per night (worth the splurge)", type: "range", low: 60, high: 100 },
-    { label: "Guesthouse/hostel, per night (budget alt)", type: "range", low: 35, high: 50 },
-  ]},
-  { group: "🇯🇵 Kyoto — Food", rows: [
-    { label: "Dandan noodles — Kinshirou (favorite meal of the whole trip)", type: "text", text: "Must" },
-    { label: "Hikiniku to Come", type: "text", text: "Try" },
-    { label: "Mochi mochi chocolate mochi", type: "text", text: "Try" },
-    { label: "Matcha soft serve", type: "text", text: "Try" },
-    { label: "Hojicha", type: "text", text: "Try" },
-  ]},
-  { group: "🇯🇵 Kyoto — Landmarks", rows: [
-    { label: "Gion + Pontocho alley", type: "text", text: "Explore" },
-    { label: "Kinkaku-ji 金閣寺 — gold temple on a lake, unbelievable", type: "approx", usd: 4 },
-    { label: "Ninenzaka area — best photo spots in Kyoto (stop by Mochi Mochi here)", type: "text", text: "Photo" },
-    { label: "Komyo-in Temple 光明院 — favorite of the whole trip, do NOT skip, gorgeous in the rain", type: "text", text: "Don't skip" },
-    { label: "Fushimi Inari Taisha 伏見稲荷大社 — orange torii gates + market stalls, go early", type: "text", text: "Go early" },
-    { label: "Kimono dressing + tea ceremony experience", type: "range", low: 30, high: 60 },
-    { label: "Check out Kyoto's bars", type: "text", text: "Nightlife" },
-    { label: "Capsule hotel / guesthouse, per night", type: "range", low: 20, high: 30 },
-  ]},
-  { group: "🇯🇵 Osaka — Food", rows: [
-    { label: "Tanghulu (candied fruit skewers)", type: "text", text: "Try" },
-    { label: "Soufflé pancakes", type: "text", text: "Try" },
-    { label: "Takoyaki octopus balls", type: "text", text: "Try" },
-  ]},
-  { group: "🇯🇵 Osaka — Landmarks & Day Trips", rows: [
-    { label: "Nara day trip — deer park", type: "range", low: 15, high: 20 },
-    { label: "Osaka shopping — really good", type: "text", text: "Shop" },
-    { label: "Osaka Castle entry", type: "approx", usd: 4 },
-    { label: "Universal Studios Japan (optional splurge day)", type: "range", low: 70, high: 90 },
-    { label: "Capsule hotel, per night", type: "range", low: 17, high: 27 },
-  ]},
-  { group: "🇯🇵 Hiroshima", rows: [
-    { label: "Okonomiyaki", type: "range", low: 8, high: 12 },
-    { label: "Peace Memorial Park & Museum", type: "approx", usd: 2 },
-    { label: "Miyajima ferry + Itsukushima Shrine", type: "range", low: 5, high: 8 },
-    { label: "Hostel dorm, per night", type: "range", low: 17, high: 25 },
-  ]},
-  { group: "🇯🇵 Return to Tokyo, fly out", rows: [
-    { label: "Hiroshima → Tokyo Shinkansen", type: "range", low: 120, high: 140 },
-    { label: "Capsule hotel near Narita/Haneda, last night", type: "range", low: 25, high: 40 },
-    { label: "Tokyo → LAX flight, direct, more frequent than Osaka", type: "range", low: 500, high: 900 },
-  ]},
 ];
-function fmtPrice(usd){
-  return usd % 1 === 0 ? `$${usd}` : `$${usd.toFixed(2)}`;
-}
+function fmtPrice(usd){ return usd % 1 === 0 ? `$${usd}` : `$${usd.toFixed(2)}`; }
 function renderThingsToDo(){
-  const listEl = document.getElementById("thingsList");
-  listEl.innerHTML = THINGS_GROUPS.map(g => {
+  document.getElementById("thingsList").innerHTML = THINGS_GROUPS.map(g => {
     const rows = g.rows.map(r => {
       let priceText;
-      if (r.type === "text") priceText = r.text;
-      else if (r.type === "approx") priceText = `~${fmtPrice(r.usd)}`;
+      if (r.type === "approx") priceText = `~${fmtPrice(r.usd)}`;
       else if (r.type === "exact") priceText = fmtPrice(r.usd);
-      else if (r.type === "from") priceText = `from ${fmtPrice(r.usd)}`;
       else if (r.type === "range") priceText = `~$${r.low}-${r.high}`;
       const tag = r.url ? "a" : "div";
       const attrs = r.url ? `href="${r.url}" target="_blank" rel="noopener"` : "";
@@ -877,28 +896,24 @@ function renderThingsToDo(){
   }).join("");
 }
 document.getElementById("thingsBanner").addEventListener("click", () => {
-  const panel = document.getElementById("thingsCard");
-  const caret = document.getElementById("thingsCaret");
+  const panel = document.getElementById("thingsCard"), caret = document.getElementById("thingsCaret");
   const isOpen = panel.style.display !== "none";
   panel.style.display = isOpen ? "none" : "block";
   caret.classList.toggle("open", !isOpen);
   if (!isOpen) renderThingsToDo();
 });
 document.getElementById("emergencyBanner").addEventListener("click", () => {
-  const panel = document.getElementById("emergencyCard");
-  const caret = document.getElementById("emergencyCaret");
+  const panel = document.getElementById("emergencyCard"), caret = document.getElementById("emergencyCaret");
   const isOpen = panel.style.display !== "none";
   panel.style.display = isOpen ? "none" : "block";
   caret.classList.toggle("open", !isOpen);
 });
 
-// ---- Visa countdown (read-only, mirrors dates Brandon set in the main tracker) ----
 function renderVisaStrip(){
-  const visa = loadVisa();
   const el = document.getElementById("visaStrip");
-  const countries = [{ key: "Vietnam", flag: "🇻🇳" }, { key: "Cambodia", flag: "🇰🇭" }];
+  const countries = [{ key:"Vietnam", flag:"🇻🇳" }, { key:"Cambodia", flag:"🇰🇭" }];
   el.innerHTML = countries.map(c => {
-    const dateVal = visa[c.key] || "";
+    const dateVal = SNAPSHOT_VISA[c.key] || "";
     let daysHtml = `<div class="vc-days">–</div>`;
     if (dateVal) {
       const days = daysBetween(todayStr(), dateVal);
@@ -910,73 +925,40 @@ function renderVisaStrip(){
   }).join("");
 }
 
-// ---- Traveler cheat sheet ----
 const CHEAT_SHEETS = {
   "🇻🇳 Vietnam": {
-    cash: [
-      "Notes come in 1,000 / 2,000 / 5,000 / 10,000 / 20,000 / 50,000 / 100,000 / 200,000 / 500,000 VND",
+    cash: ["Notes come in 1,000 / 2,000 / 5,000 / 10,000 / 20,000 / 50,000 / 100,000 / 200,000 / 500,000 VND",
       "500,000 VND (~$20) is dark blue/purple, the largest and most common bill for ATM withdrawals",
-      "10,000 and 20,000 look similar (both blue) and are easy to mix up, check the printed number",
-      "Small torn/taped bills are usually still accepted, unlike some countries",
-    ],
-    tipping: "Not culturally expected. Rounding up or leaving small change (5-10%) for good service at restaurants is appreciated but never required. Tour guides/drivers on multi-day tours ($2-5/day) are the exception, it's become customary.",
-    phrases: [
-      { en: "Hello", local: "Xin chào" },
-      { en: "Thank you", local: "Cảm ơn" },
-      { en: "How much?", local: "Bao nhiêu tiền?" },
-      { en: "Too expensive", local: "Đắt quá" },
-      { en: "Delicious", local: "Ngon" },
-      { en: "Cheers!", local: "Một hai ba, dzô!" },
-      { en: "Where's the bathroom?", local: "Nhà vệ sinh ở đâu?" },
-      { en: "No sugar/ice please", local: "Không đường/đá" },
-    ],
+      "10,000 and 20,000 look similar (both blue), check the printed number",
+      "Small torn/taped bills are usually still accepted"],
+    tipping: "Not culturally expected. Rounding up (5-10%) is appreciated but never required. Tour guides/drivers on multi-day tours ($2-5/day) are the exception.",
+    phrases: [ { en:"Hello", local:"Xin chào" }, { en:"Thank you", local:"Cảm ơn" }, { en:"How much?", local:"Bao nhiêu tiền?" },
+      { en:"Too expensive", local:"Đắt quá" }, { en:"Delicious", local:"Ngon" }, { en:"Cheers!", local:"Một hai ba, dzô!" },
+      { en:"Where's the bathroom?", local:"Nhà vệ sinh ở đâu?" } ],
   },
   "🇰🇭 Cambodia": {
-    cash: [
-      "Cambodia runs on USD for anything above ~$1, KHR (riel) is mostly used for small change",
+    cash: ["Cambodia runs on USD for anything above ~$1, KHR (riel) is for small change",
       "KHR notes: 100 / 500 / 1,000 / 2,000 / 5,000 / 10,000 / 20,000 / 50,000 / 100,000",
-      "ATMs usually dispense USD directly, no need to convert",
-      "Expect change back in a mix of USD + riel, 4,000 riel ≈ $1",
-    ],
-    tipping: "Similar to Vietnam, not required but appreciated. $1-2/day for tour guides and drivers is standard among backpackers. Restaurants in tourist areas sometimes add a service charge already, check the bill.",
-    phrases: [
-      { en: "Hello", local: "Suostei" },
-      { en: "Thank you", local: "Aw kohn" },
-      { en: "How much?", local: "T'lai punman?" },
-      { en: "Too expensive", local: "T'lai nah" },
-      { en: "Delicious", local: "Chnganh" },
-      { en: "Cheers!", local: "Chol muoy!" },
-      { en: "Where's the bathroom?", local: "Bantop teuk noev eyna?" },
-    ],
+      "ATMs usually dispense USD directly", "Change back mixes USD + riel, 4,000 riel ≈ $1"],
+    tipping: "Similar to Vietnam, not required but appreciated. $1-2/day for guides and drivers is standard.",
+    phrases: [ { en:"Hello", local:"Suostei" }, { en:"Thank you", local:"Aw kohn" }, { en:"How much?", local:"T'lai punman?" },
+      { en:"Too expensive", local:"T'lai nah" }, { en:"Delicious", local:"Chnganh" }, { en:"Cheers!", local:"Chol muoy!" } ],
   },
   "🇯🇵 Japan": {
-    cash: [
-      "Japan is still fairly cash-heavy — carry yen for small shops, temples, and rural areas",
-      "Notes: ¥1,000 / ¥2,000 (rare) / ¥5,000 / ¥10,000. Coins: ¥1 / ¥5 / ¥10 / ¥50 / ¥100 / ¥500",
-      "7-Eleven ATMs are the most reliable for foreign cards, available 24/7 nationwide",
-      "Suica/Pasmo IC cards cover trains, buses, and convenience stores — load once, tap everywhere",
-    ],
-    tipping: "Not practiced and can even come across as rude or confusing — service is included in the price everywhere, including restaurants and taxis. Just say thank you (arigatou gozaimasu) instead.",
-    phrases: [
-      { en: "Hello", local: "Konnichiwa" },
-      { en: "Thank you", local: "Arigatou gozaimasu" },
-      { en: "How much?", local: "Ikura desu ka?" },
-      { en: "Too expensive", local: "Takai desu" },
-      { en: "Delicious", local: "Oishii" },
-      { en: "Cheers!", local: "Kanpai!" },
-      { en: "Where's the bathroom?", local: "Toire wa doko desu ka?" },
-      { en: "Excuse me / sorry", local: "Sumimasen" },
-    ],
+    cash: ["Still fairly cash-heavy — carry yen for small shops, temples, rural areas",
+      "Notes: ¥1,000 / ¥2,000 (rare) / ¥5,000 / ¥10,000. Coins: ¥1/¥5/¥10/¥50/¥100/¥500",
+      "7-Eleven ATMs are most reliable for foreign cards, 24/7", "Suica/Pasmo cover trains, buses, convenience stores"],
+    tipping: "Not practiced, can seem rude or confusing. Service is included everywhere. Just say arigatou gozaimasu.",
+    phrases: [ { en:"Hello", local:"Konnichiwa" }, { en:"Thank you", local:"Arigatou gozaimasu" }, { en:"How much?", local:"Ikura desu ka?" },
+      { en:"Too expensive", local:"Takai desu" }, { en:"Delicious", local:"Oishii" }, { en:"Cheers!", local:"Kanpai!" },
+      { en:"Where's the bathroom?", local:"Toire wa doko desu ka?" }, { en:"Excuse me / sorry", local:"Sumimasen" } ],
   },
 };
 let cheatActiveTab = Object.keys(CHEAT_SHEETS)[0];
 function renderCheatSheet(){
   document.getElementById("cheatTabs").innerHTML = Object.keys(CHEAT_SHEETS).map(k =>
-    `<button type="button" class="cheat-tab ${k === cheatActiveTab ? "active" : ""}" data-k="${escapeHtml(k)}">${escapeHtml(k)}</button>`
-  ).join("");
-  document.querySelectorAll(".cheat-tab").forEach(btn => {
-    btn.addEventListener("click", () => { cheatActiveTab = btn.getAttribute("data-k"); renderCheatSheet(); });
-  });
+    `<button type="button" class="cheat-tab ${k===cheatActiveTab?"active":""}" data-k="${escapeHtml(k)}">${escapeHtml(k)}</button>`).join("");
+  document.querySelectorAll(".cheat-tab").forEach(btn => { if (!btn.closest("#japanTabs")) btn.addEventListener("click", () => { cheatActiveTab = btn.getAttribute("data-k"); renderCheatSheet(); }); });
   const data = CHEAT_SHEETS[cheatActiveTab];
   document.getElementById("cheatContent").innerHTML = `
     <div class="ref-group-label">Cash notes</div>
@@ -988,144 +970,92 @@ function renderCheatSheet(){
   `;
 }
 document.getElementById("cheatBanner").addEventListener("click", () => {
-  const panel = document.getElementById("cheatCard");
-  const caret = document.getElementById("cheatCaret");
+  const panel = document.getElementById("cheatCard"), caret = document.getElementById("cheatCaret");
   const isOpen = panel.style.display !== "none";
   panel.style.display = isOpen ? "none" : "block";
   caret.classList.toggle("open", !isOpen);
   if (!isOpen) renderCheatSheet();
 });
 
-// ---- Trip journal (read-only, mirrors what Brandon writes in the main tracker) ----
 function renderJournal(){
-  const journal = loadJournal();
-  document.getElementById("journalSub").textContent = journal.length ? `${journal.length} ${journal.length === 1 ? "entry" : "entries"}` : "No entries yet";
+  const journal = SNAPSHOT_JOURNAL;
+  document.getElementById("journalSub").textContent = journal.length ? `${journal.length} ${journal.length===1?"entry":"entries"}` : "No entries yet";
   const listEl = document.getElementById("journalList");
-  if (journal.length === 0) {
-    listEl.innerHTML = `<div class="empty">Nothing logged yet.</div>`;
-    return;
-  }
+  if (journal.length === 0) { listEl.innerHTML = `<div class="empty">Nothing logged yet.</div>`; return; }
   const sorted = [...journal].sort((a,b) => b.date.localeCompare(a.date));
-  listEl.innerHTML = sorted.map(j => `
-    <div class="journal-entry">
-      <div class="j-date">${escapeHtml(j.date)}</div>
-      <div class="j-text">${escapeHtml(j.text)}</div>
-    </div>
-  `).join("");
+  listEl.innerHTML = sorted.map(j => `<div class="journal-entry"><div class="j-date">${escapeHtml(j.date)}</div><div class="j-text">${escapeHtml(j.text)}</div></div>`).join("");
 }
-
-// ---- Trip wrapped summary ----
 function renderWrapped(){
-  const onGround = loadExpenses().filter(x => x.type !== "pretrip");
+  const onGround = SNAPSHOT_EXPENSES.filter(x => x.type !== "pretrip");
+  const pretrip = SNAPSHOT_EXPENSES.filter(x => x.type === "pretrip");
   const gridEl = document.getElementById("wrappedGrid");
-  if (onGround.length === 0) {
-    gridEl.innerHTML = `<div class="empty">Nothing logged yet.</div>`;
-    return;
-  }
+  if (onGround.length === 0 && pretrip.length === 0) { gridEl.innerHTML = `<div class="empty">Nothing logged yet.</div>`; return; }
   const total = onGround.reduce((s,x)=>s+x.amount,0);
+  const pretripTotal = pretrip.reduce((s,x)=>s+x.amount,0);
+  const grandTotal = total + pretripTotal;
   const daysWithSpend = new Set(onGround.map(x => x.date)).size;
   const avgPerDay = total / Math.max(1, daysWithSpend);
   const byCat = {};
   onGround.forEach(x => byCat[x.category] = (byCat[x.category]||0) + x.amount);
   const topCat = Object.entries(byCat).sort((a,b) => b[1]-a[1])[0];
-  const byDay = {};
-  onGround.forEach(x => byDay[x.date] = (byDay[x.date]||0) + x.amount);
-  const priciestDay = Object.entries(byDay).sort((a,b) => b[1]-a[1])[0];
   const catLabel = topCat ? (CATEGORIES.find(c => c.key === topCat[0]) || {}).label || topCat[0] : "–";
   const stats = [
-    { label: "Total spent", val: `$${total.toFixed(2)}`, sub: `${onGround.length} entries` },
-    { label: "Avg / day", val: `$${avgPerDay.toFixed(2)}`, sub: `across ${daysWithSpend} days` },
+    { label: "Trip grand total", val: `$${grandTotal.toFixed(2)}`, sub: `$${pretripTotal.toFixed(2)} pre-trip + $${total.toFixed(2)} on the ground` },
+    { label: "On-the-ground spent", val: `$${total.toFixed(2)}`, sub: `${onGround.length} entries` },
+    { label: "Avg / day (on ground)", val: `$${avgPerDay.toFixed(2)}`, sub: `across ${daysWithSpend} days` },
     { label: "Top category", val: catLabel, sub: topCat ? `$${topCat[1].toFixed(2)}` : "" },
-    { label: "Priciest day", val: priciestDay ? `$${priciestDay[1].toFixed(2)}` : "–", sub: priciestDay ? priciestDay[0] : "" },
   ];
   gridEl.innerHTML = stats.map(s => `
-    <div class="wrapped-stat">
-      <div class="ws-label">${escapeHtml(s.label)}</div>
-      <div class="ws-val">${s.val}</div>
-      <div class="ws-sub">${escapeHtml(s.sub)}</div>
-    </div>
+    <div class="wrapped-stat"><div class="ws-label">${escapeHtml(s.label)}</div><div class="ws-val">${s.val}</div><div class="ws-sub">${escapeHtml(s.sub)}</div></div>
   `).join("");
 }
 document.getElementById("journalBanner").addEventListener("click", () => {
-  const panel = document.getElementById("journalCard");
-  const caret = document.getElementById("journalCaret");
+  const panel = document.getElementById("journalCard"), caret = document.getElementById("journalCaret");
   const isOpen = panel.style.display !== "none";
   panel.style.display = isOpen ? "none" : "block";
   caret.classList.toggle("open", !isOpen);
   if (!isOpen) renderJournal();
 });
 document.getElementById("wrappedBanner").addEventListener("click", () => {
-  const panel = document.getElementById("wrappedCard");
-  const caret = document.getElementById("wrappedCaret");
+  const panel = document.getElementById("wrappedCard"), caret = document.getElementById("wrappedCaret");
   const isOpen = panel.style.display !== "none";
   panel.style.display = isOpen ? "none" : "block";
   caret.classList.toggle("open", !isOpen);
   if (!isOpen) renderWrapped();
 });
 
-// Sun times only need one call for wherever "today" actually is, so this
-// stays a single lightweight request rather than one per leg.
-let sunTimesCache = { leg: null, date: null, sunrise: null, sunset: null };
-async function updateSunTimes(leg){
-  const el = document.getElementById("locSun");
-  if (!el) return;
-  if (!leg || !LEG_COORDS[leg]) { el.textContent = ""; return; }
-  const today = todayStr();
-  if (sunTimesCache.leg === leg && sunTimesCache.date === today) {
-    if (sunTimesCache.sunrise) el.textContent = `☀️ ${sunTimesCache.sunrise} – 🌙 ${sunTimesCache.sunset}`;
-    return;
-  }
-  try {
-    const [lat, lon] = LEG_COORDS[leg];
-    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=sunrise,sunset&timezone=auto`);
-    const data = await res.json();
-    const sunrise = data.daily.sunrise[0].slice(11, 16);
-    const sunset = data.daily.sunset[0].slice(11, 16);
-    sunTimesCache = { leg, date: today, sunrise, sunset };
-    el.textContent = `☀️ ${sunrise} – 🌙 ${sunset}`;
-  } catch (e) {
-    el.textContent = "";
-  }
-}
+document.querySelectorAll(".qn-pill").forEach(pill => {
+  pill.addEventListener("click", (e) => {
+    e.preventDefault();
+    const target = pill.getAttribute("data-target");
+    const [bannerId, cardId] = target.includes(":") ? target.split(":") : [target, null];
+    if (cardId) { const card = document.getElementById(cardId); if (card && card.style.display === "none") document.getElementById(bannerId).click(); }
+    const scrollTarget = document.getElementById(bannerId);
+    if (scrollTarget) setTimeout(() => scrollTarget.scrollIntoView({ behavior:"smooth", block:"start" }), cardId ? 30 : 0);
+  });
+});
 
-// ---- Trip length budget (read-only, mirrors what Brandon set in the main tracker) ----
-const LS_TRIP_BUDGET = "vn-kh-trip-budget-v1";
-const DEFAULT_TRIP_BUDGET = 60;
-function loadTripBudget(){
-  try { const v = localStorage.getItem(LS_TRIP_BUDGET); if (v) return Number(v); } catch(e){}
-  return DEFAULT_TRIP_BUDGET;
-}
-function renderTripLength(){
-  const el = document.getElementById("tripLengthLine");
-  if (!el) return;
-  const tripBudget = loadTripBudget();
-  const lastConfirmedDate = itinerary["Los Angeles"] || itinerary["Tokyo (return, fly out)"] || itinerary["Siem Reap"];
-  const confirmedDays = daysBetween(itinerary["Taipei"], lastConfirmedDate);
-  const buffer = tripBudget - confirmedDays;
-  const bufferLabel = buffer >= 0 ? `${buffer}d under budget` : `${Math.abs(buffer)}d over budget`;
-  el.innerHTML = `Confirmed trip: <b>${confirmedDays}d</b> (Taipei→LA) · Budget: <b>${tripBudget}d</b> · <b>${bufferLabel}</b>`;
-}
+const backToTopBtn = document.getElementById("backToTop");
+let backToTopTicking = false;
+window.addEventListener("scroll", () => {
+  if (backToTopTicking) return;
+  backToTopTicking = true;
+  requestAnimationFrame(() => { backToTopBtn.classList.toggle("show", window.scrollY > 500); backToTopTicking = false; });
+}, { passive: true });
+backToTopBtn.addEventListener("click", () => window.scrollTo({ top:0, behavior:"smooth" }));
 
-// ---- refresh everything periodically since this mirrors localStorage the main app writes to ----
 function refreshAll(){
-  itinerary = loadItinerary();
-  tripEnd = loadTripEnd();
   renderLocationBanner();
   renderItinerary();
   renderEntries();
   renderVisaStrip();
-  renderTripLength();
   updateSunTimes(getCurrentLeg(todayStr()));
 }
-window.addEventListener("storage", refreshAll);
-window.addEventListener("focus", refreshAll);
-setInterval(refreshAll, 15000);
-
 refreshAll();
 refreshCheckin();
-setInterval(refreshCheckin, 5 * 60 * 1000);
+setInterval(refreshCheckin, 5*60*1000);
 updateLocalTime();
-setInterval(updateLocalTime, 30 * 1000);
+setInterval(updateLocalTime, 30*1000);
 </script>
 </body>
 </html>
